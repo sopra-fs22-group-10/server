@@ -6,7 +6,6 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
-
 @Mapper
 public interface DTOMapper {
 
