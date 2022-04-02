@@ -1,70 +1,90 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
-
+import org.springframework.data.annotation.CreatedDate;
 import javax.persistence.*;
+import java.io.Serial;
 import java.io.Serializable;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Entity
 @Table(name = "USER")
 public class User implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
-  @Id
-  @GeneratedValue
-  private Long id;
+    @Id
+    @GeneratedValue
+    private Long id;
 
-  @Column(nullable = false)
-  private String name;
+    @CreatedDate
+    @Column
+    private LocalDateTime creationDate;
 
-  @Column(nullable = false, unique = true)
-  private String username;
+    @Column(nullable = false)
+    private String password;
 
-  @Column(nullable = false, unique = true)
-  private String token;
+    @Column(nullable = false, unique = true)
+    private String username;
 
-  @Column(nullable = false)
-  private UserStatus status;
+    @Column(nullable = false, unique = true)
+    private String token;
 
-  public Long getId() {
-    return id;
-  }
+    @Column(nullable = false)
+    private UserStatus status;
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+    @Column
+    private LocalDate birthdate;
 
-  public String getName() {
-    return name;
-  }
+    public Long getId() {
+        return id;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-  public String getUsername() {
-    return username;
-  }
+    public void setCreationDate(LocalDateTime creationDate){this.creationDate = creationDate; }
 
-  public void setUsername(String username) {
-    this.username = username;
-  }
+    public LocalDate getBirthdate(){return this.birthdate;}
 
-  public String getToken() {
-    return token;
-  }
+    public void setBirthdate(LocalDate birthdate){this.birthdate = birthdate; }
 
-  public void setToken(String token) {
-    this.token = token;
-  }
+    public LocalDateTime getCreationDate(){return this.creationDate;}
 
-  public UserStatus getStatus() {
-    return status;
-  }
+    public String getPassword() {
+        return password;
+    }
 
-  public void setStatus(UserStatus status) {
-    this.status = status;
-  }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
+    }
 }
