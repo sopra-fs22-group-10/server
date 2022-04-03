@@ -26,16 +26,15 @@ public class StatsService {
         this.statsRepository = statsRepository;
     }
 
-    public List<Stats> getStatss() {
+    /* I don't think the get Stats should exist because they are already saved in the Template or crad Entity
+    public List<Stats> getStats() {
         return this.statsRepository.findAll();
     }
 
+     */
 
 
     public Stats createStats(Stats newStats) {
-
-        // saves the given entity but data is only persisted in the database once
-        // flush() is called
 
 
         newStats = statsRepository.save(newStats);

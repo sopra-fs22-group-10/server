@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 
+import ch.uzh.ifi.hase.soprafs22.constant.StatTypes;
+import ch.uzh.ifi.hase.soprafs22.constant.ValuesTypes;
 import ch.uzh.ifi.hase.soprafs22.entity.Stats;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
 import ch.uzh.ifi.hase.soprafs22.repository.TemplateRepository;
@@ -8,8 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.util.ArrayList;
@@ -33,12 +37,15 @@ public class TemplateService {
     }
     /*
     *Not sure if get Templates is necessary
+    *
+    *
     public List<Template> getTemplates() {
         return this.templateRepository.findAll();
     }
 
      */
 
+    //Not sure if change Template is necessary
     public void changeTemplate(Template newTemplate){
 
         Template templateToChange = getTemplateById(newTemplate.getTemplateid());
@@ -53,10 +60,13 @@ public class TemplateService {
         // saves the given entity but data is only persisted in the database once
         // flush() is calle
         List<Stats> newStats = new ArrayList<>();
+
         for(Stats stat : newTemplate.getTemplatestats()){
             newStats.add(statsService.createStats(stat));
         }
         newTemplate.setTemplatestats(newStats);
+
+        checkStatFormat(newTemplate.getTemplatestats());
 
         newTemplate = templateRepository.save(newTemplate);
         templateRepository.flush();
@@ -65,16 +75,34 @@ public class TemplateService {
         return newTemplate;
     }
 
+    public void checkTemplateExistsByid(){
+
+    }
+
+    public void checkStatFormat(List<Stats> Statslist){
+        for(Stats stat : Statslist){
+            if(stat.getStatvalue() != null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Template can't have a Stat Value");
+            }
+            ValuesTypes valuestype = stat.getValuestypes();
+            if(stat.getStattype() == StatTypes.VALUE){
+                if(!(valuestype == ValuesTypes.KMH || valuestype == ValuesTypes.mps)){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Values Type has the wrong format.");
+                }
+            }
+        }
+
+    }
 
     public Template getTemplateById(Long id){
 
         //checkIfIDExists(id);
         Optional<Template> potentialtemplate = templateRepository.findById(id);
 
-        //change Null to Error
-        return potentialtemplate.orElse(null);
-
-
+        if(potentialtemplate.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The provided Template ID does not exist in the Database.");
+        }
+        return potentialtemplate.get();
 
     }
 

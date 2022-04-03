@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.service;
 import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
+import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class DeckService {
         // saves the given entity but data is only persisted in the database once
         // flush() is called
         if(newDeck.getDeckname() == null){
-            newDeck.setDeckname("Deck Nr." + "1");
+            newDeck.setDeckname("Deck Nr." + newDeck.getDeckId());
         }
         if(newDeck.getDeckStatus() == null){
             newDeck.setDeckStatus(DeckStatus.PUBLIC);
@@ -73,8 +74,10 @@ public class DeckService {
         //checkIfIDExists(id);
         Optional<Deck> potentialdeck = deckRepository.findById(id);
 
-        //change Null to Error
-        return potentialdeck.orElse(null);
+        if(potentialdeck.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The provided Deck ID does not exist in the Database.");
+        }
+        return potentialdeck.get();
 
     }
 }
