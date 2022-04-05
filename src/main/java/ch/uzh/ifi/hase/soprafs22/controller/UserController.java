@@ -49,10 +49,10 @@ public class UserController {
     public UserGetDTO getUserById(@PathVariable Long userId, HttpServletResponse response) {
         response.addHeader("Accept", "application/json"); //tell accepted return type in header
 
-        User foundUser;
-        try{
+        User foundUser = userService.getUserByID(userId);
+        /*try{
             foundUser = userService.getUserByID(userId);
-        } catch (ResponseStatusException e){throw e;}
+        } catch (ResponseStatusException e){throw e;}*/
 
         response.setStatus(200);//if user is found
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(foundUser);
@@ -64,10 +64,10 @@ public class UserController {
         response.addHeader("Accept", "application/json"); //tell accepted return type in header
 
         User userInput = DTOMapper.INSTANCE.convertUserLoginDTOtoEntity(userLoginDTO);
-        User createdUser;
-        try{
+        User createdUser = userService.createUser(userInput);
+        /*try{
             createdUser = userService.createUser(userInput);}
-        catch (ResponseStatusException e){throw e;}
+        catch (ResponseStatusException e){throw e;}*/
 
         response.addHeader("Access-Control-Expose-Headers", "Authentication");
         response.addHeader("Authentication", createdUser.getAuthentication());
@@ -82,10 +82,10 @@ public class UserController {
         response.addHeader("Accept", "application/json"); //tell accepted return type in header
 
         User userInput = DTOMapper.INSTANCE.convertUserLoginDTOtoEntity(userLoginDTO);
-        User accessedUser;
-        try {
+        User accessedUser = userService.accessUser(userInput);
+        /*try {
             accessedUser = userService.accessUser(userInput);
-        } catch (ResponseStatusException e){throw e;}
+        } catch (ResponseStatusException e){throw e;}*/
 
         response.addHeader("Access-Control-Expose-Headers", "Authentication");
         response.addHeader("Authentication", accessedUser.getAuthentication());
@@ -100,10 +100,10 @@ public class UserController {
                                      HttpServletResponse response) {
         response.addHeader("Accept", "application/json"); //tell accepted return type in header
 
-        User userToUpdate;
-        try{
+        User userToUpdate = userService.getUserByID(userId);
+        /*try{
             userToUpdate = userService.getUserByID(userId);
-        } catch(ResponseStatusException e){throw e;}
+        } catch(ResponseStatusException e){throw e;}*/
 
         if (!auth.equals(userToUpdate.getAuthentication())){
             throw new ResponseStatusException(HttpStatus.resolve(401), "Not authorized");}
