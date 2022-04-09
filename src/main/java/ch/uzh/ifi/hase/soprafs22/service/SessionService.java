@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
-
+import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.Session;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.SessionRepository;
@@ -11,70 +11,115 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
+/**
+ * User Service
+ * This class is the "worker" and responsible for all functionality related to
+ * the user
+ * (e.g., it creates, modifies, deletes, finds). The result will be passed back
+ * to the caller.
+ */
 @Service
 @Transactional
-public class SessionService {
+public class    SessionService {
 
     private final Logger log = LoggerFactory.getLogger(SessionService.class);
 
     private final SessionRepository sessionRepository;
 
-    private final UserRepository userRepository;
-
     @Autowired
-    public SessionService(@Qualifier("sessionRepository") SessionRepository sessionRepository, @Qualifier("userRepository") UserRepository userRepository) {
+    public SessionService(@Qualifier("sessionRepository") SessionRepository sessionRepository) {
         this.sessionRepository = sessionRepository;
-        this.userRepository = userRepository;
     }
 
+    public List<Session> getSessions() {
+        return this.sessionRepository.findAll();
+    }
 
-    public Session createSession(Session newSession) throws ResponseStatusException {
+    public Session createSession(Session newSession) {
 
-        String authentication = generateSessionId(newSession.getSessionId().intValue());
-        newSession.setAuthentication(authentication);
-        int newSessionId = Integer.parseInt(authentication);
-        newSession.setGameCode(newSessionId);
+        // saves the given entity but data is only persisted in the database once
+        // flush() is called
+        newSession = sessionRepository.save(newSession);
+        sessionRepository.flush();
 
-        try{
-            checkSessionDetails(newSession);
-        }
-        catch (ResponseStatusException e) { throw e; }
+        newSession.setGameCode(generateGameCode(newSession.getSessionId()));
 
-        newSession = saveSession(newSession);
-        log.debug("Created Information for Session: {}", newSession);
+        log.debug("Created Information for User: {}", newSession);
+
         return newSession;
     }
 
-    public Session saveSession(Session session) {
-        Session returnSession = sessionRepository.save(session);
-        sessionRepository.flush();
-        return returnSession;
+    public void deleteSessionById(Long sessionId){
+
+        sessionRepository.deleteById(sessionId);
     }
-    //We can add more Checking Points to this method
-    private void checkSessionDetails(Session createdSession) throws ResponseStatusException {
 
-        User userByUsername = userRepository.findByUsername(createdSession.getUsername());
-
-        if(userByUsername == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Host of the Session is no User!");
+    public Session getSessionById(Long sessionId) {
+        Optional<Session> foundSession = sessionRepository.findById(sessionId);
+        if (foundSession.isPresent()) {
+            return foundSession.get();
         }
+        throw new ResponseStatusException(HttpStatus.resolve(404), "No account for this userID was found!");
     }
 
-    private String generateSessionId(int sessionId) {
-        StringBuilder idToString = new StringBuilder(String.valueOf(sessionId));
+    public Session getSessionByGameCode(int gameCode){
+        Session foundSession = sessionRepository.findByGameCode(gameCode);
+        if(foundSession != null){
+            return foundSession;
+        }
+        throw new ResponseStatusException(HttpStatus.resolve(404), "No session for this GameCode found");
+
+
+
+    }
+
+    /**
+     * This is a helper method that will check the uniqueness criteria of the
+     * username and the name
+     * defined in the User entity. The method will do nothing if the input is unique
+     * and throw an error otherwise.
+     *
+     * //@param ToBeCreated
+     * @throws ResponseStatusException
+     * @see Session
+     */
+
+  /*
+  private void checkIfUserExists(User userToBeCreated) {
+    User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
+    User userByName = userRepository.findByName(userToBeCreated.getName());
+
+    String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
+    if (userByUsername != null && userByName != null) {
+      throw new ResponseStatusException(HttpStatus.resolve(409),
+          String.format(baseErrorMessage, "username and the name", "are"));
+    } else if (userByUsername != null) {
+      throw new ResponseStatusException(HttpStatus.resolve(409), String.format(baseErrorMessage, "username", "is"));
+    } else if (userByName != null) {
+      throw new ResponseStatusException(HttpStatus.resolve(409), String.format(baseErrorMessage, "name", "is"));
+    }
+  }*/
+
+    private int generateGameCode(Long sessionId) {
+        String stringValue = sessionId.toString();
 
         Random random = new Random();
 
-        while(idToString.length() < 6){
-            int randomInt = random.nextInt(9);
-            idToString.append(randomInt);
-        }
+        while(stringValue.length() < 6) {
 
-        return idToString.toString();
+            int randomNumber = random.nextInt(10);
+            stringValue = stringValue + String.valueOf(randomNumber);
+
+        }
+        return Integer.parseInt(stringValue);
     }
 }

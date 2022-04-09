@@ -7,11 +7,6 @@ import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.SessionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User Controller
@@ -29,26 +24,39 @@ public class SessionController {
         this.sessionService = sessionService;
     }
 
-    @PostMapping("/session/create")
+
+    @GetMapping("/session/{sessionId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public SessionGetDTO createSession(@RequestBody SessionPostDTO sessionPostDTO, HttpServletResponse response) {
-        response.addHeader("Accept", "application/json"); //tell accepted return type in header
+    public SessionGetDTO getSessionBySessionId(@PathVariable Long sessionId) {
+        Session session = sessionService.getSessionById(sessionId);
+        return DTOMapper.INSTANCE.convertEntityToSessionGetDTO(session);
+    }
 
+    @GetMapping("/session/{gameCode}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public SessionGetDTO getSessionByGameCode(@PathVariable int gameCode ) {
+        Session session = sessionService.getSessionByGameCode(gameCode);
+        return DTOMapper.INSTANCE.convertEntityToSessionGetDTO(session);
+    }
+
+    @PostMapping("/session/create")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public SessionGetDTO createSession(@RequestBody SessionPostDTO sessionPostDTO) {
+        // convert API user to internal representation
         Session sessionInput = DTOMapper.INSTANCE.convertSessionPostDTOtoEntity(sessionPostDTO);
-        Session createdSession;
 
-        try {
-            createdSession = sessionService.createSession(sessionInput);
-        }
-        catch (ResponseStatusException e) { throw e;}
+        // create session
+        Session createdSession = sessionService.createSession(sessionInput);
 
-
+        // convert internal representation of session back to API
         return DTOMapper.INSTANCE.convertEntityToSessionGetDTO(createdSession);
     }
 
-
-
-
-
+    @DeleteMapping("/session/{sessionId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteBySessionId(@PathVariable Long sessionId) { sessionService.deleteSessionById(sessionId);
+    }
 }
