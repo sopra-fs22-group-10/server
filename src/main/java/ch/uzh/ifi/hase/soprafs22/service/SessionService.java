@@ -58,9 +58,12 @@ public class    SessionService {
         return newSession;
     }
 
-    public void deleteSessionById(Long sessionId){
-
+    public void deleteSessionById(Long sessionId) {
         sessionRepository.deleteById(sessionId);
+    }
+
+    public void deleteSessionByGameCode(int gameCode) {
+        sessionRepository.deleteByGameCode(gameCode);
     }
 
     public Session getSessionById(Long sessionId) {
@@ -68,10 +71,10 @@ public class    SessionService {
         if (foundSession.isPresent()) {
             return foundSession.get();
         }
-        throw new ResponseStatusException(HttpStatus.resolve(404), "No account for this userID was found!");
+        throw new ResponseStatusException(HttpStatus.resolve(404), "No session for this sessionId found");
     }
 
-    public Session getSessionByGameCode(int gameCode){
+    public Session getSessionByGameCode(int gameCode) throws ResponseStatusException{
         Session foundSession = sessionRepository.findByGameCode(gameCode);
         if(foundSession != null){
             return foundSession;
@@ -120,6 +123,8 @@ public class    SessionService {
             stringValue = stringValue + String.valueOf(randomNumber);
 
         }
-        return Integer.parseInt(stringValue);
+
+        int gameCode = Integer.parseInt(stringValue);
+        return gameCode;
     }
 }

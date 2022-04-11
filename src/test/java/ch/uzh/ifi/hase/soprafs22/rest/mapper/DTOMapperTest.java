@@ -1,7 +1,10 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs22.entity.Session;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.SessionGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.SessionPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserLoginDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
@@ -49,5 +52,40 @@ public class DTOMapperTest {
         assertEquals(user.getId(), userGetDTO.getId());
         assertEquals(user.getUsername(), userGetDTO.getUsername());
         assertEquals(user.getStatus(), userGetDTO.getStatus());
+    }
+
+    @Test
+    public void createSessionEntitySuccess(){
+        //create PostDTO
+        SessionPostDTO sessionPostDTO = new SessionPostDTO();
+        sessionPostDTO.setUsername("username");
+        sessionPostDTO.setMaxPlayers(1);
+        sessionPostDTO.setDeckId(1L);
+
+        //MAP create session Entity from postDTO
+        Session session = DTOMapper.INSTANCE.convertSessionPostDTOtoEntity(sessionPostDTO);
+
+        //check
+        assertEquals(sessionPostDTO.getUsername(), session.getUsername());
+        assertEquals(sessionPostDTO.getDeckId(), session.getDeckId());
+        assertEquals(sessionPostDTO.getMaxPlayers(), session.getMaxPlayers());
+    }
+
+    @Test
+    public void createGetSessionDTOSuccess(){
+        //create new session
+        Session session = new Session();
+        session.setSessionId(1L);
+        session.setMaxPlayers(1);
+        session.setDeckId(1L);
+        session.setGameCode(1);
+        session.setUsername("username");
+
+        //MAP create SessionGetDTO
+        SessionGetDTO sessionGetDTO = DTOMapper.INSTANCE.convertEntityToSessionGetDTO(session);
+
+        //check
+        assertEquals(session.getSessionId(), sessionGetDTO.getSessionId());
+        assertEquals(session.getGameCode(), sessionGetDTO.getGameCode());
     }
 }

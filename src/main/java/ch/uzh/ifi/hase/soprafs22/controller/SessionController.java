@@ -9,11 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * User Controller
+ * Session Controller
  * This class is responsible for handling all REST request that are related to
- * the user.
+ * the session.
  * The controller will receive the request and delegate the execution to the
- * UserService and finally return the result.
+ * SessionService and finally return the result.
  */
 @RestController
 public class SessionController {
@@ -24,14 +24,6 @@ public class SessionController {
         this.sessionService = sessionService;
     }
 
-
-    @GetMapping("/session/{sessionId}")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public SessionGetDTO getSessionBySessionId(@PathVariable Long sessionId) {
-        Session session = sessionService.getSessionById(sessionId);
-        return DTOMapper.INSTANCE.convertEntityToSessionGetDTO(session);
-    }
 
     @GetMapping("/session/{gameCode}")
     @ResponseStatus(HttpStatus.OK)
@@ -55,8 +47,8 @@ public class SessionController {
         return DTOMapper.INSTANCE.convertEntityToSessionGetDTO(createdSession);
     }
 
-    @DeleteMapping("/session/{sessionId}")
+    @DeleteMapping("/session/{gameCode}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteBySessionId(@PathVariable Long sessionId) { sessionService.deleteSessionById(sessionId);
+    public void deleteByGameCode(@PathVariable int gameCode) { sessionService.deleteSessionByGameCode(gameCode);
     }
 }

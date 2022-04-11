@@ -10,4 +10,6 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     Session findBySessionId(Long sessionId);
 
     Session findByGameCode(int gameCode);
+
+    void deleteByGameCode(int gameCode);
 }
