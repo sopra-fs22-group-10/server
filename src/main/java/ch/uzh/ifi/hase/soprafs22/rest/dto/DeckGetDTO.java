@@ -14,7 +14,7 @@ public class DeckGetDTO {
 
     private String deckname;
 
-    private DeckStatus status;
+    private DeckStatus deckstatus;
 
     private Template template;
 
@@ -49,13 +49,9 @@ public class DeckGetDTO {
         this.deckname = deckname;
     }
 
-    public DeckStatus getStatus() {
-        return status;
-    }
 
-    public void setStatus(DeckStatus status) {
-        this.status = status;
-    }
+
+
 
     public void setTemplate(Template template) {
         this.template = template;
@@ -66,11 +62,11 @@ public class DeckGetDTO {
     }
 
     public DeckStatus getDeckStatus() {
-        return status;
+        return deckstatus;
     }
 
     public void setDeckStatus(DeckStatus status) {
-        this.status = status;
+        this.deckstatus = status;
     }
 
 

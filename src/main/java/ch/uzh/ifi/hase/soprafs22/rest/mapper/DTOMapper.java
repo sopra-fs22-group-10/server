@@ -14,6 +14,11 @@ public interface DTOMapper {
 
   @Mapping(source = "password", target = "password")
   @Mapping(source = "username", target = "username")
+  @Mapping(target = "creationDate", ignore = true)
+  @Mapping(target = "birthdate", ignore = true)
+  @Mapping(target = "token", ignore = true)
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "status", ignore = true)
   User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
 
   @Mapping(source = "id", target = "id")
@@ -25,22 +30,28 @@ public interface DTOMapper {
   UserGetDTO convertEntityToUserGetDTO(User user);
 
 
-  @Mapping(source = "deckId", target = "deckId")
-  @Mapping(source = "cardlist", target = "cardlist")
-  @Mapping(source = "deckname", target = "deckname")
-  @Mapping(source ="template", target ="template")
-  DeckGetDTO convertEntityToDeckGetDTO(Deck deck);
-
-  @Mapping(source = "deckname", target = "deckname")
-  Deck convertDeckPostDTOtoEntity(DeckPostDTO deckPostDTO);
 
 
-
-  //@Mapping(source = "templateid", target = "templateid")
   @Mapping(source = "templatestats", target = "templatestats")
   @Mapping(source = "templatename", target = "templatename")
   @Mapping(source = "statcount", target = "statcount")
+  @Mapping(target = "templateId", ignore = true)
   Template convertTemplatePostDTOtoEntity(TemplatePostDTO templatePostDTO);
+
+  @Mapping(source = "deckname", target = "deckname")
+  @Mapping(target = "cardlist", ignore = true)
+  @Mapping(target = "deckId", ignore = true)
+  @Mapping(target ="deckstatus", ignore = true)
+  @Mapping(target = "template", ignore = true)
+  Deck convertDeckPostDTOtoEntity(DeckPostDTO deckPostDTO);
 
 
 }
+/*
+@Mapping(source = "deckId", target = "deckId")
+    @Mapping(source = "cardlist", target = "cardlist")
+    @Mapping(source = "deckname", target = "deckname")
+    @Mapping(source ="deckstatus", target= "deckstatus")
+    @Mapping(source ="template", target ="template")
+    DeckGetDTO convertEntityToDeckGetDTO(Deck deck);
+ */

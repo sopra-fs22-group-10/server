@@ -67,9 +67,6 @@ public class UserGetDTO {
     }
 
 
-
-
-    //Userstatus from backend is changed to boolean logged_in for client
     public void setStatus(UserStatus status) {
         this.status = status;
 

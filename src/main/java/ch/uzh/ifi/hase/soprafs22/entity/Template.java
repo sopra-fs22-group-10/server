@@ -15,11 +15,9 @@ public class Template implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-
-
     @Id
     @GeneratedValue
-    private Long templateid;
+    private Long templateId;
 
     @Column(nullable = false, unique = true)
     private String templatename;
@@ -28,7 +26,7 @@ public class Template implements Serializable {
     private int statcount;
 
     @OneToMany
-    private List<Stats> templatestats;
+    private List<Stat> templatestats;
 
 
 
@@ -37,12 +35,12 @@ public class Template implements Serializable {
 
 
 
-    public Long getTemplateid() {
-        return templateid;
+    public Long getTemplateId() {
+        return templateId;
     }
 
-    public void setTemplateid(Long templateid) {
-        this.templateid = templateid;
+    public void setTemplateId(Long templateid) {
+        this.templateId = templateid;
     }
 
     //Maybe needs to raise an error
@@ -60,11 +58,11 @@ public class Template implements Serializable {
     }
 
      */
-    public void setTemplatestats( List<Stats> templatestats){
+    public void setTemplatestats( List<Stat> templatestats){
         this.templatestats=templatestats;
     }
 
-    public List<Stats> getTemplatestats() {
+    public List<Stat> getTemplatestats() {
         return templatestats;
     }
 

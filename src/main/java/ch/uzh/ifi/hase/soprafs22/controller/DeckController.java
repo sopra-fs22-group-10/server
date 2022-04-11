@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -31,25 +30,36 @@ public class DeckController {
     @GetMapping("/decks")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<DeckGetDTO> getAllDecks() {
+    public List<Deck> getAllDecks() {
         // fetch all decks in the internal representation
         List<Deck> decks = deckService.getPublicDecks();
-        List<DeckGetDTO> deckGetDTOs = new ArrayList<>();
 
-        // convert each deck to the API representation
-        for (Deck deck : decks) {
-            deckGetDTOs.add(DTOMapper.INSTANCE.convertEntityToDeckGetDTO(deck));
-        }
-        return deckGetDTOs;
+        //Authentification Check
+
+        return decks;
     }
 
-    @PostMapping("/decks/users/{userId}")
+    @GetMapping("/decks/{deckId}")
     @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public Deck getDeckById(@PathVariable Long deckId) {
+        // fetch all decks in the internal representation
+        Deck deck = deckService.getDeckById(deckId);
+
+        //Authentification Check
+
+        return deck;
+    }
+
+
+    @PostMapping("/decks/users/{userId}")
+    @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public Deck createDeck(@PathVariable Long userId, DeckPostDTO deckPostDTO){
 
         Deck newDeck = DTOMapper.INSTANCE.convertDeckPostDTOtoEntity(deckPostDTO);
 
+        //In create Deck the userId has to be added to link decks with user accounts
         Deck createdDeck = deckService.createDeck(newDeck);
 
         return createdDeck;
@@ -57,7 +67,7 @@ public class DeckController {
 
 
     @PostMapping("/decks/{deckId}/templates")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public Deck CreateTemplate(@PathVariable Long deckId, @RequestBody TemplatePostDTO templatePostDTO, HttpServletResponse responseheader ){
         responseheader.setHeader("Accept", "application/jason");

@@ -9,11 +9,11 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "STAT")
-public class Stats implements Serializable {
+public class Stat implements Serializable {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private Long statId;
 
     @Column
     private String statvalue;
@@ -59,12 +59,12 @@ public class Stats implements Serializable {
         return valuestypes;
     }
 
-    public Long getId() {
-        return id;
+    public Long getStatId() {
+        return statId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setStatId(Long id) {
+        this.statId = id;
     }
 
 

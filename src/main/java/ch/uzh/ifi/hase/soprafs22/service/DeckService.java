@@ -3,7 +3,6 @@ package ch.uzh.ifi.hase.soprafs22.service;
 import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
-import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,13 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+
 @Service
 @Transactional
 public class DeckService {
@@ -44,11 +39,20 @@ public class DeckService {
     public Deck createDeck(Deck newDeck) {
         // saves the given entity but data is only persisted in the database once
         // flush() is called
-        if(newDeck.getDeckname() == null){
-            newDeck.setDeckname("Deck Nr." + newDeck.getDeckId());
+
+
+        if(newDeck.getDeckstatus() == null){
+            newDeck.setDeckstatus(DeckStatus.PUBLIC);
         }
-        if(newDeck.getDeckStatus() == null){
-            newDeck.setDeckStatus(DeckStatus.PUBLIC);
+        if(newDeck.getDeckname() == null){
+            newDeck.setDeckname("Deck.Nr.");
+        }
+
+        newDeck = deckRepository.save(newDeck);
+        deckRepository.flush();
+
+        if(newDeck.getDeckname() == "Deck.Nr."){
+            newDeck.setDeckname("Deck Nr." + newDeck.getDeckId().toString());
         }
         newDeck = deckRepository.save(newDeck);
         deckRepository.flush();

@@ -3,7 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.StatTypes;
 import ch.uzh.ifi.hase.soprafs22.constant.ValuesTypes;
-import ch.uzh.ifi.hase.soprafs22.entity.Stats;
+import ch.uzh.ifi.hase.soprafs22.entity.Stat;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
 import ch.uzh.ifi.hase.soprafs22.repository.TemplateRepository;
 import org.slf4j.Logger;
@@ -27,13 +27,13 @@ public class TemplateService {
 
     private final TemplateRepository templateRepository;
 
-    private final StatsService statsService;
+    private final StatService statService;
 
     @Autowired
-    public TemplateService(@Qualifier("templateRepository") TemplateRepository templateRepository, StatsService statsService) {
+    public TemplateService(@Qualifier("templateRepository") TemplateRepository templateRepository, StatService statService) {
         this.templateRepository = templateRepository;
 
-        this.statsService = statsService;
+        this.statService = statService;
     }
     /*
     *Not sure if get Templates is necessary
@@ -48,7 +48,7 @@ public class TemplateService {
     //Not sure if change Template is necessary
     public void changeTemplate(Template newTemplate){
 
-        Template templateToChange = getTemplateById(newTemplate.getTemplateid());
+        Template templateToChange = getTemplateById(newTemplate.getTemplateId());
         templateToChange = newTemplate;
 
         templateRepository.flush();
@@ -59,14 +59,16 @@ public class TemplateService {
 
         // saves the given entity but data is only persisted in the database once
         // flush() is calle
-        List<Stats> newStats = new ArrayList<>();
+        List<Stat> newStats = new ArrayList<>();
 
-        for(Stats stat : newTemplate.getTemplatestats()){
-            newStats.add(statsService.createStats(stat));
+        for(Stat stat : newTemplate.getTemplatestats()){
+            newStats.add(statService.createStat(stat));
         }
         newTemplate.setTemplatestats(newStats);
 
         checkStatFormat(newTemplate.getTemplatestats());
+
+        newTemplate.setStatcount(newStats.size());
 
         newTemplate = templateRepository.save(newTemplate);
         templateRepository.flush();
@@ -79,8 +81,8 @@ public class TemplateService {
 
     }
 
-    public void checkStatFormat(List<Stats> Statslist){
-        for(Stats stat : Statslist){
+    public void checkStatFormat(List<Stat> statslist){
+        for(Stat stat : statslist){
             if(stat.getStatvalue() != null){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Template can't have a Stat Value");
             }
@@ -88,6 +90,11 @@ public class TemplateService {
             if(stat.getStattype() == StatTypes.VALUE){
                 if(!(valuestype == ValuesTypes.KMH || valuestype == ValuesTypes.mps)){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Values Type has the wrong format.");
+                }
+            }
+            if(stat.getStattype() != StatTypes.VALUE){
+                if(valuestype != null){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only the Stattype VALUE can have a valuestype.");
                 }
             }
         }

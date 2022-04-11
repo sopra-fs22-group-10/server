@@ -1,8 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs22.entity.Deck;
-
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
@@ -32,7 +29,7 @@ public class Card implements Serializable {
     private String image;
 
     @OneToMany
-    private List<Stats> cardstats;
+    private List<Stat> cardstats;
 
     public String getImage(){
         return image;
@@ -58,7 +55,7 @@ public class Card implements Serializable {
         this.cardname = cardname;
     }
 
-    public void addStat(Stats stat){
+    public void addStat(Stat stat){
         this.cardstats.add(stat);
     }
 

@@ -1,13 +1,12 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
+
 
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
-import ch.uzh.ifi.hase.soprafs22.entity.Card;
-import ch.uzh.ifi.hase.soprafs22.entity.Template;
+
 import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
 
 
@@ -31,18 +30,14 @@ public class Deck implements Serializable {
 
 
     //Deck private or public
-    @Column(nullable = false)
+
+    @Column
     private DeckStatus deckstatus;
 
 
     @ManyToOne
     private Template template;
 
-    /*public List getCards() {
-        return cardlist;
-    }
-
-     */
 
     public List<Card> getCardlist() {
         return cardlist;
@@ -72,12 +67,11 @@ public class Deck implements Serializable {
         this.deckname = deckname;
     }
 
-
-    public DeckStatus getDeckStatus() {
+    public DeckStatus getDeckstatus() {
         return deckstatus;
     }
 
-    public void setDeckStatus(DeckStatus deckstatus) {
+    public void setDeckstatus(DeckStatus deckstatus) {
         this.deckstatus = deckstatus;
     }
 

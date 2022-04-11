@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository("templateRepository")
 public interface TemplateRepository extends JpaRepository<Template, Long> {
 
+    Template findByTemplateId(Long TemplateId);
+
 }
