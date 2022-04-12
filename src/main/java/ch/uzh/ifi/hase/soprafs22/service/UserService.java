@@ -127,7 +127,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "username", "is"));
         }
     }
- 
+     /*
      * @param userToBeCreated: the user that is tried to be created
      * @throws org.springframework.web.server.ResponseStatusException: Exception that tells us user already exists
      * @see User
