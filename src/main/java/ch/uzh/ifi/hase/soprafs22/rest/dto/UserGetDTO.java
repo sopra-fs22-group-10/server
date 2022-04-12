@@ -1,20 +1,20 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
-import java.time.LocalDate;
 
 public class UserGetDTO {
 
-    private Long id;
+    private Long userId;
     private String username;
     private UserStatus status;
 
-    public Long getId() {
-        return id;
+
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {return username;}
@@ -24,4 +24,5 @@ public class UserGetDTO {
     public UserStatus getStatus() {return status;}
 
     public void setStatus(UserStatus status) {this.status = status;}
+
 }
