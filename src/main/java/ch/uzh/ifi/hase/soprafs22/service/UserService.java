@@ -43,13 +43,14 @@ public class UserService {
     public List<User> getUsers() {
         return this.userRepository.findAll();
     }
-
+    /*
     public void logout(Long userId, UserStatus newstatus){
         checkIfIDExists(userId);
         User user = getUserById(userId);
         user.setStatus(newstatus);
         userRepository.flush();
     }
+    */
     //After checking if username and password are correct the Token of the corresponding user is returned and The status is set to Online
     //Checks user credentials, set Status online and return actual user
     /*
