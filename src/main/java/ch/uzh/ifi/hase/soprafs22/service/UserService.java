@@ -2,7 +2,6 @@ package ch.uzh.ifi.hase.soprafs22.service;
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPutDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 
-import java.time.LocalDate;
 import java.util.Base64;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * User Service
@@ -85,7 +82,7 @@ public class UserService {
     }
 
     public void deleteUser(User user) {
-        userRepository.deleteById(user.getId());
+        userRepository.deleteById(user.getUserId());
     }
 
     public User createUser(User newUser) throws ResponseStatusException {

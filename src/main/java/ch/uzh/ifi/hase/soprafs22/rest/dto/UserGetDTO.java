@@ -1,28 +1,20 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
-import java.time.LocalDate;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.time.format.DateTimeFormatter;
 
 public class UserGetDTO {
 
-    private Long id;
+    private Long userId;
     private String username;
     private UserStatus status;
 
 
-    public Long getId() {
-        return id;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {return username;}

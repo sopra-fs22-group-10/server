@@ -4,7 +4,9 @@ package ch.uzh.ifi.hase.soprafs22.service;
 import ch.uzh.ifi.hase.soprafs22.constant.StatTypes;
 import ch.uzh.ifi.hase.soprafs22.entity.Stat;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
+import ch.uzh.ifi.hase.soprafs22.repository.StatRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.TemplateRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,13 +26,15 @@ public class TemplateServiceTest {
     @Mock
     private TemplateRepository templateRepository;
 
+    @Mock
+    private StatRepository statRepository;
+
+    @Mock
+    private StatService statService;
+
     @InjectMocks
     private TemplateService templateService;
 
-
-
-    @InjectMocks
-    private StatService statService;
 
     private Template testTemplate;
     private Stat testStat;
@@ -57,14 +61,23 @@ public class TemplateServiceTest {
         // when -> any object is being saved in the templateRepository -> return the dummy
         // testTemplate
         Mockito.when(templateRepository.save(Mockito.any())).thenReturn(testTemplate);
+        Mockito.when(statRepository.save(Mockito.any())).thenReturn(testStat);
+        Mockito.when(statService.createStat(Mockito.any())).thenReturn(testStat);
     }
 
-    /*
+    @AfterEach
+    public void teardown(){
+        statRepository.deleteAll();
+        templateRepository.deleteAll();
+    }
+
+
     @Test
     public void createTemplate_success() {
         // when -> any object is being saved in the templateRepository -> return the dummy
         // testTemplate
-        StatService statService;
+
+        Template createdTemplate = templateService.createTemplate(testTemplate);
 
 
         // then
@@ -76,7 +89,7 @@ public class TemplateServiceTest {
     }
     //Removed duplicate name/password check since passwords should not throw an exception if they are not unique
 
-     */
+
 
 }
 

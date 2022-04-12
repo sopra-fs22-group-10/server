@@ -6,20 +6,15 @@ import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserLoginDTO;
 
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.LoginGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -30,10 +25,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
-
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -41,7 +33,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -67,7 +58,7 @@ public class UserControllerTest {
         user.setPassword("testPassword");
         user.setAuthentication("testAuthentication");
         user.setStatus(UserStatus.OFFLINE);
-        user.setId(1L);
+        user.setUserId(1L);
     }
 
     @AfterEach
@@ -145,10 +136,10 @@ public class UserControllerTest {
     public void get_user_from_ID() throws Exception {
         // given predfined user
         // this mocks the UserService -> we define above what the userService should return when getUsers() is called
-        given(userService.getUserByID(user.getId())).willReturn(user);
+        given(userService.getUserByID(user.getUserId())).willReturn(user);
 
         // when
-        MockHttpServletRequestBuilder getRequest = get("/users/"+user.getId()).contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder getRequest = get("/users/"+user.getUserId()).contentType(MediaType.APPLICATION_JSON);
 
         // then
         mockMvc.perform(getRequest).andExpect(status().is(200))
@@ -159,11 +150,11 @@ public class UserControllerTest {
     public void get_user_from_wrong_ID() throws Exception {
         // given predfined user
         // this mocks the UserService -> we define above what the userService should return when getUsers() is called
-        given(userService.getUserByID(user.getId())).willThrow(new ResponseStatusException(HttpStatus.resolve(404),
+        given(userService.getUserByID(user.getUserId())).willThrow(new ResponseStatusException(HttpStatus.resolve(404),
                 "No account for this userID was found!"));
 
         // when
-        MockHttpServletRequestBuilder getRequest = get("/users/"+user.getId()).contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder getRequest = get("/users/"+user.getUserId()).contentType(MediaType.APPLICATION_JSON);
 
         // then
         mockMvc.perform(getRequest).andExpect(status().is(404));
@@ -173,13 +164,13 @@ public class UserControllerTest {
     public void update_user_with_ID() throws Exception {
         // given predfined user
         // this mocks the UserService -> we define above what the userService should return when getUsers() is called
-        given(userService.getUserByID(user.getId())).willReturn(user);
+        given(userService.getUserByID(user.getUserId())).willReturn(user);
 
         UserPostDTO userPostDTO = new UserPostDTO();
         userPostDTO.setUsername(user.getUsername());
 
         // when
-        MockHttpServletRequestBuilder putRequest = put("/users/"+user.getId())
+        MockHttpServletRequestBuilder putRequest = put("/users/"+user.getUserId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authentication", user.getAuthentication())
                 .content(asJsonString(userPostDTO));
@@ -192,14 +183,14 @@ public class UserControllerTest {
     public void update_user_with_wrong_ID() throws Exception {
         // given predfined user
         // this mocks the UserService -> we define above what the userService should return when getUsers() is called
-        given(userService.getUserByID(user.getId())).willThrow(new ResponseStatusException(HttpStatus.resolve(404),
+        given(userService.getUserByID(user.getUserId())).willThrow(new ResponseStatusException(HttpStatus.resolve(404),
                 "No account for this userID was found!"));
 
         UserPostDTO userPostDTO = new UserPostDTO();
         userPostDTO.setUsername(user.getUsername());
 
         // when
-        MockHttpServletRequestBuilder putRequest = put("/users/"+user.getId())
+        MockHttpServletRequestBuilder putRequest = put("/users/"+user.getUserId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authentication", user.getAuthentication())
                 .content(asJsonString(userPostDTO));
@@ -212,13 +203,13 @@ public class UserControllerTest {
     public void update_user_with_wrong_auth() throws Exception {
         // given predfined user
         // this mocks the UserService -> we define above what the userService should return when getUsers() is called
-        given(userService.getUserByID(user.getId())).willReturn(user);
+        given(userService.getUserByID(user.getUserId())).willReturn(user);
 
         UserPostDTO userPostDTO = new UserPostDTO();
         userPostDTO.setUsername(user.getUsername());
 
         // when
-        MockHttpServletRequestBuilder putRequest = put("/users/"+user.getId())
+        MockHttpServletRequestBuilder putRequest = put("/users/"+user.getUserId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authentication", "wrongAuth")
                 .content(asJsonString(userPostDTO));

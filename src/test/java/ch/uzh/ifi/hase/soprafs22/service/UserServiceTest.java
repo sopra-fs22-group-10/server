@@ -11,8 +11,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest {
@@ -35,7 +33,7 @@ public class UserServiceTest {
         testUser.setPassword("testPassword");
         testUser.setAuthentication("testAuthentication");
         testUser.setStatus(UserStatus.OFFLINE);
-        testUser.setId(1L);
+        testUser.setUserId(1L);
 
 
         // when -> any object is being save in the userRepository -> return the dummy
@@ -52,7 +50,7 @@ public class UserServiceTest {
         // then
         Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any());
 
-        assertEquals(testUser.getId(), createdUser.getId());
+        assertEquals(testUser.getUserId(), createdUser.getUserId());
         assertEquals(testUser.getUsername(), createdUser.getUsername());
         assertEquals(testUser.getStatus(), createdUser.getStatus());
         //not in get
