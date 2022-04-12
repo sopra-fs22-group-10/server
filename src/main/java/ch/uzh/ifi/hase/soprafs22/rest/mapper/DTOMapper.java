@@ -4,9 +4,8 @@ import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UserLoginDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
+
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
