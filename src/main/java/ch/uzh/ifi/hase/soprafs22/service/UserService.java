@@ -12,11 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * User Service
@@ -63,8 +59,7 @@ public class UserService {
     }
 
     public User createUser(User newUser) throws ResponseStatusException {
-        String toEncode = newUser.getUsername() + ":" + newUser.getPassword();
-        String authentication = Base64.getEncoder().encodeToString(toEncode.getBytes());
+        String authentication = generateAuthToken();
         newUser.setAuthentication(authentication);
         newUser.setStatus(UserStatus.OFFLINE);
 
@@ -80,8 +75,21 @@ public class UserService {
         try {
             checkLoginCredentials(userInput);
         } catch (ResponseStatusException e){throw e;}
-        log.debug("Logged into account for User: {}", userInput);
-        return userRepository.findByUsername(userInput.getUsername());
+        User loggedInUser = userRepository.findByUsername(userInput.getUsername());
+        log.debug("Logged into account for User: {}", loggedInUser);
+        return loggedInUser;
+    }
+
+    public void logoutUser(Long userId, String auth){
+        Optional <User> loggedOutUser = userRepository.findById(userId);
+        if (loggedOutUser.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.resolve(404), "No account for this userID was found!");
+        } else {
+            if (!auth.equals(loggedOutUser.get().getAuthentication())){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authorized!");
+            }
+        }
+        loggedOutUser.get().setAuthentication(generateAuthToken());
     }
 
     /**
@@ -122,5 +130,9 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Wrong password!");
         }
+    }
+
+    private String generateAuthToken(){
+        return Long.toHexString(Double.doubleToLongBits(Math.random()));
     }
 }
