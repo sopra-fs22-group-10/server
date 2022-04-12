@@ -52,7 +52,7 @@ public class StatService {
 
         //change Null to Error
         if(potentialStat.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The provided Template ID does not exist in the Database.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The provided Stat ID does not exist in the Database.");
         }
         return potentialStat.get();
 

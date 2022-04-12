@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.constant.StatTypes;
 import ch.uzh.ifi.hase.soprafs22.constant.ValuesTypes;
 import ch.uzh.ifi.hase.soprafs22.entity.Stat;
 import ch.uzh.ifi.hase.soprafs22.repository.StatRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class StatServiceIntegrationTest {
     public void setup() {
         statRepository.deleteAll();
     }
+
+    @AfterEach
+    public void teardown(){statRepository.deleteAll();}
 
     @Test
     public void createStats_validInputs_success() {
@@ -75,9 +79,9 @@ public class StatServiceIntegrationTest {
         testStat.setStatname("testStat1");
         testStat.setStattype(StatTypes.NUMBER);
 
-        Stat recovered = statService.createStat(testStat);
+        testStat = statService.createStat(testStat);
         // when
-        Stat recoveredStat = statService.getStatById(1L);
+        Stat recoveredStat = statService.getStatById(testStat.getStatId());
 
         // then
         assertEquals(testStat.getStatId(), recoveredStat.getStatId());

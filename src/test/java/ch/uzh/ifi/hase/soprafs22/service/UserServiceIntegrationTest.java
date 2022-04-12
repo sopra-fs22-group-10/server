@@ -2,25 +2,23 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
+import ch.uzh.ifi.hase.soprafs22.repository.StatRepository;
+import ch.uzh.ifi.hase.soprafs22.repository.TemplateRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UserLoginDTO;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 
 /**
  * Test class for the UserResource REST resource.
@@ -36,17 +34,37 @@ public class UserServiceIntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
+    private TemplateRepository templateRepository;
+
+    @Autowired
+    private StatRepository statRepository;
+
+    @Autowired
+    private DeckRepository deckRepository;
+
+    @Autowired
     private UserService userService;
 
     @BeforeEach
     public void setup() {
         userRepository.deleteAll();
+        statRepository.deleteAll();
+        templateRepository.deleteAll();
+        deckRepository.deleteAll();
+    }
+    @AfterEach
+    public void teardown(){
+        userRepository.deleteAll();
+        statRepository.deleteAll();
+        templateRepository.deleteAll();
+        deckRepository.deleteAll();
     }
 
     @Test
     public void createUser_validInputs_success() {
         // given
         assertNull(userRepository.findByUsername("testUsername"));
+
 
         User testUser = new User();
         testUser.setUsername("testUsername");

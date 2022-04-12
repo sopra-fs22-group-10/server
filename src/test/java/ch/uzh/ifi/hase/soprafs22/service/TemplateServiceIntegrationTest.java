@@ -5,6 +5,8 @@ import ch.uzh.ifi.hase.soprafs22.constant.ValuesTypes;
 import ch.uzh.ifi.hase.soprafs22.entity.Stat;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
 import ch.uzh.ifi.hase.soprafs22.repository.TemplateRepository;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +18,10 @@ import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @WebAppConfiguration
@@ -44,6 +44,9 @@ public class TemplateServiceIntegrationTest {
     public void setup() {
         templateRepository.deleteAll();
     }
+
+    @AfterEach
+    public void teardown(){templateRepository.deleteAll();}
 
     @Test
     public void createTemplate_validInputs_success() {

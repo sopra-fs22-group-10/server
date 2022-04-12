@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
 import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class DeckServiceIntegrationTest {
     public void setup() {
         deckRepository.deleteAll();
     }
+
+    @AfterEach
+    public void teardown(){deckRepository.deleteAll();}
 
     @Test
     public void createDeck_validInputs_success() {

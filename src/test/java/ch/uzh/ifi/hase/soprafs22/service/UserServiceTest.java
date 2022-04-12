@@ -57,7 +57,7 @@ public class UserServiceTest {
         assertEquals(testUser.getStatus(), createdUser.getStatus());
         //not in get
         assertEquals(testUser.getPassword(), createdUser.getPassword());
-        assertEquals(UserStatus.ONLINE, createdUser.getAuthentication());
+        assertEquals(testUser.getAuthentication(), createdUser.getAuthentication());
     }
 
     @Test

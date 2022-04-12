@@ -43,13 +43,15 @@ public class UserService {
     public List<User> getUsers() {
         return this.userRepository.findAll();
     }
-
+    /*
     public void logout(Long userId, UserStatus newstatus){
         checkIfIDExists(userId);
         User user = getUserById(userId);
         user.setStatus(newstatus);
         userRepository.flush();
     }
+
+     */
     //After checking if username and password are correct the Token of the corresponding user is returned and The status is set to Online
     //Checks user credentials, set Status online and return actual user
     /*
@@ -71,7 +73,7 @@ public class UserService {
         if (foundUser.isPresent()) {
             return foundUser.get();
         }
-        throw new ResponseStatusException(HttpStatus.resolve(404), "No account for this userID was found!");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No account for this userID was found!");
     }
 
     public User saveUser(User user) {
