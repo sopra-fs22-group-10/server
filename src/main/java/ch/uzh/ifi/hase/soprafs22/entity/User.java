@@ -1,68 +1,54 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
-import org.springframework.data.annotation.CreatedDate;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
+/**
+ * Internal User Representation
+ * This class composes the internal representation of the user and defines how
+ * the user is stored in the database.
+ * Every variable will be mapped into a database field with the @Column
+ * annotation
+ * - nullable = false -> this cannot be left empty
+ * - unique = true -> this value must be unqiue across the database -> composes
+ * the primary key
+ */
 
 @Entity
 @Table(name = "USER")
 public class User implements Serializable {
-
-    @Serial
+    
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @CreatedDate
-    @Column
-    private LocalDateTime creationDate;
+    @Column(nullable = false, unique = true)
+    private String username;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, unique = true)
-    private String username;
-
-    @Column(nullable = false, unique = true)
-    private String token;
+    @Column(nullable = false)
+    private String authentication;
 
     @Column(nullable = false)
     private UserStatus status;
-
-    @Column
-    private LocalDate birthdate;
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setCreationDate(LocalDateTime creationDate){this.creationDate = creationDate; }
-
-    public LocalDate getBirthdate(){return this.birthdate;}
-
-    public void setBirthdate(LocalDate birthdate){this.birthdate = birthdate; }
-
-    public LocalDateTime getCreationDate(){return this.creationDate;}
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public void setId(Long id) {this.id = id;}
 
     public String getUsername() {
         return username;
@@ -72,12 +58,21 @@ public class User implements Serializable {
         this.username = username;
     }
 
-    public String getToken() {
-        return token;
+    public String getPassword() {
+        return password;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getAuthentication() {
+        return authentication;
+    }
+
+    public void setAuthentication(String authentication) {
+        this.authentication = authentication;
+
     }
 
     public UserStatus getStatus() {
@@ -87,4 +82,6 @@ public class User implements Serializable {
     public void setStatus(UserStatus status) {
         this.status = status;
     }
+
 }
+

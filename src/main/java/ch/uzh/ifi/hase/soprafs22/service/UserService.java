@@ -14,12 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-
-
+import java.util.Base64;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,78 +44,6 @@ public class UserService {
         return this.userRepository.findAll();
     }
 
-
-
-    public User createUser(User newUser) {
-        newUser.setToken(UUID.randomUUID().toString());
-        newUser.setStatus(UserStatus.ONLINE);
-
-        checkIfUserExists(newUser);
-        LocalDateTime now = LocalDateTime.now();
-        newUser.setCreationDate(now);
-        // saves the given entity but data is only persisted in the database once
-        // flush() is called
-        newUser = userRepository.save(newUser);
-        userRepository.flush();
-
-        log.debug("Created Information for User: {}", newUser);
-        return newUser;
-    }
-
-
-    public void ChangeUserData(String username,String birthday, String token, Long id)  {
-
-        User user1 = getUserById(id);
-
-        verifyTokenandMatchId(token, id);
-
-        if(birthday != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-            try {
-
-
-                LocalDate date = LocalDate.parse(birthday, formatter);
-
-
-            }
-            catch (DateTimeParseException e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The date Format wasn't right");
-            }
-
-            LocalDate date = LocalDate.parse(birthday, formatter);
-            user1.setBirthdate(date);
-        }
-        if(username != null) {
-            user1.setUsername(username);
-        }
-
-
-
-        userRepository.flush();
-
-        log.debug("Updated Information for User: {}", user1);
-
-    }
-
-    public User getUserById(Long id){
-
-        checkIfIDExists(id);
-        Optional<User> potentialuser = userRepository.findById(id);
-
-        User user = potentialuser.get();
-
-        return user;
-    }
-
-    public User getUserByUsername(User temoraryuser){
-        //checkIfIDExists(id);
-
-        User potentialuser = userRepository.findByUsername(temoraryuser.getUsername());
-
-        return potentialuser;
-    }
-
     public void logout(Long userId, UserStatus newstatus){
         checkIfIDExists(userId);
         User user = getUserById(userId);
@@ -129,16 +52,7 @@ public class UserService {
     }
     //After checking if username and password are correct the Token of the corresponding user is returned and The status is set to Online
     //Checks user credentials, set Status online and return actual user
-    public User loginUsers(String username, String password){
-        User ActualUser = userRepository.findByUsername(username);
-
-        checkIfUsernameAndPasswordMatch(ActualUser, password);
-
-        ActualUser.setStatus(UserStatus.ONLINE);
-
-        return ActualUser;
-
-    }
+    /*
     public void verifyTokenandMatchId(String token, Long id){
         User userToCheck = userRepository.findByToken(token);
         if (userToCheck == null) {
@@ -148,15 +62,50 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You don't have access to this recourse, you can't change userprofile of other users");
         }
     }
+    */
 
-    private void checkIfUsernameAndPasswordMatch(User ActualUser, String password){
 
-        String baseErrorMessage = "The %s you entered, doesn't match the %s. Please try again!";
-        if (ActualUser == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sorry, there doesn't exist a user with the username you entered");
-        }else if(! ActualUser.getPassword().equals(password)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "password", "username"));
+
+    public User getUserByID(Long Id) throws ResponseStatusException{
+        Optional<User> foundUser = userRepository.findById(Id);
+        if (foundUser.isPresent()) {
+            return foundUser.get();
         }
+        throw new ResponseStatusException(HttpStatus.resolve(404), "No account for this userID was found!");
+    }
+
+    public User saveUser(User user) {
+        // saves the given entity but data is only persisted in the database once
+        // flush() is called
+        User returnUser = userRepository.save(user);
+        userRepository.flush();
+        return returnUser;
+    }
+
+    public void deleteUser(User user) {
+        userRepository.deleteById(user.getId());
+    }
+
+    public User createUser(User newUser) throws ResponseStatusException {
+        String toEncode = newUser.getUsername() + ":" + newUser.getPassword();
+        String authentication = Base64.getEncoder().encodeToString(toEncode.getBytes());
+        newUser.setAuthentication(authentication);
+        newUser.setStatus(UserStatus.OFFLINE);
+
+        try {
+            checkIfUserExists(newUser);
+        } catch (ResponseStatusException e){throw e;}
+        newUser = saveUser(newUser);
+        log.debug("Created Information for User: {}", newUser);
+        return newUser;
+    }
+
+    public User accessUser(User userInput) throws ResponseStatusException {
+        try {
+            checkLoginCredentials(userInput);
+        } catch (ResponseStatusException e){throw e;}
+        log.debug("Logged into account for User: {}", userInput);
+        return userRepository.findByUsername(userInput.getUsername());
     }
 
 
@@ -166,23 +115,44 @@ public class UserService {
      * defined in the User entity. The method will do nothing if the input is unique
      * and throw an error otherwise.
      *
+
      *
      */
 
     private void checkIfUserExists(User userToBeCreated) {
         User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
 
-
         String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
         if (userByUsername != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "username", "is"));
         }
     }
-    private void checkIfIDExists(Long ID) {
+ 
+     * @param userToBeCreated: the user that is tried to be created
+     * @throws org.springframework.web.server.ResponseStatusException: Exception that tells us user already exists
+     * @see User
+     */
+   
 
-        String baseErrorMessage = "The %s provided does not exist. There %s not any user assotiated with this Id";
-        if (! userRepository.existsById(ID)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage, "ID", "is"));
+    /**
+     * This is a helper method that will check the login credentials. The method will do nothing
+     *  if the credentials are correct and throw an error otherwise.
+     *
+     * @param userToAccess: the user whose profile is tried to log into
+     * @throws org.springframework.web.server.ResponseStatusException: exception to show that login was incorrect
+     * @see User
+     */
+    private void checkLoginCredentials(User userToAccess) throws ResponseStatusException {
+        User userByUsername = userRepository.findByUsername(userToAccess.getUsername());
+
+        if (userByUsername == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "No account for this username was found!");
+        }
+        else if (!userByUsername.getPassword().equals(userToAccess.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Wrong password!");
+
         }
     }
 }
