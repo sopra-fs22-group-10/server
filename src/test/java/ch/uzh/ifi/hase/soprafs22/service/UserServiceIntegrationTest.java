@@ -57,6 +57,7 @@ public class UserServiceIntegrationTest {
 
         // when
         User createdUser = userService.createUser(testUser);
+        testUser.setId(1L);
 
         // then
         assertEquals(testUser.getId(), createdUser.getId());
@@ -84,7 +85,7 @@ public class UserServiceIntegrationTest {
         testUser2.setPassword("testPassword2");
         testUser2.setAuthentication("testAuthentication2");
         testUser2.setStatus(UserStatus.OFFLINE);
-        testUser2.setId(2L);
+        testUser2.setId(1L);
 
         // check that an error is thrown
         assertThrows(ResponseStatusException.class, () -> userService.createUser(testUser2));
