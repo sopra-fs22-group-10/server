@@ -105,11 +105,11 @@ public class UserControllerTest {
 
         // then
         MvcResult mvcResult = mockMvc.perform(postRequest)
-                //.andExpect(status().is(201))
+                .andExpect(status().is(201))
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
                 .andReturn();
         String authentication = mvcResult.getResponse().getHeader("Authentication");
-        //assertEquals(authentication, user.getAuthentication());
+        assertEquals(authentication, user.getAuthentication());
     }
 
     @Test //post /users -> 409 : register for taken username
@@ -176,7 +176,7 @@ public class UserControllerTest {
                 .content(asJsonString(userPostDTO));
 
         // then
-        //mockMvc.perform(putRequest).andExpect(status().is(204));
+        mockMvc.perform(putRequest).andExpect(status().is(204));
     }
 
     @Test //put /users/1 -> 404 : fail at updating data because user 1 doesnt exist
@@ -234,11 +234,11 @@ public class UserControllerTest {
 
         // then
         MvcResult mvcResult = mockMvc.perform(postRequest)
-                //.andExpect(status().is(200))
+                .andExpect(status().is(200))
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
                 .andReturn();
         String authentication = mvcResult.getResponse().getHeader("Authentication");
-        //assertEquals(authentication, user.getAuthentication());
+        assertEquals(authentication, user.getAuthentication());
     }
 
     @Test //post /loginrequests -> 400 : login with wrong password
