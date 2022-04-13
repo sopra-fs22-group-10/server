@@ -1,0 +1,15 @@
+To Do:
+    Entities:   -Template
+                -Card
+                -Deck
+
+    repository: -CardRepository
+                -DeckRepository
+                -TemplateRepository
+
+    service:    -CardService
+                -TemplateService
+                -DeckService
+
+    controller: -CardController
+                 -TemplateController
