@@ -1,13 +1,14 @@
 package ch.uzh.ifi.hase.soprafs22.repository;
 
+
+import ch.uzh.ifi.hase.soprafs22.entity.Template;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository("userRepository")
-public interface UserRepository extends JpaRepository<User, Long> {
+@Repository("templateRepository")
+public interface TemplateRepository extends JpaRepository<Template, Long> {
 
-    User findByUserId(Long id);
-    User findByUsername(String username);
+    Template findByTemplateId(Long TemplateId);
 
 }

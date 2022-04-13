@@ -1,5 +1,4 @@
 package ch.uzh.ifi.hase.soprafs22.service;
-
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
@@ -11,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.*;
 
 /**
@@ -37,13 +35,37 @@ public class UserService {
     public List<User> getUsers() {
         return this.userRepository.findAll();
     }
+    /*
+    public void logout(Long userId, UserStatus newstatus){
+        checkIfIDExists(userId);
+        User user = getUserById(userId);
+        user.setStatus(newstatus);
+        userRepository.flush();
+    }
+
+     */
+    //After checking if username and password are correct the Token of the corresponding user is returned and The status is set to Online
+    //Checks user credentials, set Status online and return actual user
+    /*
+    public void verifyTokenandMatchId(String token, Long id){
+        User userToCheck = userRepository.findByToken(token);
+        if (userToCheck == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You don't have access to this resource, because you are not logged in");
+        }
+        if (userToCheck.getId() != id) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You don't have access to this recourse, you can't change userprofile of other users");
+        }
+    }
+    */
+
+
 
     public User getUserByID(Long Id) throws ResponseStatusException{
         Optional<User> foundUser = userRepository.findById(Id);
         if (foundUser.isPresent()) {
             return foundUser.get();
         }
-        throw new ResponseStatusException(HttpStatus.resolve(404), "No account for this userID was found!");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No account for this userID was found!");
     }
 
     public User saveUser(User user) {
@@ -55,7 +77,7 @@ public class UserService {
     }
 
     public void deleteUser(User user) {
-        userRepository.deleteById(user.getId());
+        userRepository.deleteById(user.getUserId());
     }
 
     public User createUser(User newUser) throws ResponseStatusException {
@@ -92,24 +114,31 @@ public class UserService {
         loggedOutUser.get().setAuthentication(generateAuthToken());
     }
 
+
     /**
      * This is a helper method that will check the uniqueness criteria of the
      * username and the name
      * defined in the User entity. The method will do nothing if the input is unique
      * and throw an error otherwise.
      *
-     * @param userToBeCreated: the user that is tried to be created
-     * @throws org.springframework.web.server.ResponseStatusException: Exception that tells us user already exists
-     * @see User
+
+     *
      */
-    private void checkIfUserExists(User userToBeCreated) throws ResponseStatusException {
+
+    private void checkIfUserExists(User userToBeCreated) {
         User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
 
         String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
         if (userByUsername != null) {
-            throw new ResponseStatusException(HttpStatus.resolve(409), String.format(baseErrorMessage, "username", "is"));
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "username", "is"));
         }
     }
+     /*
+     * @param userToBeCreated: the user that is tried to be created
+     * @throws org.springframework.web.server.ResponseStatusException: Exception that tells us user already exists
+     * @see User
+     */
+   
 
     /**
      * This is a helper method that will check the login credentials. The method will do nothing
@@ -129,6 +158,7 @@ public class UserService {
         else if (!userByUsername.getPassword().equals(userToAccess.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Wrong password!");
+
         }
     }
 

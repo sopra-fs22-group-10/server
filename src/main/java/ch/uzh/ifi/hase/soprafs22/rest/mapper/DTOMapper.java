@@ -1,9 +1,10 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
+import ch.uzh.ifi.hase.soprafs22.entity.Deck;
+import ch.uzh.ifi.hase.soprafs22.entity.Template;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UserLoginDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
+
+import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -23,15 +24,47 @@ public interface DTOMapper {
 
     DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
+
+  @Mapping(source = "templatestats", target = "templatestats")
+  @Mapping(source = "templatename", target = "templatename")
+  @Mapping(source = "statcount", target = "statcount")
+  @Mapping(target = "templateId", ignore = true)
+  Template convertTemplatePostDTOtoEntity(TemplatePostDTO templatePostDTO);
+
+  @Mapping(source = "deckname", target = "deckname")
+  @Mapping(target = "cardlist", ignore = true)
+  @Mapping(target = "deckId", ignore = true)
+  @Mapping(target ="deckstatus", ignore = true)
+  @Mapping(target = "template", ignore = true)
+  Deck convertDeckPostDTOtoEntity(DeckPostDTO deckPostDTO);
+
+
+
     @Mapping(source = "username", target = "username")
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "userId", ignore = true)
+    @Mapping(target = "authentication", ignore = true)
+    @Mapping(target = "status", ignore = true)
     User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
 
-    @Mapping(source = "id", target = "id")
+    @Mapping(source = "userId", target = "userId")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "status", target = "status")
     UserGetDTO convertEntityToUserGetDTO(User user);
 
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
+    @Mapping(target = "userId", ignore = true)
+    @Mapping(target = "authentication", ignore = true)
+    @Mapping(target = "status", ignore = true)
     User convertUserLoginDTOtoEntity(UserLoginDTO userLoginDTO);
+
 }
+/*
+@Mapping(source = "deckId", target = "deckId")
+    @Mapping(source = "cardlist", target = "cardlist")
+    @Mapping(source = "deckname", target = "deckname")
+    @Mapping(source ="deckstatus", target= "deckstatus")
+    @Mapping(source ="template", target ="template")
+    DeckGetDTO convertEntityToDeckGetDTO(Deck deck);
+ */

@@ -1,12 +1,10 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.*;
+import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDate;
 
 /**
  * Internal User Representation
@@ -18,15 +16,17 @@ import java.time.LocalDate;
  * - unique = true -> this value must be unqiue across the database -> composes
  * the primary key
  */
+
 @Entity
 @Table(name = "USER")
 public class User implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue
-    private Long id;
+    private Long userId;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -40,11 +40,11 @@ public class User implements Serializable {
     @Column(nullable = false)
     private UserStatus status;
 
-    public Long getId() {
-        return id;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {this.id = id;}
+    public void setUserId(Long id) {this.userId = id;}
 
     public String getUsername() {
         return username;
@@ -68,6 +68,7 @@ public class User implements Serializable {
 
     public void setAuthentication(String authentication) {
         this.authentication = authentication;
+
     }
 
     public UserStatus getStatus() {
@@ -77,4 +78,6 @@ public class User implements Serializable {
     public void setStatus(UserStatus status) {
         this.status = status;
     }
+
 }
+
