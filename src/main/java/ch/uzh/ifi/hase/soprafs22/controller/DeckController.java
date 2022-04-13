@@ -1,11 +1,14 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.entity.Card;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.CardPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DeckGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DeckPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.TemplatePostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
+import ch.uzh.ifi.hase.soprafs22.service.CardService;
 import ch.uzh.ifi.hase.soprafs22.service.DeckService;
 import ch.uzh.ifi.hase.soprafs22.service.TemplateService;
 import org.springframework.http.HttpStatus;
@@ -19,11 +22,12 @@ public class DeckController {
 
     private final DeckService deckService;
     private final TemplateService templateService;
+    private final CardService cardService;
 
-    DeckController(DeckService deckService, TemplateService templateService) {
+    DeckController(DeckService deckService, TemplateService templateService, CardService cardService) {
         this.deckService = deckService;
-
         this.templateService = templateService;
+        this.cardService = cardService;
     }
 
     
@@ -76,6 +80,21 @@ public class DeckController {
 
         //The template doesn't have to be transformed to a TemplateGetDTO since no info must be left out
         return deckService.setTemplate(deckTemplate, deckId);
+    }
+
+    @PostMapping("/decks/{deckId}/cards")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public Deck CreateCard(@PathVariable Long deckId, @RequestBody CardPostDTO cardPostDTO, HttpServletResponse responseheader ){
+        responseheader.setHeader("Accept", "application/jason");
+        Deck theDeck = deckService.getDeckById(deckId);
+
+        Card userCard = DTOMapper.INSTANCE.convertCardPostDTOtoEntity(cardPostDTO);
+
+        Card deckCard = cardService.createCard(userCard, theDeck.getTemplate());
+
+        //The template doesn't have to be transformed to a TemplateGetDTO since no info must be left out
+        return deckService.addNewCard(deckCard, deckId);
     }
 
 

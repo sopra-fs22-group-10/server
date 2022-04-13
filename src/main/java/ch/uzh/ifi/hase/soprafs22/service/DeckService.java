@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
+import ch.uzh.ifi.hase.soprafs22.entity.Card;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
 import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
@@ -71,6 +72,13 @@ public class DeckService {
         return deck;
     }
 
+    public Deck addNewCard(Card card, Long DeckId){
+        Deck deck = getDeckById(DeckId);
+        checkIfCardIsAlreadyInDeck(card, deck);
+        deck.addCard(card);
+        return deck;
+    }
+
 
 
     public Deck getDeckById(Long id){
@@ -83,6 +91,19 @@ public class DeckService {
         }
         return potentialdeck.get();
 
+    }
+
+
+
+    public void checkIfCardIsAlreadyInDeck(Card card, Deck deck){
+        if(deck.getCardList().contains(card)){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "The to be added card exists already in the Deck.");
+        }
+        for(Card card2: deck.getCardList()){
+            if(card.getCardname()== card2.getCardname()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There already exist a Card with this CardName. CardNames in a Deck have to be unique.");
+            }
+        }
     }
 }
 

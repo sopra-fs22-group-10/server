@@ -37,6 +37,7 @@ public class StatService {
     public Stat createStat(Stat newStat) {
 
 
+
         newStat = statRepository.save(newStat);
         statRepository.flush();
 
