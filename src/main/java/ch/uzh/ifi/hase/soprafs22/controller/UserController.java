@@ -33,8 +33,7 @@ public class UserController {
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<UserGetDTO> getAllUsers(HttpServletResponse response) {
-        response.addHeader("Accept", "application/json"); //tell accepted return type in header
+    public List<UserGetDTO> getAllUsers() {
 
         List<User> users = userService.getUsers();
         List<UserGetDTO> userGetDTOs = new ArrayList<>();
@@ -46,22 +45,19 @@ public class UserController {
 
     @GetMapping("/users/{userId}")
     @ResponseBody
-    public UserGetDTO getUserById(@PathVariable Long userId, HttpServletResponse response) {
-        response.addHeader("Accept", "application/json"); //tell accepted return type in header
+    public UserGetDTO getUserById(@PathVariable Long userId) {
 
         User foundUser = userService.getUserByID(userId);
         /*try{
             foundUser = userService.getUserByID(userId);
         } catch (ResponseStatusException e){throw e;}*/
 
-        response.setStatus(200);//if user is found
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(foundUser);
     }
 
     @PostMapping("/users")
     @ResponseBody
-    public UserGetDTO createUser(@RequestBody UserLoginDTO userLoginDTO, HttpServletResponse response) {
-        response.addHeader("Accept", "application/json"); //tell accepted return type in header
+    public UserGetDTO createUser(@RequestBody UserLoginDTO userLoginDTO) {
 
         User userInput = DTOMapper.INSTANCE.convertUserLoginDTOtoEntity(userLoginDTO);
         User createdUser = userService.createUser(userInput);
@@ -69,17 +65,13 @@ public class UserController {
             createdUser = userService.createUser(userInput);}
         catch (ResponseStatusException e){throw e;}*/
 
-        response.addHeader("Access-Control-Expose-Headers", "Authentication");
-        response.addHeader("Authentication", createdUser.getAuthentication());
-        response.setStatus(201);
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
     }
 
     @PostMapping("/users/login")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public UserGetDTO getUserAccess(@RequestBody UserLoginDTO userLoginDTO, HttpServletResponse response) {
-        response.addHeader("Accept", "application/json"); //tell accepted return type in header
+    public UserGetDTO getUserAccess(@RequestBody UserLoginDTO userLoginDTO) {
 
         User userInput = DTOMapper.INSTANCE.convertUserLoginDTOtoEntity(userLoginDTO);
         User accessedUser = userService.accessUser(userInput);
@@ -87,16 +79,13 @@ public class UserController {
             accessedUser = userService.accessUser(userInput);
         } catch (ResponseStatusException e){throw e;}*/
 
-        response.addHeader("Access-Control-Expose-Headers", "Authentication");
-        response.addHeader("Authentication", accessedUser.getAuthentication());
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(accessedUser);
     }
 
     @PostMapping("/users/{userId}/logout")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public void logoutUser(@PathVariable Long userId, @RequestHeader("Authentication") String auth, HttpServletResponse response) {
-        response.addHeader("Accept", "application/json"); //tell accepted return type in header
+    public void logoutUser(@PathVariable Long userId, @RequestHeader("Authentication") String auth) {
 
         try {
             userService.logoutUser(userId, auth);
@@ -107,9 +96,7 @@ public class UserController {
     @ResponseBody
     public void updateUserById(@PathVariable Long userId,
                                      @RequestBody UserPostDTO userPostDTO,
-                                     @RequestHeader("Authentication") String auth,
-                                     HttpServletResponse response) {
-        response.addHeader("Accept", "application/json"); //tell accepted return type in header
+                                     @RequestHeader("Authentication") String auth) {
 
         User userToUpdate = userService.getUserByID(userId);
         /*try{
@@ -121,6 +108,5 @@ public class UserController {
 
         userToUpdate.setUsername(userPostDTO.getUsername());
         userService.saveUser(userToUpdate);
-        response.setStatus(204);//if update is successful
     }
 }
