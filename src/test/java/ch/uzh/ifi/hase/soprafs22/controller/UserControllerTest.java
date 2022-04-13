@@ -228,7 +228,7 @@ public class UserControllerTest {
         given(userService.accessUser(Mockito.any())).willReturn(user);
 
         // when/then -> do the request + validate the result
-        MockHttpServletRequestBuilder postRequest = post("/loginrequests")
+        MockHttpServletRequestBuilder postRequest = post("/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(userLoginDTO));
 
@@ -251,7 +251,7 @@ public class UserControllerTest {
         given(userService.accessUser(Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong password!"));
 
         // when/then -> do the request + validate the result
-        MockHttpServletRequestBuilder postRequest = post("/loginrequests")
+        MockHttpServletRequestBuilder postRequest = post("/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(userLoginDTO));
 
