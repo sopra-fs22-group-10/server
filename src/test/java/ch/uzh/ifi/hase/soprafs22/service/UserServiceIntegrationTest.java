@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+
 /**
  * Test class for the UserResource REST resource.
  *
