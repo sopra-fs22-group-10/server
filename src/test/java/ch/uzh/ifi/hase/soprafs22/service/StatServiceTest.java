@@ -53,6 +53,7 @@ public class StatServiceTest {
         assertEquals(testStat.getStatvalue(), createdStat.getStatvalue());
         assertEquals(testStat.getStattype(), createdStat.getStattype());
     }
-    //Removed duplicate name/password check since passwords should not throw an exception if they are not unique
+
+
 
 }

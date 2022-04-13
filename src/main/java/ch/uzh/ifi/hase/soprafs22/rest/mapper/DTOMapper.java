@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
+import ch.uzh.ifi.hase.soprafs22.entity.Card;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
@@ -29,9 +30,6 @@ public interface DTOMapper {
   @Mapping(source = "status", target = "status")
   UserGetDTO convertEntityToUserGetDTO(User user);
 
-
-
-
   @Mapping(source = "templatestats", target = "templatestats")
   @Mapping(source = "templatename", target = "templatename")
   @Mapping(source = "statcount", target = "statcount")
@@ -45,6 +43,12 @@ public interface DTOMapper {
   @Mapping(target = "template", ignore = true)
   Deck convertDeckPostDTOtoEntity(DeckPostDTO deckPostDTO);
 
+  
+  @Mapping(source = "cardstats", target = "cardstats")
+  @Mapping(source = "cardname", target = "cardname")
+  @Mapping(source = "image", target = "image")
+  @Mapping(target = "cardId", ignore = true)
+  Card convertCardPostDTOtoEntity(CardPostDTO cardPostDTO);
 
 }
 /*

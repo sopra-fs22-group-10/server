@@ -40,7 +40,7 @@ public class UserServiceTest {
 
     @Test
     public void createUser_validInputs_success() {
-        // when -> any object is being save in the userRepository -> return the dummy
+        // when -> any object is being saved in the userRepository -> return the dummy
         // testUser
         User createdUser = userService.createUser(testUser);
 

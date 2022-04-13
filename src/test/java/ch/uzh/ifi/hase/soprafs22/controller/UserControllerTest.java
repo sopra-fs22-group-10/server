@@ -58,6 +58,7 @@ public class UserControllerTest {
     private UserService userService;
 
     private User testUser;
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);

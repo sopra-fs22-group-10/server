@@ -59,6 +59,8 @@ public class TemplateService {
 
         // saves the given entity but data is only persisted in the database once
         // flush() is calle
+        checkTemplateFormat(newTemplate);
+
         List<Stat> newStats = new ArrayList<>();
 
         for(Stat stat : newTemplate.getTemplatestats()){
@@ -77,8 +79,10 @@ public class TemplateService {
         return newTemplate;
     }
 
-    public void checkTemplateExistsByid(){
-
+    public void checkTemplateFormat(Template templateToCheck){
+        if(templateToCheck.getTemplatename() == null || templateToCheck.getTemplatestats().isEmpty()){
+            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Template must have a name and at least on stat to be created.");
+        }
     }
 
     public void checkStatFormat(List<Stat> statslist){

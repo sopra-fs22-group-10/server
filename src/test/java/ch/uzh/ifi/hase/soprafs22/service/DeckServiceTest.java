@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,6 +52,26 @@ public class DeckServiceTest {
         assertEquals(testDeck.getDeckname(), createdDeck.getDeckname());
         assertEquals(DeckStatus.PUBLIC, createdDeck.getDeckstatus());
     }
+
+    @Test
+    public void get_Deck_by_Id(){
+
+        Deck createdDeck = deckService.getDeckById(testDeck.getDeckId());
+
+        assertEquals(testDeck.getDeckId(), createdDeck.getDeckId());
+        assertEquals(testDeck.getDeckname(), createdDeck.getDeckname());
+        assertEquals(DeckStatus.PUBLIC, createdDeck.getDeckstatus());
+    }
+
+
+    @Test
+    public void get_not_existing_Deck_by_Id(){
+
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> deckService.getDeckById(2L));
+        assertEquals(thrown.getStatus(), HttpStatus.NOT_FOUND);
+    }
+
+
     //Removed duplicate name/password check since passwords should not throw an exception if they are not unique
 
 }
