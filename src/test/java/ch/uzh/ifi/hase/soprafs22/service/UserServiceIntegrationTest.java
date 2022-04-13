@@ -54,7 +54,6 @@ public class UserServiceIntegrationTest {
         testUser.setPassword("testPassword");
         testUser.setAuthentication("testAuthentication");
         testUser.setStatus(UserStatus.OFFLINE);
-        testUser.setId(1L);
 
         // when
         User createdUser = userService.createUser(testUser);
