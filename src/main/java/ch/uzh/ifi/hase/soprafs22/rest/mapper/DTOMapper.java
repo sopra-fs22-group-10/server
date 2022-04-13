@@ -1,8 +1,9 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
+import ch.uzh.ifi.hase.soprafs22.entity.Session;
+import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
-import ch.uzh.ifi.hase.soprafs22.entity.User;
 
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import org.mapstruct.*;
@@ -58,6 +59,18 @@ public interface DTOMapper {
     @Mapping(target = "authentication", ignore = true)
     @Mapping(target = "status", ignore = true)
     User convertUserLoginDTOtoEntity(UserLoginDTO userLoginDTO);
+
+
+
+    //sessionMappings
+    @Mapping(source = "username", target = "username")
+    @Mapping(source = "deckId", target = "deckId")
+    @Mapping(source = "maxPlayers", target = "maxPlayers")
+    Session convertSessionPostDTOtoEntity(SessionPostDTO sessionPostDTO);
+
+    @Mapping(source = "sessionId", target = "sessionId")
+    @Mapping(source = "gameCode", target = "gameCode")
+    SessionGetDTO convertEntityToSessionGetDTO(Session session);
 
 }
 /*
