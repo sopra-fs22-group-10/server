@@ -92,9 +92,9 @@ public class DeckController {
         Card userCard = DTOMapper.INSTANCE.convertCardPostDTOtoEntity(cardPostDTO);
 
         Card deckCard = cardService.createCard(userCard, theDeck.getTemplate());
-
+        Deck deckToReturn = deckService.addNewCard(deckCard, deckId);
         //The template doesn't have to be transformed to a TemplateGetDTO since no info must be left out
-        return deckService.addNewCard(deckCard, deckId);
+        return deckToReturn;
     }
 
 

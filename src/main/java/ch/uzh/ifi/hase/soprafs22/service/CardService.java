@@ -14,14 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+
+import java.util.*;
 
 @Service
 @Transactional
@@ -66,6 +60,7 @@ public class CardService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Card StatCount doesn't match the template StatCount");
         }
 
+
         List<Stat> newStats = new ArrayList<>();
         for(int i = 0; i<card.getCardstats().size(); i++){
              Stat StatCard= card.getCardstats().get(i);
@@ -77,7 +72,11 @@ public class CardService {
              if((StatCard.getStattype()!= StatTypes.VALUE && (StatCard.getValuestypes() != null) || (StatCard.getStattype()== StatTypes.VALUE && (StatCard.getValuestypes() == null)))){
                  throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only StatType VALUE, can and must have a non null Valuestype");
              }
-
+             if(i+1<card.getCardstats().size()){
+                 if(Objects.equals(StatCard.getStatname(), card.getCardstats().get(i + 1).getStatname())){
+                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No two stats of the same Card can have the same names");
+                 }
+             }
              if(StatCard.getStatvalue() == null){
                  throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A CardStat needs to have a Value");
              }

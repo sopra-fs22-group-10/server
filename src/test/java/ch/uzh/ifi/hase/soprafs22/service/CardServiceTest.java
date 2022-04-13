@@ -31,9 +31,7 @@ public class CardServiceTest {
     @InjectMocks
     private CardService cardService;
 
-
-
-    @InjectMocks
+    @Mock
     private StatService statService;
 
     private Card testCard;
@@ -68,7 +66,7 @@ public class CardServiceTest {
         CardStat.setStatvalue("CardStatValue");
 
         List<Stat> cardStats = new ArrayList<>();
-        cardStats.add(TemplateStat);
+        cardStats.add(CardStat);
         testCard.setCardstats(cardStats);
 
         List<Stat> templateStat = new ArrayList<>();
@@ -80,6 +78,8 @@ public class CardServiceTest {
         // testCard
         Mockito.when(cardRepository.save(Mockito.any())).thenReturn(testCard);
         Mockito.when(statRepository.save(Mockito.any())).thenReturn(CardStat);
+        Mockito.when(statService.createStat(Mockito.any())).thenReturn(CardStat);
+        //Mockito.when(cardService.checkCardMatchesTemplateAndHasValidStats(Mockito.any(),Mockito.any())).thenReturn(testCard);
     }
 
 
@@ -89,7 +89,8 @@ public class CardServiceTest {
         // testCard
         StatService statService;
 
-        Mockito.when(cardService.checkCardMatchesTemplateAndHasValidStats(testCard, Mockito.any())).thenReturn(testCard);
+
+
         Card createdCard = cardService.createCard(testCard, testTemplate);
 
         // then

@@ -45,6 +45,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{userId}")
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public UserGetDTO getUserById(@PathVariable Long userId, HttpServletResponse response) {
         response.addHeader("Accept", "application/json"); //tell accepted return type in header
@@ -54,24 +55,22 @@ public class UserController {
             foundUser = userService.getUserByID(userId);
         } catch (ResponseStatusException e){throw e;}*/
 
-        response.setStatus(200);//if user is found
+        //if user is found
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(foundUser);
     }
 
     @PostMapping("/users")
+    @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public UserGetDTO createUser(@RequestBody UserLoginDTO userLoginDTO, HttpServletResponse response) {
         response.addHeader("Accept", "application/json"); //tell accepted return type in header
 
         User userInput = DTOMapper.INSTANCE.convertUserLoginDTOtoEntity(userLoginDTO);
         User createdUser = userService.createUser(userInput);
-        /*try{
-            createdUser = userService.createUser(userInput);}
-        catch (ResponseStatusException e){throw e;}*/
 
         response.addHeader("Access-Control-Expose-Headers", "Authentication");
         response.addHeader("Authentication", createdUser.getAuthentication());
-        response.setStatus(201);
+
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
     }
 
@@ -93,6 +92,7 @@ public class UserController {
     }
 
     @PutMapping("/users/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
     public void updateUserById(@PathVariable Long userId,
                                      @RequestBody UserPostDTO userPostDTO,
@@ -106,10 +106,10 @@ public class UserController {
         } catch(ResponseStatusException e){throw e;}*/
 
         if (!auth.equals(userToUpdate.getAuthentication())){
-            throw new ResponseStatusException(HttpStatus.resolve(401), "Not authorized");}
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized");}
 
         userToUpdate.setUsername(userPostDTO.getUsername());
         userService.saveUser(userToUpdate);
-        response.setStatus(204);//if update is successful
+       //if update is successful
     }
 }

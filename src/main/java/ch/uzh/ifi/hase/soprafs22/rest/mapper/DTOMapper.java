@@ -21,7 +21,7 @@ public interface DTOMapper {
   Template convertTemplatePostDTOtoEntity(TemplatePostDTO templatePostDTO);
 
   @Mapping(source = "deckname", target = "deckname")
-  @Mapping(target = "cardlist", ignore = true)
+  @Mapping(target = "cardList", ignore = true)
   @Mapping(target = "deckId", ignore = true)
   @Mapping(target ="deckstatus", ignore = true)
   @Mapping(target = "template", ignore = true)

@@ -65,27 +65,6 @@ public class StatServiceIntegrationTest {
 
     }
 
-    @Test
-    public void createStat_invalid_INPUT() {
-        // when -> any object is being saved in the statRepository -> return the dummy
-        // testStat
-        assertNull(statRepository.findByStatId(1L));
-
-        Stat testStat = new Stat();
-        testStat.setStatvalue("200");
-        testStat.setStattype(StatTypes.NUMBER);
-
-        Stat testStat2 = new Stat();
-        testStat2.setStatvalue("200");
-        testStat2.setStatname("Statname2");
-
-        Stat createdStat = statService.createStat(testStat);
-
-        assertThrows(NullPointerException.class,()-> {statService.createStat(testStat);});
-
-    }
-
-
 
 
     @Test

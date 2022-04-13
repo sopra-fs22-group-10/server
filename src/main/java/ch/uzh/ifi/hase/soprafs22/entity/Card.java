@@ -22,7 +22,7 @@ public class Card implements Serializable {
     //@JoinColumn(name = "deck_id")
     //private Deck deck;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String cardname;
 
     @Column(nullable = false)

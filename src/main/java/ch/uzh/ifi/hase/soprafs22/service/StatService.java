@@ -36,7 +36,9 @@ public class StatService {
 
     public Stat createStat(Stat newStat) {
 
-
+        if(newStat.getStatname() == null || newStat.getStattype() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A created Stat has to have at least a statnam and stattype");
+        }
 
         newStat = statRepository.save(newStat);
         statRepository.flush();

@@ -7,7 +7,10 @@ import ch.uzh.ifi.hase.soprafs22.entity.Card;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Stat;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
+import ch.uzh.ifi.hase.soprafs22.repository.CardRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
+import ch.uzh.ifi.hase.soprafs22.repository.StatRepository;
+import ch.uzh.ifi.hase.soprafs22.repository.TemplateRepository;
 import org.junit.jupiter.api.AfterEach;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DeckPostDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +20,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.util.ArrayList;
@@ -37,6 +41,21 @@ public class DeckServiceIntegrationTest {
     @Autowired
     private DeckService deckService;
 
+    @Autowired
+    private StatRepository statRepository;
+
+    @Autowired
+    private CardRepository cardRepository;
+
+    @Autowired
+    private TemplateRepository templateRepository;
+
+    @Autowired
+    private TemplateService templateService;
+
+    @Autowired
+    private CardService cardService;
+
 
 
     @BeforeEach
@@ -45,7 +64,12 @@ public class DeckServiceIntegrationTest {
     }
 
     @AfterEach
-    public void teardown(){deckRepository.deleteAll();}
+    public void teardown(){
+        deckRepository.deleteAll();
+        templateRepository.deleteAll();
+        cardRepository.deleteAll();
+        statRepository.deleteAll();
+    }
 
     @Test
     public void createDeck_validInputs_success() {
@@ -65,7 +89,6 @@ public class DeckServiceIntegrationTest {
     @Test
     public void setTemplate_with_valid_INPUT(){
         Template testTemplate = new Template();
-        testTemplate.setTemplateId(1L);
         testTemplate.setStatcount(0);
         testTemplate.setTemplatename("testTemplatename");
 
@@ -81,6 +104,9 @@ public class DeckServiceIntegrationTest {
         testDeck.setDeckname("Yess");
         testDeck.setDeckstatus(DeckStatus.PUBLIC);
 
+        testDeck = deckService.createDeck(testDeck);
+        testTemplate = templateService.createTemplate(testTemplate);
+
         Deck newDeck = deckService.setTemplate(testTemplate, testDeck.getDeckId());
 
 
@@ -88,26 +114,31 @@ public class DeckServiceIntegrationTest {
         assertEquals(newDeck.getTemplate().getTemplatename(), testTemplate.getTemplatename());
         assertEquals(newDeck.getTemplate().getStatcount(), testTemplate.getStatcount());
         assertEquals(newDeck.getTemplate().getTemplatestats(), testTemplate.getTemplatestats());
+
+
     }
 
     @Test
     public void addCard_with_valid_INPUT(){
+
+        Deck testDeck = new Deck();
+        testDeck.setDeckname("Yess");
+        testDeck.setDeckstatus(DeckStatus.PUBLIC);
+
+
         Stat templateStat = new Stat();
         templateStat.setStatname("templateStat1");
-        templateStat.setStatId(1L);
         templateStat.setStattype(StatTypes.NUMBER);
 
         Stat cardStat = new Stat();
         cardStat.setStatvalue("200");
         cardStat.setStatname("cardStat1");
-        cardStat.setStatId(1L);
         cardStat.setStattype(StatTypes.NUMBER);
 
         Template testTemplate = new Template();
         List<Stat> templateStats = new ArrayList<Stat>();
         templateStats.add(templateStat);
         testTemplate.setTemplatestats(templateStats);
-        testTemplate.setTemplateId(1L);
         testTemplate.setStatcount(1);
         testTemplate.setTemplatename("testTemplate1");
 
@@ -115,87 +146,116 @@ public class DeckServiceIntegrationTest {
         List<Stat> cardStats = new ArrayList<Stat>();
         cardStats.add(cardStat);
         testCard.setCardstats(cardStats);
-        testCard.setCardId(1L);
         testCard.setCardname("testCard1");
+        testCard.setImage("ImageLink");
 
 
         // given
-        Deck testDeck = new Deck();
-        testDeck.setDeckId(1L);
-        testDeck.setDeckname("Yess");
-        testDeck.setDeckstatus(DeckStatus.PUBLIC);
-        testDeck.setTemplate(testTemplate);
+        testDeck = deckService.createDeck(testDeck);
 
-        Deck newDeck = deckService.addNewCard(testCard, testDeck.getDeckId());
+        Card createdCard = cardService.createCard(testCard, testTemplate);
+        
+
+        Deck newDeck = deckService.addNewCard(createdCard, testDeck.getDeckId());
 
 
-        assertEquals(newDeck.getCardList().get(0).getCardId(), testCard.getCardId());
-        assertEquals(newDeck.getCardList().get(0).getCardname(), testCard.getCardname());
-        assertEquals(newDeck.getCardList().get(0).getImage(), testCard.getImage());
-        assertEquals(newDeck.getCardList().get(0).getCardstats(), testCard.getCardstats());
+
+        assertEquals(newDeck.getCardList().get(0).getCardId(), createdCard.getCardId());
+        assertEquals(newDeck.getCardList().get(0).getCardname(), createdCard.getCardname());
+        assertEquals(newDeck.getCardList().get(0).getImage(), createdCard.getImage());
+        assertEquals(newDeck.getCardList().get(0).getCardstats(), createdCard.getCardstats());
     }
 
     @Test
     public void addCard_when_Card_in_Deck(){
 
+        Deck testDeck = new Deck();
+        testDeck.setDeckname("Yess");
+        testDeck.setDeckstatus(DeckStatus.PUBLIC);
+
+
+        Stat templateStat = new Stat();
+        templateStat.setStatname("templateStat1");
+        templateStat.setStattype(StatTypes.NUMBER);
+
         Stat cardStat = new Stat();
         cardStat.setStatvalue("200");
         cardStat.setStatname("cardStat1");
-        cardStat.setStatId(1L);
         cardStat.setStattype(StatTypes.NUMBER);
+
+        Template testTemplate = new Template();
+        List<Stat> templateStats = new ArrayList<Stat>();
+        templateStats.add(templateStat);
+        testTemplate.setTemplatestats(templateStats);
+        testTemplate.setStatcount(1);
+        testTemplate.setTemplatename("testTemplate1");
 
         Card testCard = new Card();
         List<Stat> cardStats = new ArrayList<Stat>();
         cardStats.add(cardStat);
         testCard.setCardstats(cardStats);
-        testCard.setCardId(1L);
         testCard.setCardname("testCard1");
+        testCard.setImage("ImageLink");
 
-        // given
-        Deck testDeck = new Deck();
-        testDeck.setDeckId(1L);
-        testDeck.setDeckname("Yess");
-        testDeck.setDeckstatus(DeckStatus.PUBLIC);
-        deckService.addNewCard(testCard, testDeck.getDeckId());
+        testDeck = deckService.createDeck(testDeck);
+        Card createdCard = cardService.createCard(testCard, testTemplate);
+        Deck newDeck = deckService.addNewCard(createdCard, testDeck.getDeckId());
 
-        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> deckService.addNewCard(testCard, testDeck.getDeckId()));
+
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> deckService.addNewCard(testCard, newDeck.getDeckId()));
         assertEquals(thrown.getStatus(), HttpStatus.CONFLICT);
 
     }
     @Test
     public void addCard_when_CardName_exists_in_Deck() {
 
+        Stat templateStat = new Stat();
+        templateStat.setStatname("templateStat1");
+        templateStat.setStattype(StatTypes.NUMBER);
+
+        Template testTemplate = new Template();
+        List<Stat> templateStats = new ArrayList<Stat>();
+        templateStats.add(templateStat);
+        testTemplate.setTemplatestats(templateStats);
+        testTemplate.setStatcount(1);
+        testTemplate.setTemplatename("testTemplate1");
+
         Stat cardStat = new Stat();
         cardStat.setStatvalue("200");
         cardStat.setStatname("cardStat1");
-        cardStat.setStatId(1L);
         cardStat.setStattype(StatTypes.NUMBER);
+        List<Stat> statList = new ArrayList<Stat>();
+        statList.add(cardStat);
+
+        Stat cardStat2 = new Stat();
+        cardStat2.setStatvalue("300");
+        cardStat2.setStatname("cardStat21");
+        cardStat2.setStattype(StatTypes.NUMBER);
+        List<Stat> statList2 = new ArrayList<Stat>();
+        statList2.add(cardStat2);
 
         Card testCard = new Card();
-        List<Stat> cardStats = new ArrayList<Stat>();
-        cardStats.add(cardStat);
-        testCard.setCardstats(cardStats);
-        testCard.setCardId(1L);
+        testCard.setCardstats(statList);
         testCard.setCardname("testCard1");
+        testCard.setImage("someImage");
+        testCard = cardService.createCard(testCard, testTemplate);
 
         Card testCard2 = new Card();
-        List<Stat> cardStats2 = new ArrayList<Stat>();
-        cardStats2.add(cardStat);
-        testCard2.setCardstats(cardStats);
-        testCard2.setCardId(1L);
+        testCard2.setCardstats(statList2);
         testCard2.setCardname("testCard1");
-
+        testCard2.setImage("someImage2");
+        Card newCard = cardService.createCard(testCard2, testTemplate);
 
         // given
         Deck testDeck = new Deck();
-        testDeck.setDeckId(1L);
         testDeck.setDeckname("Yess");
         testDeck.setDeckstatus(DeckStatus.PUBLIC);
 
-        deckService.addNewCard(testCard, testDeck.getDeckId());
+        testDeck = deckService.createDeck(testDeck);
+        Deck finalDeck = deckService.addNewCard(testCard, testDeck.getDeckId());
 
-        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> deckService.addNewCard(testCard2, testDeck.getDeckId()));
-        assertEquals(thrown.getStatus(), HttpStatus.BAD_REQUEST);
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> deckService.addNewCard(newCard, finalDeck.getDeckId()));
+        assertEquals(thrown.getStatus(), HttpStatus.CONFLICT);
     }
 
 

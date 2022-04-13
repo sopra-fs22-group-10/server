@@ -60,6 +60,7 @@ public class Template implements Serializable {
      */
     public void setTemplatestats( List<Stat> templatestats){
         this.templatestats=templatestats;
+        this.statcount = templatestats.size();
     }
 
     public List<Stat> getTemplatestats() {
