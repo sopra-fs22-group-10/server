@@ -6,11 +6,11 @@ import java.util.List;
 
 public class TemplatePostDTO {
 
-    private Long templateid;
+    //private Long templateid;
     private List<Stat> templatestats;
     private int statcount;
-    private String templatename;
 
+    /*
     public Long getTemplateid() {
         return templateid;
     }
@@ -18,6 +18,8 @@ public class TemplatePostDTO {
     public void setTemplateid(Long templateid) {
         this.templateid = templateid;
     }
+
+     */
 
     public List<Stat> getTemplatestats() {
         return templatestats;
@@ -37,11 +39,4 @@ public class TemplatePostDTO {
         this.statcount = statcount;
     }
 
-    public String getTemplatename() {
-        return templatename;
-    }
-
-    public void setTemplatename(String templatename) {
-        this.templatename = templatename;
-    }
 }

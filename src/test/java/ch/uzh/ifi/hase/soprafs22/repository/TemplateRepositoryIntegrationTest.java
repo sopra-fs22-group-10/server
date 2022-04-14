@@ -39,7 +39,7 @@ public class TemplateRepositoryIntegrationTest {
         entityManager.flush();
 
         Template template = new Template();
-        template.setTemplatename("TemplateName1");
+
 
         List<Stat> templateStats = new ArrayList<>();
         templateStats.add(testStat);
@@ -55,7 +55,6 @@ public class TemplateRepositoryIntegrationTest {
 
         // then
         assertNotNull(found.getTemplateId());
-        assertEquals(found.getTemplatename(), template.getTemplatename());
         assertEquals(found.getTemplatestats().get(0), testStat);
         assertEquals(found.getStatcount(), templateStats.size());
 

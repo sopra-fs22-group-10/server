@@ -1,10 +1,15 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserLoginDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
+import ch.uzh.ifi.hase.soprafs22.service.CardService;
+import ch.uzh.ifi.hase.soprafs22.service.DeckService;
+import ch.uzh.ifi.hase.soprafs22.service.TemplateService;
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 /**
  * User Controller
@@ -25,10 +32,30 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-
     UserController(UserService userService) {
         this.userService = userService;
     }
+
+
+
+    //Just for Testing from Here
+    //==============================================================================
+    /*
+    private final UserService userService;
+    private final DeckService deckService;
+    private final DeckRepository deckRepository;
+
+    UserController(UserService userService , DeckService deckService, DeckRepository deckRepository) {
+        this.userService = userService;
+        this.deckService = deckService;
+        this.deckRepository = deckRepository;
+    }
+
+     */
+
+
+    //To here
+    //======================================================================================================================================
 
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
@@ -68,11 +95,26 @@ public class UserController {
         User userInput = DTOMapper.INSTANCE.convertUserLoginDTOtoEntity(userLoginDTO);
         User createdUser = userService.createUser(userInput);
 
+        //Deck defaultDeck = deckService.createDefaultDeck();
+
         response.addHeader("Access-Control-Expose-Headers", "Authentication");
         response.addHeader("Authentication", createdUser.getAuthentication());
 
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
     }
+    /*
+    public Deck addDeck_whenUser_Created(Long userId){
+
+
+        DeckController deckController = new DeckController(deckService, templateService, cardService);
+        deckController.createDeck(userId, DeckForTesting.Json)
+
+    }
+
+     */
+
+
+
 
     @PostMapping("/loginrequests")
     @ResponseStatus(HttpStatus.OK)

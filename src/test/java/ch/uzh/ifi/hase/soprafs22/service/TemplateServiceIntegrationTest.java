@@ -61,9 +61,9 @@ public class TemplateServiceIntegrationTest {
 
 
 
-        testTemplate.setTemplatename("TemplateName1");
 
-        List<Stat> templateStats = new ArrayList<Stat>();
+
+        List<Stat> templateStats = new ArrayList<>();
         templateStats.add(testStat);
         testTemplate.setTemplatestats(templateStats);
         testTemplate.setStatcount(1);
@@ -74,9 +74,7 @@ public class TemplateServiceIntegrationTest {
 
         // then
         assertEquals(testTemplate.getTemplateId(), createdTemplate.getTemplateId());
-        assertEquals(testTemplate.getTemplatename(), createdTemplate.getTemplatename());
         assertEquals(testTemplate.getTemplatestats().get(0), testStat);
-        assertEquals(testTemplate.getTemplatename(), createdTemplate.getTemplatename());
 
     }
 
@@ -93,9 +91,9 @@ public class TemplateServiceIntegrationTest {
 
 
         Template testTemplate = new Template();
-        testTemplate.setTemplatename("TemplateName1");
 
-        List<Stat> templateStats = new ArrayList<Stat>();
+
+        List<Stat> templateStats = new ArrayList<>();
         templateStats.add(testStat);
         testTemplate.setTemplatestats(templateStats);
         testTemplate.setStatcount(1);
@@ -120,9 +118,9 @@ public class TemplateServiceIntegrationTest {
         testStat.setValuestypes(ValuesTypes.KMH);
 
         Template testTemplate = new Template();
-        testTemplate.setTemplatename("TemplateName1");
 
-        List<Stat> templateStats = new ArrayList<Stat>();
+
+        List<Stat> templateStats = new ArrayList<>();
         templateStats.add(testStat);
         testTemplate.setTemplatestats(templateStats);
         testTemplate.setStatcount(1);

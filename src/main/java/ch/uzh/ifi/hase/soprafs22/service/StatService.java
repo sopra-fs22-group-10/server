@@ -61,6 +61,24 @@ public class StatService {
 
     }
 
+    public boolean changeStatIfExists(Stat newStat){
+        if(newStat.getStatId() == null){
+            return false;
+        }
+        if(statRepository.existsById(newStat.getStatId()))
+        {
+            Stat oldStat = getStatById(newStat.getStatId());
+            oldStat = newStat;
+            statRepository.flush();
+            return true;
+        }
+        return false;
+
+
+    }
+
+
+
 
 
 }

@@ -90,7 +90,7 @@ public class DeckServiceIntegrationTest {
     public void setTemplate_with_valid_INPUT(){
         Template testTemplate = new Template();
         testTemplate.setStatcount(0);
-        testTemplate.setTemplatename("testTemplatename");
+
 
         Stat testStat = new Stat();
         testStat.setStatname("testStat1");
@@ -111,7 +111,6 @@ public class DeckServiceIntegrationTest {
 
 
         assertEquals(newDeck.getTemplate().getTemplateId(), testTemplate.getTemplateId());
-        assertEquals(newDeck.getTemplate().getTemplatename(), testTemplate.getTemplatename());
         assertEquals(newDeck.getTemplate().getStatcount(), testTemplate.getStatcount());
         assertEquals(newDeck.getTemplate().getTemplatestats(), testTemplate.getTemplatestats());
 
@@ -127,23 +126,23 @@ public class DeckServiceIntegrationTest {
 
 
         Stat templateStat = new Stat();
-        templateStat.setStatname("templateStat1");
+        templateStat.setStatname("Stat1");
         templateStat.setStattype(StatTypes.NUMBER);
 
         Stat cardStat = new Stat();
         cardStat.setStatvalue("200");
-        cardStat.setStatname("cardStat1");
+        cardStat.setStatname("Stat1");
         cardStat.setStattype(StatTypes.NUMBER);
 
         Template testTemplate = new Template();
-        List<Stat> templateStats = new ArrayList<Stat>();
+        List<Stat> templateStats = new ArrayList<>();
         templateStats.add(templateStat);
         testTemplate.setTemplatestats(templateStats);
         testTemplate.setStatcount(1);
-        testTemplate.setTemplatename("testTemplate1");
+
 
         Card testCard = new Card();
-        List<Stat> cardStats = new ArrayList<Stat>();
+        List<Stat> cardStats = new ArrayList<>();
         cardStats.add(cardStat);
         testCard.setCardstats(cardStats);
         testCard.setCardname("testCard1");
@@ -175,23 +174,23 @@ public class DeckServiceIntegrationTest {
 
 
         Stat templateStat = new Stat();
-        templateStat.setStatname("templateStat1");
+        templateStat.setStatname("Stat1");
         templateStat.setStattype(StatTypes.NUMBER);
 
         Stat cardStat = new Stat();
         cardStat.setStatvalue("200");
-        cardStat.setStatname("cardStat1");
+        cardStat.setStatname("Stat1");
         cardStat.setStattype(StatTypes.NUMBER);
 
         Template testTemplate = new Template();
-        List<Stat> templateStats = new ArrayList<Stat>();
+        List<Stat> templateStats = new ArrayList<>();
         templateStats.add(templateStat);
         testTemplate.setTemplatestats(templateStats);
         testTemplate.setStatcount(1);
-        testTemplate.setTemplatename("testTemplate1");
+
 
         Card testCard = new Card();
-        List<Stat> cardStats = new ArrayList<Stat>();
+        List<Stat> cardStats = new ArrayList<>();
         cardStats.add(cardStat);
         testCard.setCardstats(cardStats);
         testCard.setCardname("testCard1");
@@ -210,28 +209,29 @@ public class DeckServiceIntegrationTest {
     public void addCard_when_CardName_exists_in_Deck() {
 
         Stat templateStat = new Stat();
-        templateStat.setStatname("templateStat1");
+        templateStat.setStatname("cardStat1");
         templateStat.setStattype(StatTypes.NUMBER);
 
+
         Template testTemplate = new Template();
-        List<Stat> templateStats = new ArrayList<Stat>();
+        List<Stat> templateStats = new ArrayList<>();
         templateStats.add(templateStat);
         testTemplate.setTemplatestats(templateStats);
         testTemplate.setStatcount(1);
-        testTemplate.setTemplatename("testTemplate1");
+
 
         Stat cardStat = new Stat();
         cardStat.setStatvalue("200");
         cardStat.setStatname("cardStat1");
         cardStat.setStattype(StatTypes.NUMBER);
-        List<Stat> statList = new ArrayList<Stat>();
+        List<Stat> statList = new ArrayList<>();
         statList.add(cardStat);
 
         Stat cardStat2 = new Stat();
         cardStat2.setStatvalue("300");
-        cardStat2.setStatname("cardStat21");
+        cardStat2.setStatname("cardStat1");
         cardStat2.setStattype(StatTypes.NUMBER);
-        List<Stat> statList2 = new ArrayList<Stat>();
+        List<Stat> statList2 = new ArrayList<>();
         statList2.add(cardStat2);
 
         Card testCard = new Card();
@@ -257,7 +257,6 @@ public class DeckServiceIntegrationTest {
         ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> deckService.addNewCard(newCard, finalDeck.getDeckId()));
         assertEquals(thrown.getStatus(), HttpStatus.CONFLICT);
     }
-
 
 
 }

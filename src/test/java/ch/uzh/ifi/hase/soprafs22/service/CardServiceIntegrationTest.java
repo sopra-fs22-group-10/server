@@ -63,14 +63,14 @@ public class CardServiceIntegrationTest {
 
         testTemplate = new Template();
         testTemplate.setStatcount(1);
-        testTemplate.setTemplatename("testTemplatename1");
+
 
         TemplateStat = new Stat();
-        TemplateStat.setStatname("testTemplateStat1");
+        TemplateStat.setStatname("testStat1");
         TemplateStat.setStattype(StatTypes.NUMBER);
 
         CardStat = new Stat();
-        CardStat.setStatname("testCardStat1");
+        CardStat.setStatname("testStat1");
         CardStat.setStattype(StatTypes.NUMBER);
         CardStat.setStatvalue("CardStatValue");
 
@@ -158,6 +158,17 @@ public class CardServiceIntegrationTest {
 
         assertThrows(ResponseStatusException.class,()-> cardService.createCard(testCard, testTemplate));
         
+    }
+
+    @Test
+    public void delete_Card_success(){
+        Card newcard = cardService.createCard(testCard, testTemplate);
+        List<Card> allCards = cardRepository.findAll();
+        assertTrue(allCards.size() == 1);
+        cardService.deleteCard(newcard.getCardId());
+        //cardRepository.existsById(newcard.getCardId());
+        allCards = cardRepository.findAll();
+        assertTrue(allCards.size() == 0);
     }
 
     @Test

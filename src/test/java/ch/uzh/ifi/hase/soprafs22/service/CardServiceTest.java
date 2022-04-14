@@ -52,15 +52,15 @@ public class CardServiceTest {
         testTemplate = new Template();
         testTemplate.setTemplateId(1L);
         testTemplate.setStatcount(1);
-        testTemplate.setTemplatename("testTemplatename");
+
 
         TemplateStat = new Stat();
-        TemplateStat.setStatname("testTemplateStat1");
+        TemplateStat.setStatname("testStat1");
         TemplateStat.setStatId(1L);
         TemplateStat.setStattype(StatTypes.NUMBER);
 
         CardStat = new Stat();
-        CardStat.setStatname("testCardStat1");
+        CardStat.setStatname("testStat1");
         CardStat.setStatId(1L);
         CardStat.setStattype(StatTypes.NUMBER);
         CardStat.setStatvalue("CardStatValue");
