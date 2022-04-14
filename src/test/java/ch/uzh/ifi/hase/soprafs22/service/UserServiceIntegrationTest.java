@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.*;
 
 
+
 /**
  * Test class for the UserResource REST resource.
  *
@@ -56,6 +57,7 @@ public class UserServiceIntegrationTest {
         // when
         User createdUser = userService.createUser(testUser);
         testUser.setUserId(1L);
+
         // then
         assertEquals(testUser.getUserId(), createdUser.getUserId());
         assertEquals(testUser.getUsername(), createdUser.getUsername());
@@ -88,7 +90,6 @@ public class UserServiceIntegrationTest {
         testUser2.setAuthentication("testAuthentication2");
         testUser2.setStatus(UserStatus.OFFLINE);
         testUser2.setUserId(2L);
-
 
         // check that an error is thrown
         assertThrows(ResponseStatusException.class, () -> userService.createUser(testUser2));

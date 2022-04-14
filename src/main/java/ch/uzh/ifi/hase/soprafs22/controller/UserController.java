@@ -116,7 +116,7 @@ public class UserController {
 
 
 
-    @PostMapping("/loginrequests")
+    @PostMapping("/users/login")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public UserGetDTO getUserAccess(@RequestBody UserLoginDTO userLoginDTO, HttpServletResponse response) {
@@ -131,6 +131,17 @@ public class UserController {
         response.addHeader("Access-Control-Expose-Headers", "Authentication");
         response.addHeader("Authentication", accessedUser.getAuthentication());
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(accessedUser);
+    }
+
+    @PostMapping("/users/{userId}/logout")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void logoutUser(@PathVariable Long userId, @RequestHeader("Authentication") String auth, HttpServletResponse response) {
+        response.addHeader("Accept", "application/json"); //tell accepted return type in header
+
+        try {
+            userService.logoutUser(userId, auth);
+        } catch (ResponseStatusException e){throw e;}
     }
 
     @PutMapping("/users/{userId}")
