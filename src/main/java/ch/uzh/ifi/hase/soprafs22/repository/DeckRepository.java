@@ -12,7 +12,6 @@ import java.util.List;
 public interface DeckRepository extends JpaRepository<Deck, Long> {
    // Deck findAll(DeckStatus status);
 
-    Deck findByDeckId(Long DeckId);
 
     List<Deck> findBydeckstatus(DeckStatus deckstatus);
     //List<Deck> findAll(DeckStatus status);

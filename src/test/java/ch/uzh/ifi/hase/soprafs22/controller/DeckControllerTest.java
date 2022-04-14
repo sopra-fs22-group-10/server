@@ -2,17 +2,19 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
 import ch.uzh.ifi.hase.soprafs22.constant.StatTypes;
+import ch.uzh.ifi.hase.soprafs22.entity.Card;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Stat;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.CardPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DeckPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.TemplatePostDTO;
+import ch.uzh.ifi.hase.soprafs22.service.CardService;
 import ch.uzh.ifi.hase.soprafs22.service.DeckService;
 import ch.uzh.ifi.hase.soprafs22.service.TemplateService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -49,27 +51,52 @@ public class DeckControllerTest {
 
     @MockBean
     private TemplateService templateService;
+    
+    @MockBean
+    private CardService cardService;
 
     private Deck testDeck;
     private Template testTemplate;
-    private Stat testStat;
+    private Stat templateStat;
+    private Stat cardStat;
+    private Card testCard;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
 
-        testStat = new Stat();
-        testStat.setStatvalue("200");
-        testStat.setStatname("testStat1");
-        testStat.setStattype(StatTypes.NUMBER);
+        templateStat = new Stat();
+        templateStat.setStatname("templateStat1");
+        templateStat.setStatId(1L);
+        templateStat.setStattype(StatTypes.NUMBER);
+
+        cardStat = new Stat();
+        cardStat.setStatvalue("200");
+        cardStat.setStatname("cardStat1");
+        cardStat.setStatId(1L);
+        cardStat.setStattype(StatTypes.NUMBER);
+        
+        
+        
+        
 
         testTemplate = new Template();
         List<Stat> templateStats = new ArrayList<Stat>();
-        templateStats.add(testStat);
+        templateStats.add(templateStat);
         testTemplate.setTemplatestats(templateStats);
         testTemplate.setTemplateId(1L);
         testTemplate.setStatcount(1);
         testTemplate.setTemplatename("testTemplate1");
+        
+        testCard = new Card();
+        List<Stat> cardStats = new ArrayList<Stat>();
+        cardStats.add(cardStat);
+        testCard.setCardstats(cardStats);
+        testCard.setCardId(1L);
+        testCard.setCardname("testCard1");
+        testCard.setImage("hhtpsblablabla");
+        
+        
         // given
         testDeck = new Deck();
         testDeck.setDeckId(1L);
@@ -159,7 +186,7 @@ public class DeckControllerTest {
 
         List<Stat> templateStats = new ArrayList<Stat>();
         TemplatePostDTO template_1 = new TemplatePostDTO();
-        templateStats.add(testStat);
+        templateStats.add(templateStat);
         template_1.setTemplatestats(templateStats);
         template_1.setTemplateid(1L);
         template_1.setStatcount(1);
@@ -176,7 +203,7 @@ public class DeckControllerTest {
 
 
 
-
+        /*
         JSONArray ja = new JSONArray();
 
         LinkedHashMap<Object,Object> statmap = new LinkedHashMap<>();
@@ -194,6 +221,8 @@ public class DeckControllerTest {
         map.put("templatename", testTemplate.getTemplatename());
         map.put("statcount", testTemplate.getStatcount());
         map.put("templatestats", ja);
+        
+         */
 
 
 
@@ -228,6 +257,52 @@ public class DeckControllerTest {
                 .andExpect(status().isNotFound());
 
 
+    }
+
+    @Test
+    public void createCard_with_valid_INPUT()throws Exception{
+
+        
+        CardPostDTO card_1 = new CardPostDTO();
+        Stat postStat = new Stat();
+        
+        postStat.setStatvalue("200");
+        postStat.setStatname("postStat1");
+        postStat.setStattype(StatTypes.NUMBER);
+
+        List<Stat> cardStats = new ArrayList<Stat>();
+        cardStats.add(postStat);
+        
+        card_1.setCardstats(cardStats);
+        card_1.setCardname("card_1");
+        card_1.setImage("https:somestuff.com");
+
+        testDeck.setTemplate(testTemplate);
+        
+        given(cardService.createCard(Mockito.any(), Mockito.any())).willReturn(testCard);
+        given(deckService.getDeckById(Mockito.any())).willReturn(testDeck);
+
+        List<Card> cardlist = new ArrayList<>();
+        cardlist.add(testCard);
+        testDeck.setCardList(cardlist);
+
+        given(deckService.addNewCard(Mockito.any(), Mockito.any())).willReturn(testDeck);
+
+        MockHttpServletRequestBuilder postRequest = post("/decks/1/cards")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(card_1));
+        
+        mockMvc.perform(postRequest).andExpect(status().isCreated())
+                //.andExpect(jsonPath("$.cardList", hasSize(1)))
+                .andExpect(jsonPath("$.cardList[0].cardname",is(testCard.getCardname())))
+                .andExpect(jsonPath("$.cardList[0].cardId",is(testCard.getCardId().intValue())))
+                .andExpect(jsonPath("$.cardList[0].cardstats[0].statvalue",is(testCard.getCardstats().get(0).getStatvalue())))
+                .andExpect(jsonPath("$.cardList[0].cardstats[0].statname",is(testCard.getCardstats().get(0).getStatname())))
+                .andExpect(jsonPath("$.cardList[0].cardstats[0].stattype",is(testCard.getCardstats().get(0).getStattype().toString())))
+                .andExpect(jsonPath("$.cardList[0].cardstats[0].valuestypes",is(testCard.getCardstats().get(0).getValuestypes())));
+
+        //.andExpect(jsonPath("$.template", equalToObject(testDeck.getTemplate())));
+        
     }
     /*
     public void addTemplate(

@@ -22,33 +22,34 @@ public class Deck implements Serializable {
     private Long deckId;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private List<Card> cardlist;
+    private List<Card> cardList;
 
     //the Deck name doesn't have to be unique since User can get public Decks and Decks from other people
     @Column(nullable = false)
     private String deckname;
 
-
     //Deck private or public
-
-    @Column
+    @Column(nullable = false)
     private DeckStatus deckstatus;
-
 
     @ManyToOne
     private Template template;
 
 
-    public List<Card> getCardlist() {
-        return cardlist;
+    public List<Card> getCardList() {
+        return cardList;
+    }
+
+    public void setCardList(List<Card> cardList) {
+        this.cardList = cardList;
     }
 
     public void addCard(Card card){
-        this.cardlist.add(card);
+        this.cardList.add(card);
     }
 
     public void removeCard(Card card){
-        this.cardlist.remove(card);
+        this.cardList.remove(card);
     }
 
     public Long getDeckId() {
