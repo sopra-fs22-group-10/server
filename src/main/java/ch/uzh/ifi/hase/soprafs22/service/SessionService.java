@@ -94,33 +94,6 @@ public class    SessionService {
         throw new ResponseStatusException(HttpStatus.resolve(404), "No session for this GameCode found");
     }
 
-    /**
-     * This is a helper method that will check the uniqueness criteria of the
-     * username and the name
-     * defined in the User entity. The method will do nothing if the input is unique
-     * and throw an error otherwise.
-     *
-     * //@param ToBeCreated
-     * @throws ResponseStatusException
-     * @see Session
-     */
-
-
-  private void checkIfUserExists(User user) {
-    User userByUsername = userRepository.findByUsername(user.getUsername());
-
-
-    String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
-    if (userByUsername != null && user != null) {
-      throw new ResponseStatusException(HttpStatus.resolve(409),
-          String.format(baseErrorMessage, "username and the name", "are"));
-    } else if (userByUsername != null) {
-      throw new ResponseStatusException(HttpStatus.resolve(409), String.format(baseErrorMessage, "username", "is"));
-    } else if (user != null) {
-      throw new ResponseStatusException(HttpStatus.resolve(409), String.format(baseErrorMessage, "name", "is"));
-    }
-  }
-
   private int generateGameCode(Long sessionId) {
     String stringValue = sessionId.toString();
 

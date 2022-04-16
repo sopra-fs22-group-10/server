@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,7 +29,9 @@ public class SessionRepositoryIntegrationTest {
         session.setMaxPlayers(1);
         session.setDeckId(1L);
         session.setGameCode(1);
-        session.setUsername("username");
+        session.setHostUsername("username");
+        session.setUserList(new ArrayList<String>());
+        session.addUser("username");
 
         entityManager.persist(session);
         entityManager.flush();
@@ -38,9 +41,10 @@ public class SessionRepositoryIntegrationTest {
 
         // then
         assertNotNull(found.getSessionId());
-        assertEquals(found.getUsername(), session.getUsername());
+        assertEquals(found.getHostUsername(), session.getHostUsername());
         assertEquals(found.getGameCode(), session.getGameCode());
         assertEquals(found.getDeckId(), session.getDeckId());
         assertEquals(found.getMaxPlayers(), session.getMaxPlayers());
+        assertEquals(found.getUserList(), session.getUserList());
     }
 }
