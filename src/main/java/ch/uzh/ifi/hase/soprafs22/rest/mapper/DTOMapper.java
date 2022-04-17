@@ -19,7 +19,6 @@ public interface DTOMapper {
 
 
   @Mapping(source = "templatestats", target = "templatestats")
-  @Mapping(source = "templatename", target = "templatename")
   @Mapping(source = "statcount", target = "statcount")
   @Mapping(target = "templateId", ignore = true)
   Template convertTemplatePostDTOtoEntity(TemplatePostDTO templatePostDTO);
@@ -31,6 +30,12 @@ public interface DTOMapper {
   @Mapping(target = "template", ignore = true)
   Deck convertDeckPostDTOtoEntity(DeckPostDTO deckPostDTO);
 
+  @Mapping(source = "cardstats", target = "cardstats")
+  @Mapping(source = "cardname", target = "cardname")
+  @Mapping(source = "image", target = "image")
+  @Mapping(source = "cardId", target = "cardId")
+  Card convertCardPutDTOtoEntity(CardPutDTO cardPutDTO);
+
 
   @Mapping(source = "cardstats", target = "cardstats")
   @Mapping(source = "cardname", target = "cardname")
@@ -38,13 +43,15 @@ public interface DTOMapper {
   @Mapping(target = "cardId", ignore = true)
   Card convertCardPostDTOtoEntity(CardPostDTO cardPostDTO);
 
-
+    /*
     @Mapping(source = "username", target = "username")
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "userId", ignore = true)
     @Mapping(target = "authentication", ignore = true)
     @Mapping(target = "status", ignore = true)
     User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
+    *
+     */
 
     @Mapping(source = "userId", target = "userId")
     @Mapping(source = "username", target = "username")
@@ -56,6 +63,7 @@ public interface DTOMapper {
     @Mapping(target = "userId", ignore = true)
     @Mapping(target = "authentication", ignore = true)
     @Mapping(target = "status", ignore = true)
+    @Mapping(target = "deckList", ignore = true)
     User convertUserLoginDTOtoEntity(UserLoginDTO userLoginDTO);
 
 

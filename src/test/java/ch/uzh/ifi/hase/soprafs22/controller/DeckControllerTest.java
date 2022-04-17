@@ -6,12 +6,11 @@ import ch.uzh.ifi.hase.soprafs22.entity.Card;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Stat;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
+import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.CardPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DeckPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.TemplatePostDTO;
-import ch.uzh.ifi.hase.soprafs22.service.CardService;
-import ch.uzh.ifi.hase.soprafs22.service.DeckService;
-import ch.uzh.ifi.hase.soprafs22.service.TemplateService;
+import ch.uzh.ifi.hase.soprafs22.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -34,8 +33,7 @@ import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -54,6 +52,15 @@ public class DeckControllerTest {
     
     @MockBean
     private CardService cardService;
+
+    @MockBean
+    private StatService statService;
+
+    @MockBean
+    private DeckRepository deckRepository;
+
+    @MockBean
+    private UserService userService;
 
     private Deck testDeck;
     private Template testTemplate;
@@ -81,15 +88,15 @@ public class DeckControllerTest {
         
 
         testTemplate = new Template();
-        List<Stat> templateStats = new ArrayList<Stat>();
+        List<Stat> templateStats = new ArrayList<>();
         templateStats.add(templateStat);
         testTemplate.setTemplatestats(templateStats);
         testTemplate.setTemplateId(1L);
         testTemplate.setStatcount(1);
-        testTemplate.setTemplatename("testTemplate1");
+
         
         testCard = new Card();
-        List<Stat> cardStats = new ArrayList<Stat>();
+        List<Stat> cardStats = new ArrayList<>();
         cardStats.add(cardStat);
         testCard.setCardstats(cardStats);
         testCard.setCardId(1L);
@@ -184,13 +191,12 @@ public class DeckControllerTest {
     @Test
     public void add_Template_to_Deck_with_DeckId() throws Exception{
 
-        List<Stat> templateStats = new ArrayList<Stat>();
+        List<Stat> templateStats = new ArrayList<>();
         TemplatePostDTO template_1 = new TemplatePostDTO();
         templateStats.add(templateStat);
         template_1.setTemplatestats(templateStats);
-        template_1.setTemplateid(1L);
         template_1.setStatcount(1);
-        template_1.setTemplatename("template_1");
+
 
         testDeck.setTemplate(testTemplate);
 
@@ -230,7 +236,6 @@ public class DeckControllerTest {
         mockMvc.perform(postRequest).andExpect(status().isCreated())
                 .andExpect(jsonPath("$.deckname", is(testDeck.getDeckname())))
                 .andExpect(jsonPath("$.deckstatus", is(testDeck.getDeckstatus().toString())))
-                .andExpect(jsonPath("$.template.templatename",is(testTemplate.getTemplatename())))
                 .andExpect(jsonPath("$.template.templateId",is(testTemplate.getTemplateId().intValue())))
                 .andExpect(jsonPath("$.template.templatestats[0].statvalue",is(testTemplate.getTemplatestats().get(0).getStatvalue())))
                 .andExpect(jsonPath("$.template.templatestats[0].statname",is(testTemplate.getTemplatestats().get(0).getStatname())));
@@ -270,7 +275,9 @@ public class DeckControllerTest {
         postStat.setStatname("postStat1");
         postStat.setStattype(StatTypes.NUMBER);
 
-        List<Stat> cardStats = new ArrayList<Stat>();
+
+
+        List<Stat> cardStats = new ArrayList<>();
         cardStats.add(postStat);
         
         card_1.setCardstats(cardStats);
@@ -314,6 +321,30 @@ public class DeckControllerTest {
         
     }
     */
+
+    //The testDeck doesn't contain the testCraad to be Deleteed
+    @Test
+    public void deleteCard_when_Card_not_in_Deck()throws Exception {
+
+        given(deckService.checkIfCardIdIsInDeck(Mockito.any(), Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "The provided CardId doesn't correspond to a Card in the Deck." ));
+
+        MockHttpServletRequestBuilder deleteRequest = delete("/decks/1/cards/1")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(deleteRequest).andExpect(status().isNotFound());
+
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
     private String asJsonString(final Object object) {

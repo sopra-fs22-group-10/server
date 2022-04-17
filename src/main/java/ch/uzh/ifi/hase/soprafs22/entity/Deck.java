@@ -21,9 +21,6 @@ public class Deck implements Serializable {
     @GeneratedValue
     private Long deckId;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Card> cardList;
-
     //the Deck name doesn't have to be unique since User can get public Decks and Decks from other people
     @Column(nullable = false)
     private String deckname;
@@ -34,6 +31,9 @@ public class Deck implements Serializable {
 
     @ManyToOne
     private Template template;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Card> cardList;
 
 
     public List<Card> getCardList() {

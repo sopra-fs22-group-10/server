@@ -4,13 +4,20 @@ import ch.uzh.ifi.hase.soprafs22.entity.Stat;
 
 import java.util.List;
 
-public class CardPostDTO {
-
+public class CardPutDTO {
     private String cardname;
     private String image;
     private List<Stat> cardstats;
+    private Long cardId;
 
 
+    public Long getCardId() {
+        return cardId;
+    }
+
+    public void setCardId(Long id) {
+        this.cardId = id;
+    }
 
     public String getCardname() {
         return cardname;
@@ -20,6 +27,9 @@ public class CardPostDTO {
         this.cardname = cardname;
     }
 
+    public void addStat(Stat stat){
+        this.cardstats.add(stat);
+    }
 
     public void setCardstats(List<Stat> cardstats) {
         this.cardstats = cardstats;

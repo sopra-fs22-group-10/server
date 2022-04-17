@@ -55,9 +55,6 @@ public class Card implements Serializable {
         this.cardname = cardname;
     }
 
-    public void addStat(Stat stat){
-        this.cardstats.add(stat);
-    }
 
     public void setCardstats(List<Stat> cardstats) {
         this.cardstats = cardstats;
