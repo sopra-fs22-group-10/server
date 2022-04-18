@@ -1,10 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Session;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.SessionRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
@@ -17,7 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * User Service
@@ -34,22 +35,16 @@ public class    SessionService {
 
     private final SessionRepository sessionRepository;
 
-    private final UserRepository userRepository;
-
-    private final DeckRepository deckRepository;
-
     @Autowired
-    public SessionService(@Qualifier("sessionRepository") SessionRepository sessionRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("deckRepository") DeckRepository deckRepository) {
+    public SessionService(@Qualifier("sessionRepository") SessionRepository sessionRepository) {
         this.sessionRepository = sessionRepository;
-        this.userRepository = userRepository;
-        this.deckRepository = deckRepository;
     }
 
     public List<Session> getSessions() {
         return this.sessionRepository.findAll();
     }
 
-    public Session createSession(Session newSession) throws ResponseStatusException {
+    public Session createSession(Session newSession) {
 
         // saves the given entity but data is only persisted in the database once
         // flush() is called
@@ -57,13 +52,6 @@ public class    SessionService {
         sessionRepository.flush();
 
         newSession.setGameCode(generateGameCode(newSession.getSessionId()));
-        List<String> userList = new ArrayList<>();
-        newSession.setUserList(userList);
-        try{
-            checkSessionCreationInput(newSession);
-        }catch (ResponseStatusException e) {throw e; }
-
-        newSession.addUser(newSession.getHostUsername());
 
         log.debug("Created Information for User: {}", newSession);
 
@@ -92,40 +80,51 @@ public class    SessionService {
             return foundSession;
         }
         throw new ResponseStatusException(HttpStatus.resolve(404), "No session for this GameCode found");
+
+
+
     }
 
-  private int generateGameCode(Long sessionId) {
-    String stringValue = sessionId.toString();
+    /**
+     * This is a helper method that will check the uniqueness criteria of the
+     * username and the name
+     * defined in the User entity. The method will do nothing if the input is unique
+     * and throw an error otherwise.
+     *
+     * //@param ToBeCreated
+     * @throws ResponseStatusException
+     * @see Session
+     */
 
-    Random random = new Random();
+  /*
+  private void checkIfUserExists(User userToBeCreated) {
+    User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
+    User userByName = userRepository.findByName(userToBeCreated.getName());
 
-    while(stringValue.length() < 6) {
+    String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
+    if (userByUsername != null && userByName != null) {
+      throw new ResponseStatusException(HttpStatus.resolve(409),
+          String.format(baseErrorMessage, "username and the name", "are"));
+    } else if (userByUsername != null) {
+      throw new ResponseStatusException(HttpStatus.resolve(409), String.format(baseErrorMessage, "username", "is"));
+    } else if (userByName != null) {
+      throw new ResponseStatusException(HttpStatus.resolve(409), String.format(baseErrorMessage, "name", "is"));
+    }
+  }*/
 
-        int randomNumber = random.nextInt(10);
-        stringValue = stringValue + String.valueOf(randomNumber);
-   }
+    private int generateGameCode(Long sessionId) {
+        String stringValue = sessionId.toString();
 
-   int gameCode = Integer.parseInt(stringValue);
-   return gameCode;
-   }
+        Random random = new Random();
 
-   public void checkSessionCreationInput(Session newSession) throws ResponseStatusException{
-      //check if the user exists
-       User userToCheck = userRepository.findByUsername(newSession.getHostUsername());
+        while(stringValue.length() < 6) {
 
-       if(userToCheck == null){ throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The given User does not exist");}
-       //check if User is authorized
-       //TO BE IMPLEMENTED
+            int randomNumber = random.nextInt(10);
+            stringValue = stringValue + String.valueOf(randomNumber);
 
-       //check if MaxPlayer Input is correct
-       if(newSession.getMaxPlayers() > 6){
-       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The maximum number of Players is 6!");
-       }
-       //set maxPlayers to a minimum value of 2
-       if(newSession.getMaxPlayers() < 2) {newSession.setMaxPlayers(2); }
+        }
 
-       //check if Deck exists
-       Deck deckToCheck = deckRepository.findByDeckId(newSession.getDeckId());
-       if(deckToCheck == null) { throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The given Deck does not exist"); }
-  }
+        int gameCode = Integer.parseInt(stringValue);
+        return gameCode;
+    }
 }
