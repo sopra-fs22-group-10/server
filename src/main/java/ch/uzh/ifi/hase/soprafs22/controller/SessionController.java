@@ -51,4 +51,5 @@ public class SessionController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteByGameCode(@PathVariable int gameCode) { sessionService.deleteSessionByGameCode(gameCode);
     }
+
 }

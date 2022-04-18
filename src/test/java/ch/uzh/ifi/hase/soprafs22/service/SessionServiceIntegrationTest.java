@@ -1,8 +1,10 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Session;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.SessionRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserLoginDTO;
@@ -20,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,31 +40,64 @@ public class SessionServiceIntegrationTest {
     @Autowired
     private SessionRepository sessionRepository;
 
+    @Qualifier("userRepository")
+    @Autowired
+    private UserRepository userRepository;
+
+    @Qualifier("deckRepository")
+    @Autowired
+    private DeckRepository deckRepository;
+
     @Autowired
     private SessionService sessionService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private DeckService deckService;
+
     @BeforeEach
     public void setup() {
+
         sessionRepository.deleteAll();
+        userRepository.deleteAll();
+        deckRepository.deleteAll();
     }
+
 
     @Test
     public void createSessionSuccess() {
         // given
         assertNull(sessionRepository.findBySessionId(1L));
+        assertNull(userRepository.findByUserId(1L));
+        assertNull(deckRepository.findByDeckId(1L));
 
         Session session = new Session();
         session.setMaxPlayers(1);
-        session.setDeckId(1L);
+        session.setUserList(new ArrayList<String>());
+        session.setDeckId(2L);
         session.setGameCode(1);
-        session.setUsername("username");
+        session.setHostUsername("username");
+        session.addUser("username");
+
+        User user = new User();
+        user.setUsername("username");
+        user.setPassword("password");
+
+        User createUser = userService.createUser(user);
+
+        Deck deck = new Deck();
+        deck.setDeckname("deck");
+
+        Deck createDeck = deckService.createDeck(deck);
 
         // when
         Session createdSession = sessionService.createSession(session);
 
         // then
         assertEquals(session.getSessionId(), createdSession.getSessionId());
-        assertEquals(session.getUsername(), createdSession.getUsername());
+        assertEquals(session.getHostUsername(), createdSession.getHostUsername());
         assertEquals(session.getGameCode(), createdSession.getGameCode());
         assertEquals(session.getMaxPlayers(), createdSession.getMaxPlayers());
         assertEquals(session.getDeckId(), createdSession.getDeckId());
