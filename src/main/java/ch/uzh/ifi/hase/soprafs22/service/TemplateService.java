@@ -48,6 +48,7 @@ public class TemplateService {
      */
 
     //Not sure if change Template is necessary
+    /*
     public void changeTemplate(Template newTemplate){
 
         Template templateToChange = getTemplateById(newTemplate.getTemplateId());
@@ -56,6 +57,8 @@ public class TemplateService {
         templateRepository.flush();
         log.debug("Updated Information for Template: {}", templateToChange);
     }
+
+     */
 
     public Template createTemplate(Template newTemplate) {
 

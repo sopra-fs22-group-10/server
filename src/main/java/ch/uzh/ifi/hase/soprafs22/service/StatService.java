@@ -67,8 +67,9 @@ public class StatService {
         }
         if(statRepository.existsById(newStat.getStatId()))
         {
-            Stat oldStat = getStatById(newStat.getStatId());
-            oldStat = newStat;
+
+            Stat statToChange = statRepository.findByStatId(newStat.getStatId());
+            statToChange.setStatvalue(newStat.getStatvalue());
             statRepository.flush();
             return true;
         }

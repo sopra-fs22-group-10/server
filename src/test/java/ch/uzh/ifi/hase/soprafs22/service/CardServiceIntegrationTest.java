@@ -22,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 
@@ -164,11 +165,11 @@ public class CardServiceIntegrationTest {
     public void delete_Card_success(){
         Card newcard = cardService.createCard(testCard, testTemplate);
         List<Card> allCards = cardRepository.findAll();
-        assertTrue(allCards.size() == 1);
+        assertEquals(1, allCards.size());
         cardService.deleteCard(newcard.getCardId());
         //cardRepository.existsById(newcard.getCardId());
         allCards = cardRepository.findAll();
-        assertTrue(allCards.size() == 0);
+        assertEquals(0, allCards.size());
     }
 
     @Test
@@ -189,6 +190,44 @@ public class CardServiceIntegrationTest {
         testTemplate.setTemplatestats(templateStats);
         
         assertThrows(ResponseStatusException.class,()-> cardService.createCard(testCard, testTemplate));
+
+    }
+
+    @Test
+    public void change_Card_success(){
+
+        testCard = cardService.createCard(testCard, testTemplate);
+
+        Stat newCardStat = new Stat();
+        newCardStat.setStatId(testCard.getCardstats().get(0).getStatId());
+        newCardStat.setStatname("testStat1");
+        newCardStat.setStattype(StatTypes.NUMBER);
+        newCardStat.setStatvalue("33");
+
+        Card newcard = new Card();
+        newcard.setCardId(testCard.getCardId());
+        newcard.setCardname("NewCardname");
+        newcard.setImage("newImage");
+
+
+        List<Stat> cardStats = new ArrayList<>();
+        cardStats.add(newCardStat);
+        newcard.setCardstats(cardStats);
+
+        cardService.changeCard(newcard, testTemplate);
+
+        Card changedCard = cardService.getCardById(newcard.getCardId());
+
+        assertEquals(changedCard.getCardId(), newcard.getCardId());
+        assertEquals(changedCard.getCardstats().get(0).getStatvalue(), "33");
+        assertEquals(changedCard.getCardname(), "NewCardname");
+        assertEquals(changedCard.getImage(), newcard.getImage());
+        assertEquals(changedCard.getCardstats().get(0).getStatId(), newcard.getCardstats().get(0).getStatId());
+        assertEquals(changedCard.getCardstats().get(0).getStattype(), newcard.getCardstats().get(0).getStattype());
+        assertEquals(changedCard.getCardstats().get(0).getStatvalue(), newcard.getCardstats().get(0).getStatvalue());
+
+
+
 
     }
 

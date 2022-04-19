@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -50,14 +52,17 @@ public class DeckService {
             newDeck.setDeckname("Deck.Nr.");
         }
 
+
         newDeck = deckRepository.save(newDeck);
-        deckRepository.flush();
+
 
         if(Objects.equals(newDeck.getDeckname(), "Deck.Nr.")){
             newDeck.setDeckname("Deck Nr." + newDeck.getDeckId().toString());
+
+            newDeck = deckRepository.save(newDeck);
+            deckRepository.flush();
         }
-        newDeck = deckRepository.save(newDeck);
-        deckRepository.flush();
+
 
         log.debug("Created Information for Deck: {}", newDeck);
         return newDeck;
@@ -75,8 +80,8 @@ public class DeckService {
 
     public Deck addNewCard(Card card, Long DeckId){
         Deck deck = getDeckById(DeckId);
-        checkIfCardIsAlreadyInDeck(card, deck);
 
+        checkIfCardIsAlreadyInDeck(card, deck);
         deck.addCard(card);
         return deck;
     }
@@ -99,14 +104,18 @@ public class DeckService {
 
 
     public void checkIfCardIsAlreadyInDeck(Card card, Deck deck){
-        if(deck.getCardList().contains(card)){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "The to be added card exists already in the Deck.");
-        }
-        for(Card card2: deck.getCardList()){
-            if(Objects.equals(card.getCardname(), card2.getCardname())){
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "There already exist a Card with this CardName. CardNames in a Deck have to be unique.");
+        if(deck.getCardList() != null) {
+
+            if (deck.getCardList().contains(card)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "The to be added card exists already in the Deck.");
+            }
+            for (Card card2 : deck.getCardList()) {
+                if (Objects.equals(card.getCardname(), card2.getCardname())) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "There already exist a Card with this CardName. CardNames in a Deck have to be unique.");
+                }
             }
         }
+
     }
 
     public boolean checkIfCardIdIsInDeck(Long cardId, Long deckId){

@@ -37,7 +37,7 @@ public class CardService {
 
 
 
-    public Card createCard(Card newCard, Template cardTemplate)throws  ResponseStatusException {
+    public Card createCard(Card newCard, Template cardTemplate){
 
         // saves the given entity but data is only persisted in the database once
         // flush() is called
@@ -59,9 +59,13 @@ public class CardService {
 
     public void changeCard(Card card, Template template){
 
-        Card newCard = checkCardMatchesTemplateAndHasValidStats(card, template);
-        Card old_Card = getCardById(card.getCardId());
-        old_Card=newCard;
+
+        Card oldCard = getCardById(card.getCardId());
+
+        card = checkCardMatchesTemplateAndHasValidStats(card, template);
+
+        cardRepository.save(card);
+
         cardRepository.flush();
 
 
@@ -69,6 +73,7 @@ public class CardService {
 
     //Checks if the Card and Template have the same Stat Structure and then creates the new Stats, adds the to the Card Entity and returns the updated one.
     public Card checkCardMatchesTemplateAndHasValidStats(Card card, Template template){
+
         if(card.getCardstats().size() != template.getStatcount()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Card StatCount doesn't match the template StatCount");
         }
@@ -101,13 +106,19 @@ public class CardService {
              if(!statService.changeStatIfExists(StatCard)){
                  newStats.add(statService.createStat(StatCard));
              }
+             else{
+                 newStats.add(statService.getStatById(StatCard.getStatId()));
+             }
 
 
         }
-
+        /*
         if(card.getCardId() == null || !cardRepository.existsById(card.getCardId())){
             card.setCardstats(newStats);
         }
+
+         */
+        card.setCardstats(newStats);
 
         return card;
     }
@@ -132,6 +143,7 @@ public class CardService {
         return optionalCard.get();
     }
 
+
     public void checkIfCardExistsById(Long cardId){
         if(!cardRepository.existsById(cardId)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There exists no Card with this Id");
@@ -139,5 +151,7 @@ public class CardService {
 
 
     }
+
+
 
 }

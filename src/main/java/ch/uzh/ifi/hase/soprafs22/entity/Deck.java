@@ -5,6 +5,7 @@ package ch.uzh.ifi.hase.soprafs22.entity;
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
@@ -45,6 +46,9 @@ public class Deck implements Serializable {
     }
 
     public void addCard(Card card){
+        if(cardList == null || cardList.isEmpty()){
+            cardList = new ArrayList<>();
+        }
         this.cardList.add(card);
     }
 

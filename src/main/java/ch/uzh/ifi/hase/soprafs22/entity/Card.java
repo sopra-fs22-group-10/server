@@ -28,7 +28,7 @@ public class Card implements Serializable {
     @Column(nullable = false)
     private String image;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Stat> cardstats;
 
     public String getImage(){

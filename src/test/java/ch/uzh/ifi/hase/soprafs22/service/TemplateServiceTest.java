@@ -13,7 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.util.ArrayList;
@@ -57,16 +57,15 @@ public class TemplateServiceTest {
         testTemplate.setTemplatestats(templateStats);
 
 
-
         // when -> any object is being saved in the templateRepository -> return the dummy
         // testTemplate
         Mockito.when(templateRepository.save(Mockito.any())).thenReturn(testTemplate);
-        Mockito.when(statRepository.save(Mockito.any())).thenReturn(testStat);
+
         Mockito.when(statService.createStat(Mockito.any())).thenReturn(testStat);
     }
 
     @AfterEach
-    public void teardown(){
+    public void teardown() {
         statRepository.deleteAll();
         templateRepository.deleteAll();
     }
@@ -76,7 +75,7 @@ public class TemplateServiceTest {
     public void createTemplate_success() {
         // when -> any object is being saved in the templateRepository -> return the dummy
         // testTemplate
-
+        Mockito.when(statRepository.save(Mockito.any())).thenReturn(testStat);
         Template createdTemplate = templateService.createTemplate(testTemplate);
 
 
@@ -85,10 +84,36 @@ public class TemplateServiceTest {
 
         assertEquals(testTemplate.getTemplateId(), createdTemplate.getTemplateId());
         assertEquals(testTemplate.getStatcount(), createdTemplate.getStatcount());
+        assertEquals(testTemplate.getTemplatestats(), createdTemplate.getTemplatestats());
     }
-    //Removed duplicate name/password check since passwords should not throw an exception if they are not unique
+
+    @Test
+    public void createTemplate_invalidInputs_Stat_with_Statvalue_throwsException() {
+        // given
 
 
+        Stat someStat = new Stat();
+        someStat.setStatvalue("200");
+        someStat.setStatname("testStat1");
+        someStat.setStattype(StatTypes.NUMBER);
 
+
+        Mockito.when(statService.createStat(Mockito.any())).thenReturn(someStat);
+
+        Template testTemplate = new Template();
+
+
+        List<Stat> templateStats = new ArrayList<>();
+        templateStats.add(someStat);
+        testTemplate.setTemplatestats(templateStats);
+        testTemplate.setStatcount(1);
+
+
+        // when
+
+        assertThrows(ResponseStatusException.class, () -> templateService.createTemplate(testTemplate));
+
+
+    }
 }
 
