@@ -1,11 +1,14 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.entity.Session;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.JoinSessionPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.SessionGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.SessionPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.SessionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.mapping.Join;
+import org.hibernate.mapping.JoinedSubclass;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -163,6 +166,95 @@ public class SessionControllerTest {
 
         // then
         mockMvc.perform(getRequest).andExpect(status().is(404));
+    }
+
+
+    @Test //Post /session/join/{gameCode} -> 200 : successfully join session and get Updated Session back
+    public void joinSessionSuccess() throws Exception {
+        // given predfined session
+        JoinSessionPostDTO joinSessionPostDTO = new JoinSessionPostDTO();
+        joinSessionPostDTO.setUsername("username2");
+
+        session.addUser(joinSessionPostDTO.getUsername());
+        // this mocks the SessionService -> we define above what the sessionService should return when getSessionByGameCode() is called
+        given(sessionService.joinSessionByGameCode(Mockito.anyInt(),Mockito.anyString())).willReturn(session);
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder postRequest = post("/session/join/"+session.getGameCode())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(joinSessionPostDTO));
+
+        // then
+        MvcResult mvcResult = mockMvc.perform(postRequest)
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.gameCode", is(session.getGameCode())))
+                .andExpect(jsonPath("$.hostUsername", is(session.getHostUsername())))
+                .andExpect(jsonPath("$.userList", is(session.getUserList())))
+                .andExpect(jsonPath("$.deckId", is(session.getDeckId().intValue())))
+                .andExpect(jsonPath("$.maxPlayers", is(session.getMaxPlayers())))
+                .andReturn();
+    }
+
+    @Test //Post /session/join/{gameCode} -> 400 : fail to join session since session is already full
+    public void joinSessionWhereSessionIsFull() throws Exception {
+    // given predfined session
+        JoinSessionPostDTO joinSessionPostDTO = new JoinSessionPostDTO();
+        joinSessionPostDTO.setUsername("username2");
+
+        session.addUser(joinSessionPostDTO.getUsername());
+        // this mocks the SessionService -> we define above what the sessionService should return when getSessionByGameCode() is called
+        given(sessionService.joinSessionByGameCode(Mockito.anyInt(), Mockito.anyString())).willThrow(new ResponseStatusException(HttpStatus.resolve(400), "The Session is already full"));
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder postRequest = post("/session/join/"+session.getGameCode())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(joinSessionPostDTO));
+
+        // then
+        mockMvc.perform(postRequest)
+                .andExpect(status().is(400));
+    }
+
+    @Test //Post /session/join/{gameCode} -> 404 : fail to join session since Session does not exist
+    public void joinSessionWithWrongGameCode() throws Exception{
+        // given predfined session
+        JoinSessionPostDTO joinSessionPostDTO = new JoinSessionPostDTO();
+        joinSessionPostDTO.setUsername("username2");
+
+
+        // this mocks the SessionService -> we define above what the sessionService should return when getSessionByGameCode() is called
+        given(sessionService.joinSessionByGameCode(Mockito.anyInt(), Mockito.anyString())).willThrow(new ResponseStatusException(HttpStatus.resolve(404), "There exists no Session with given gameCode"));
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder postRequest = post("/session/join/"+77)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(joinSessionPostDTO));
+
+        // then
+        mockMvc.perform(postRequest)
+                .andExpect(status().is(404));
+
+    }
+
+    @Test //Post /session/join/{gameCode} -> 404 : fail to join session since given User does not exist
+    public void joinSessionWhitUserNotExisting() throws Exception{
+        // given predfined session
+        JoinSessionPostDTO joinSessionPostDTO = new JoinSessionPostDTO();
+        joinSessionPostDTO.setUsername("username2");
+
+
+        // this mocks the SessionService -> we define above what the sessionService should return when getSessionByGameCode() is called
+        given(sessionService.joinSessionByGameCode(Mockito.anyInt(), Mockito.anyString())).willThrow(new ResponseStatusException(HttpStatus.resolve(404), "There exists no User with given username"));
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder postRequest = post("/session/join/"+session.getGameCode())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(joinSessionPostDTO));
+
+        // then
+        mockMvc.perform(postRequest)
+                .andExpect(status().is(404));
+
     }
     /*
     @Test //post /users -> 409 : register for taken username

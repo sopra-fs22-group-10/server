@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.entity.Session;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.JoinSessionPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.SessionGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.SessionPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
@@ -52,4 +53,26 @@ public class SessionController {
     public void deleteByGameCode(@PathVariable int gameCode) { sessionService.deleteSessionByGameCode(gameCode);
     }
 
+    @PostMapping("/session/join/{gameCode}")
+    @ResponseStatus(HttpStatus.OK)
+    public SessionGetDTO joinSessionByGameCode(@PathVariable int gameCode, @RequestBody JoinSessionPostDTO joinSessionPostDTO) {
+
+        String username = joinSessionPostDTO.getUsername();
+
+        Session joinedSession = sessionService.joinSessionByGameCode(gameCode, username);
+
+        //convert internal representation of session back to API
+        return DTOMapper.INSTANCE.convertEntityToSessionGetDTO(joinedSession);
+    }
+
+    @PutMapping("/session/{gameCode}")
+    @ResponseStatus(HttpStatus.OK)
+    public SessionGetDTO updateSessionByGameCode(@PathVariable int gameCode, @RequestBody SessionPostDTO sessionPostDTO) {
+
+        Session sessionToUpdate = DTOMapper.INSTANCE.convertSessionPostDTOtoEntity(sessionPostDTO);
+
+        Session updatedSession = sessionService.updateSession(sessionToUpdate);
+
+        return DTOMapper.INSTANCE.convertEntityToSessionGetDTO(updatedSession);
+    }
 }

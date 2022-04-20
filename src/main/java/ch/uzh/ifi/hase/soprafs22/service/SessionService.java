@@ -86,46 +86,110 @@ public class    SessionService {
         throw new ResponseStatusException(HttpStatus.resolve(404), "No session for this sessionId found");
     }
 
+    public Session joinSessionByGameCode(int gameCode, String username) throws ResponseStatusException{
+        User user;
+        Session sessionToJoin;
+        //check if user exists
+        try{
+            user = checkIfUserExists(username);
+        } catch(ResponseStatusException e) {throw e; }
+
+        //check if Session exists
+        try{
+            sessionToJoin = checkIfSessionExists(gameCode);
+        } catch(ResponseStatusException e) {throw e; }
+
+        //check if there are more Players allowed
+        try{
+            checkIfSessionIsFull(sessionToJoin);
+        } catch(ResponseStatusException e) {throw e; }
+
+        sessionToJoin.addUser(username);
+
+
+        return sessionToJoin;
+
+    }
+
+
+    public Session updateSession(Session sessionToUpdate) throws ResponseStatusException {
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+    }
+
     public Session getSessionByGameCode(int gameCode) throws ResponseStatusException{
         Session foundSession = sessionRepository.findByGameCode(gameCode);
         if(foundSession != null){
             return foundSession;
         }
-        throw new ResponseStatusException(HttpStatus.resolve(404), "No session for this GameCode found");
+        throw new ResponseStatusException(HttpStatus.resolve(404), "There exists no Session with given gamecode");
     }
 
-  private int generateGameCode(Long sessionId) {
-    String stringValue = sessionId.toString();
 
-    Random random = new Random();
 
-    while(stringValue.length() < 6) {
 
-        int randomNumber = random.nextInt(10);
-        stringValue = stringValue + String.valueOf(randomNumber);
-   }
 
-   int gameCode = Integer.parseInt(stringValue);
-   return gameCode;
-   }
-
-   public void checkSessionCreationInput(Session newSession) throws ResponseStatusException{
+  //internal helper Methods
+  private void checkSessionCreationInput(Session newSession) throws ResponseStatusException{
       //check if the user exists
-       User userToCheck = userRepository.findByUsername(newSession.getHostUsername());
+      User userToCheck = userRepository.findByUsername(newSession.getHostUsername());
+      if(userToCheck == null){ throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The given User does not exist");}
+      //check if User is authorized
+      //TO BE IMPLEMENTED
 
-       if(userToCheck == null){ throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The given User does not exist");}
-       //check if User is authorized
-       //TO BE IMPLEMENTED
+      //check if MaxPlayer Input is correct
+      if(newSession.getMaxPlayers() > 6){
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The maximum number of Players is 6!");
+      }
+      //set maxPlayers to a minimum value of 2
+      if(newSession.getMaxPlayers() < 2) {newSession.setMaxPlayers(2); }
 
-       //check if MaxPlayer Input is correct
-       if(newSession.getMaxPlayers() > 6){
-       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The maximum number of Players is 6!");
-       }
-       //set maxPlayers to a minimum value of 2
-       if(newSession.getMaxPlayers() < 2) {newSession.setMaxPlayers(2); }
-
-       //check if Deck exists
-       Deck deckToCheck = deckRepository.findByDeckId(newSession.getDeckId());
-       if(deckToCheck == null) { throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The given Deck does not exist"); }
+      //check if Deck exists
+      Deck deckToCheck = deckRepository.findByDeckId(newSession.getDeckId());
+      if(deckToCheck == null) { throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The given Deck does not exist"); }
   }
+
+    private int generateGameCode(Long sessionId) {
+        String stringValue = sessionId.toString();
+
+        Random random = new Random();
+
+        while(stringValue.length() < 6) {
+
+            int randomNumber = random.nextInt(10);
+            stringValue = stringValue + String.valueOf(randomNumber);
+        }
+
+        int gameCode = Integer.parseInt(stringValue);
+        return gameCode;
+    }
+
+    private User checkIfUserExists(String username) throws ResponseStatusException {
+        User foundUser = userRepository.findByUsername(username);
+
+        if(foundUser == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There exists no User with given username");
+        }
+
+        return foundUser;
+    }
+    private Session checkIfSessionExists(int gameCode) throws ResponseStatusException{
+        Session foundSession =  sessionRepository.findByGameCode(gameCode);
+
+        if(foundSession == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There exists no Session with given gameCode");
+        }
+        return foundSession;
+
+    }
+
+    private void checkIfSessionIsFull(Session session){
+        int maxPlayers = session.getMaxPlayers();
+        int current = session.getUserList().size();
+
+        if(current == maxPlayers) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Session is already full");
+        }
+    }
+
 }
+
