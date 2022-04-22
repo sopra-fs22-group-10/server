@@ -9,7 +9,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,9 +36,12 @@ public class DeckServiceTest {
         testDeck.setDeckstatus(DeckStatus.PUBLIC);
         testDeck.setDeckname("testDeckname");
 
+
+
         // when -> any object is being saved in the deckRepository -> return the dummy
         // testDeck
         Mockito.when(deckRepository.save(Mockito.any())).thenReturn(testDeck);
+        Mockito.when(deckRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testDeck));
     }
 
     @Test
@@ -51,6 +57,21 @@ public class DeckServiceTest {
         assertEquals(testDeck.getDeckname(), createdDeck.getDeckname());
         assertEquals(DeckStatus.PUBLIC, createdDeck.getDeckstatus());
     }
+
+    @Test
+    public void get_Deck_by_Id(){
+
+
+        Deck createdDeck = deckService.getDeckById(testDeck.getDeckId());
+
+        assertEquals(testDeck.getDeckId(), createdDeck.getDeckId());
+        assertEquals(testDeck.getDeckname(), createdDeck.getDeckname());
+        assertEquals(DeckStatus.PUBLIC, createdDeck.getDeckstatus());
+    }
+
+
+
+
     //Removed duplicate name/password check since passwords should not throw an exception if they are not unique
 
 }

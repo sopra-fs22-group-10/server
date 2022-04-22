@@ -1,11 +1,9 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicInsert;
+import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Internal Session Representation.
@@ -21,14 +19,14 @@ import java.util.List;
 @Table(name = "SESSION")
 public class Session implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     @Id
     @GeneratedValue
     private Long sessionId;
 
     @Column(nullable = false)
-    private String hostUsername;
+    private String username;
 
     @Column(nullable = false)
     private int gameCode;
@@ -42,14 +40,13 @@ public class Session implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> userList;
 
-
     public void setSessionId(Long sessionId) {this.sessionId = sessionId; }
 
     public Long getSessionId() { return sessionId;    }
 
-    public void setHostUsername(String hostUsername) {this.hostUsername = hostUsername; }
+    public void setUsername(String username) {this.username = username; }
 
-    public String getHostUsername() { return hostUsername; }
+    public String getUsername() { return username; }
 
     public void setGameCode(int gameCode) {this.gameCode = gameCode; }
 
@@ -63,11 +60,4 @@ public class Session implements Serializable {
 
     public Long getDeckId() { return deckId;    }
 
-    public void addUser(String user) { this.userList.add(user); }
-
-    public void removeUser(String user) { this.userList.remove(user); }
-
-    public void setUserList(List<String> userList) {this.userList = userList; }
-
-    public List<String> getUserList() { return userList; }
 }

@@ -1,10 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Session;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.SessionRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
@@ -18,7 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * User Service
@@ -35,22 +36,16 @@ public class    SessionService {
 
     private final SessionRepository sessionRepository;
 
-    private final UserRepository userRepository;
-
-    private final DeckRepository deckRepository;
-
     @Autowired
-    public SessionService(@Qualifier("sessionRepository") SessionRepository sessionRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("deckRepository") DeckRepository deckRepository) {
+    public SessionService(@Qualifier("sessionRepository") SessionRepository sessionRepository) {
         this.sessionRepository = sessionRepository;
-        this.userRepository = userRepository;
-        this.deckRepository = deckRepository;
     }
 
     public List<Session> getSessions() {
         return this.sessionRepository.findAll();
     }
 
-    public Session createSession(Session newSession) throws ResponseStatusException {
+    public Session createSession(Session newSession) {
 
         // saves the given entity but data is only persisted in the database once
         // flush() is called
@@ -58,13 +53,6 @@ public class    SessionService {
         sessionRepository.flush();
 
         newSession.setGameCode(generateGameCode(newSession.getSessionId()));
-        List<String> userList = new ArrayList<>();
-        newSession.setUserList(userList);
-        try{
-            checkSessionCreationInput(newSession);
-        }catch (ResponseStatusException e) {throw e; }
-
-        newSession.addUser(newSession.getHostUsername());
 
         log.debug("Created Information for User: {}", newSession);
 
@@ -168,7 +156,6 @@ public class    SessionService {
 
     private int generateGameCode(Long sessionId) {
         String stringValue = sessionId.toString();
-
         Random random = new Random();
 
         while(stringValue.length() < 6) {
@@ -180,7 +167,6 @@ public class    SessionService {
         int gameCode = Integer.parseInt(stringValue);
         return gameCode;
     }
-
     private User checkIfUserExists(String username) throws ResponseStatusException {
         User foundUser = userRepository.findByUsername(username);
 
@@ -208,6 +194,5 @@ public class    SessionService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Session is already full");
         }
     }
-
 }
 

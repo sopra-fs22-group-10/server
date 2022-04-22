@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -60,6 +61,8 @@ public class TemplateService {
 
         // saves the given entity but data is only persisted in the database once
         // flush() is calle
+        checkTemplateFormat(newTemplate);
+
         List<Stat> newStats = new ArrayList<>();
 
         for(Stat stat : newTemplate.getTemplatestats()){
@@ -78,29 +81,43 @@ public class TemplateService {
         return newTemplate;
     }
 
-    public void checkTemplateExistsByid(){
-
+    public void checkTemplateFormat(Template templateToCheck){
+        if(templateToCheck.getTemplatestats().isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Template must have a name and at least on stat to be created.");
+        }
     }
 
 
-    public void checkStatFormat(List<Stat> statslist){
-        for(Stat stat : statslist){
-            if(stat.getStatvalue() != null ){
+    public void checkStatFormat(List<Stat> statslist) {
+
+        for (int i = 0; i < statslist.size(); i++) {
+            Stat stat = statslist.get(i);
+            if (stat.getStatvalue() != null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Template can't have a Stat Value");
             }
             ValuesTypes valuestype = stat.getValuestypes();
-            if(stat.getStattype() == StatTypes.VALUE){
-                if(!(valuestype == ValuesTypes.KMH || valuestype == ValuesTypes.mps)){
+            if (stat.getStattype() == StatTypes.VALUE) {
+                if (!(valuestype == ValuesTypes.KMH || valuestype == ValuesTypes.mps)) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Values Type has the wrong format.");
                 }
             }
-            if(stat.getStattype() != StatTypes.VALUE){
-                if(valuestype != null){
+            if (stat.getStattype() != StatTypes.VALUE) {
+                if (valuestype != null) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only the Stattype VALUE can have a valuestype.");
                 }
             }
-        }
+            //Checking if Statname is Unique
+            if (i + 1 < statslist.size()) {
+                for (int j = i + 1; j < statslist.size(); j++) {
+                    {
+                        if (Objects.equals(stat.getStatname(), statslist.get(j).getStatname())) {
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No two stats of the same Template can have the same names");
+                        }
+                    }
+                }
+            }
 
+        }
     }
 
     public Template getTemplateById(Long id){

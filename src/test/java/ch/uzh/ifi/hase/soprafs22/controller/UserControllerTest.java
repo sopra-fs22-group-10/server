@@ -58,6 +58,7 @@ public class UserControllerTest {
         user.setPassword("testPassword");
         user.setAuthentication("testAuthentication");
         user.setStatus(UserStatus.OFFLINE);
+
         user.setUserId(1L);
     }
 
@@ -118,7 +119,7 @@ public class UserControllerTest {
         UserLoginDTO userLoginDTO = new UserLoginDTO();
         userLoginDTO.setUsername(user.getUsername());
         userLoginDTO.setPassword(user.getPassword());
-        given(userService.createUser(Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.resolve(409), "Username is taken!"));
+        given(userService.createUser(Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.CONFLICT, "Username is taken!"));
 
 
         // when/then -> do the request + validate the result
@@ -150,7 +151,7 @@ public class UserControllerTest {
     public void get_user_from_wrong_ID() throws Exception {
         // given predfined user
         // this mocks the UserService -> we define above what the userService should return when getUsers() is called
-        given(userService.getUserByID(user.getUserId())).willThrow(new ResponseStatusException(HttpStatus.resolve(404),
+        given(userService.getUserByID(user.getUserId())).willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND,
                 "No account for this userID was found!"));
 
         // when
@@ -183,7 +184,7 @@ public class UserControllerTest {
     public void update_user_with_wrong_ID() throws Exception {
         // given predfined user
         // this mocks the UserService -> we define above what the userService should return when getUsers() is called
-        given(userService.getUserByID(user.getUserId())).willThrow(new ResponseStatusException(HttpStatus.resolve(404),
+        given(userService.getUserByID(user.getUserId())).willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND,
                 "No account for this userID was found!"));
 
         UserPostDTO userPostDTO = new UserPostDTO();

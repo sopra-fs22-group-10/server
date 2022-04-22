@@ -9,8 +9,6 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.UserLoginDTO;
 import org.junit.jupiter.api.Test;
 
 
-import java.util.ArrayList;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -74,7 +72,7 @@ public class DTOMapperTest {
     public void createSessionEntitySuccess(){
         //create PostDTO
         SessionPostDTO sessionPostDTO = new SessionPostDTO();
-        sessionPostDTO.setHostUsername("username");
+        sessionPostDTO.setUsername("username");
         sessionPostDTO.setMaxPlayers(1);
         sessionPostDTO.setDeckId(1L);
 
@@ -82,7 +80,7 @@ public class DTOMapperTest {
         Session session = DTOMapper.INSTANCE.convertSessionPostDTOtoEntity(sessionPostDTO);
 
         //check
-        assertEquals(sessionPostDTO.getHostUsername(), session.getHostUsername());
+        assertEquals(sessionPostDTO.getUsername(), session.getUsername());
         assertEquals(sessionPostDTO.getDeckId(), session.getDeckId());
         assertEquals(sessionPostDTO.getMaxPlayers(), session.getMaxPlayers());
     }
@@ -95,15 +93,13 @@ public class DTOMapperTest {
         session.setMaxPlayers(1);
         session.setDeckId(1L);
         session.setGameCode(1);
-        session.setHostUsername("username");
-        session.setUserList(new ArrayList<String>());
-        session.addUser("username");
-
+        session.setUsername("username");
 
         //MAP create SessionGetDTO
         SessionGetDTO sessionGetDTO = DTOMapper.INSTANCE.convertEntityToSessionGetDTO(session);
 
         //check
+        assertEquals(session.getSessionId(), sessionGetDTO.getSessionId());
         assertEquals(session.getGameCode(), sessionGetDTO.getGameCode());
     }
 }

@@ -1,10 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Session;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.SessionRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserLoginDTO;
@@ -23,7 +21,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -41,14 +38,6 @@ public class SessionServiceIntegrationTest {
     @Autowired
     private SessionRepository sessionRepository;
 
-    @Qualifier("userRepository")
-    @Autowired
-    private UserRepository userRepository;
-
-    @Qualifier("deckRepository")
-    @Autowired
-    private DeckRepository deckRepository;
-
     @Autowired
     private SessionService sessionService;
 
@@ -62,9 +51,9 @@ public class SessionServiceIntegrationTest {
     private Deck testDeck;
     private Session testSession;
 
+
     @BeforeEach
     public void setup() {
-
         sessionRepository.deleteAll();
         userRepository.deleteAll();
         deckRepository.deleteAll();
@@ -97,7 +86,6 @@ public class SessionServiceIntegrationTest {
         userRepository.deleteAll();
         deckRepository.deleteAll();
     }
-
 
     @Test
     public void createSessionSuccess() {
@@ -221,6 +209,7 @@ public class SessionServiceIntegrationTest {
         existingSession = sessionService.getSessionByGameCode(existingSession.getGameCode());
 
         // then
+
         assertEquals(existingSession.getSessionId(), updatedSession.getSessionId());
         assertEquals(existingSession.getHostUsername(), updatedSession.getHostUsername());
         assertEquals(existingSession.getGameCode(), updatedSession.getGameCode());
@@ -266,7 +255,6 @@ public class SessionServiceIntegrationTest {
 
         // check that an error is thrown
         assertThrows(ResponseStatusException.class, () -> sessionService.updateSession(sessionInput));
-
     }
 
 

@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
+import ch.uzh.ifi.hase.soprafs22.entity.Card;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
 import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -51,7 +53,7 @@ public class DeckService {
         newDeck = deckRepository.save(newDeck);
         deckRepository.flush();
 
-        if(newDeck.getDeckname() == "Deck.Nr."){
+        if(Objects.equals(newDeck.getDeckname(), "Deck.Nr.")){
             newDeck.setDeckname("Deck Nr." + newDeck.getDeckId().toString());
         }
         newDeck = deckRepository.save(newDeck);
@@ -71,19 +73,66 @@ public class DeckService {
         return deck;
     }
 
+    public Deck addNewCard(Card card, Long DeckId){
+        Deck deck = getDeckById(DeckId);
+        checkIfCardIsAlreadyInDeck(card, deck);
+
+        deck.addCard(card);
+        return deck;
+    }
 
 
     public Deck getDeckById(Long id){
-
-        //checkIfIDExists(id);
-        Optional<Deck> potentialdeck = deckRepository.findById(id);
-
-        if(potentialdeck.isEmpty()){
+        if(id == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The provided Deck ID does not exist in the Database.");
         }
-        return potentialdeck.get();
+        Optional<Deck> foundDeck = deckRepository.findById(id);
+
+        if(foundDeck.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The provided Deck ID does not exist in the Database.");
+        }
+
+        return foundDeck.get();
 
     }
+
+
+
+    public void checkIfCardIsAlreadyInDeck(Card card, Deck deck){
+        if(deck.getCardList().contains(card)){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "The to be added card exists already in the Deck.");
+        }
+        for(Card card2: deck.getCardList()){
+            if(Objects.equals(card.getCardname(), card2.getCardname())){
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "There already exist a Card with this CardName. CardNames in a Deck have to be unique.");
+            }
+        }
+    }
+
+    public boolean checkIfCardIdIsInDeck(Long cardId, Long deckId){
+
+        for(Card card: getDeckById(deckId).getCardList()){
+            if(Objects.equals(card.getCardId(), cardId)){
+                return  true;
+            }
+
+        }
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "The provided CardId doesn't correspond to a Card in the Deck.");
+
+    }
+
+    /*
+    public void removeCard(Long deckId, Long cardId) {
+        Deck deck = getDeckById(deckId);
+        List<Card> cardList = deck.getCardList();
+        cardList.removeIf(card -> Objects.equals(card.getCardId(), cardId));
+        if(cardList.size() == deck.getCardList().size()){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "The provided");
+        }
+
+    }
+
+     */
 }
 
 

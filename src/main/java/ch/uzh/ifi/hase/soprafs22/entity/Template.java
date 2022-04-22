@@ -19,8 +19,6 @@ public class Template implements Serializable {
     @GeneratedValue
     private Long templateId;
 
-    @Column(nullable = false, unique = true)
-    private String templatename;
 
     @Column(nullable = false)
     private int statcount;
@@ -60,6 +58,7 @@ public class Template implements Serializable {
      */
     public void setTemplatestats( List<Stat> templatestats){
         this.templatestats=templatestats;
+        this.statcount = templatestats.size();
     }
 
     public List<Stat> getTemplatestats() {
@@ -76,13 +75,6 @@ public class Template implements Serializable {
         this.statcount = statcount;
     }
 
-    public String getTemplatename() {
-        return templatename;
-    }
-
-    public void setTemplatename(String templatename) {
-        this.templatename = templatename;
-    }
 
 
 }

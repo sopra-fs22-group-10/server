@@ -79,5 +79,4 @@ public class SessionController {
         return DTOMapper.INSTANCE.convertEntityToSessionGetDTO(updatedSession);
     }
 
-
 }

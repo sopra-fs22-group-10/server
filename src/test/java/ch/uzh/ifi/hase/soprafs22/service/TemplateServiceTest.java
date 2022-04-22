@@ -47,7 +47,7 @@ public class TemplateServiceTest {
         testTemplate = new Template();
         testTemplate.setTemplateId(1L);
         testTemplate.setStatcount(0);
-        testTemplate.setTemplatename("testTemplatename");
+
 
         testStat = new Stat();
         testStat.setStatname("testStat1");
@@ -84,7 +84,6 @@ public class TemplateServiceTest {
         Mockito.verify(templateRepository, Mockito.times(1)).save(Mockito.any());
 
         assertEquals(testTemplate.getTemplateId(), createdTemplate.getTemplateId());
-        assertEquals(testTemplate.getTemplatename(), createdTemplate.getTemplatename());
         assertEquals(testTemplate.getStatcount(), createdTemplate.getStatcount());
     }
     //Removed duplicate name/password check since passwords should not throw an exception if they are not unique
