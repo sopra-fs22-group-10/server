@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
+import org.springframework.data.annotation.Reference;
+
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
@@ -18,9 +20,6 @@ public class Card implements Serializable {
     private Long cardId;
 
     //Not sure if necessary
-    //@ManyToOne
-    //@JoinColumn(name = "deck_id")
-    //private Deck deck;
 
     @Column(nullable = false)
     private String cardname;
@@ -28,7 +27,7 @@ public class Card implements Serializable {
     @Column(nullable = false)
     private String image;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.REMOVE)
     private List<Stat> cardstats;
 
     public String getImage(){

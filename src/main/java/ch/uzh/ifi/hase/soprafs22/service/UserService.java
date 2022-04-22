@@ -64,14 +64,23 @@ public class UserService {
 
 
     //Later will include AccessCode to addPrivate Decks
-    public User addDeck(Long deckId, Long userId){
+    public void addDeck(Long deckId, Long userId){
         Deck deckToAdd = deckService.getDeckById(deckId);
         User user = getUserByID(userId);
         List<Deck> deckList = user.getDeckList();
         deckList.add(deckToAdd);
         user.setDeckList(deckList);
         userRepository.flush();
-        return user;
+
+    }
+
+    public void removeDeck(Long deckId, Long userId){
+        Deck deckToRemove = deckService.getDeckById(deckId);
+        User user = getUserByID(userId);
+        List<Deck> deckList = user.getDeckList();
+        deckList.remove(deckToRemove);
+        user.setDeckList(deckList);
+        userRepository.flush();
     }
 
     public User getUserByID(Long Id) throws ResponseStatusException{
@@ -124,7 +133,7 @@ public class UserService {
     public void logoutUser(Long userId, String auth){
         Optional <User> loggedOutUser = userRepository.findById(userId);
         if (loggedOutUser.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.resolve(404), "No account for this userID was found!");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No account for this userID was found!");
         } else {
             if (!auth.equals(loggedOutUser.get().getAuthentication())){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authorized!");

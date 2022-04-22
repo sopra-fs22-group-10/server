@@ -5,6 +5,7 @@ package ch.uzh.ifi.hase.soprafs22.entity;
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
@@ -29,10 +30,11 @@ public class Deck implements Serializable {
     @Column(nullable = false)
     private DeckStatus deckstatus;
 
+    //Right now Template has many to one Relationship but could be changed to One to One
     @ManyToOne
     private Template template;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Card> cardList;
 
 
@@ -45,6 +47,9 @@ public class Deck implements Serializable {
     }
 
     public void addCard(Card card){
+        if(cardList == null || cardList.isEmpty()){
+            cardList = new ArrayList<>();
+        }
         this.cardList.add(card);
     }
 
