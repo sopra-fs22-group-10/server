@@ -74,6 +74,15 @@ public class UserService {
 
     }
 
+    public void removeDeck(Long deckId, Long userId){
+        Deck deckToRemove = deckService.getDeckById(deckId);
+        User user = getUserByID(userId);
+        List<Deck> deckList = user.getDeckList();
+        deckList.remove(deckToRemove);
+        user.setDeckList(deckList);
+        userRepository.flush();
+    }
+
     public User getUserByID(Long Id) throws ResponseStatusException{
         Optional<User> foundUser = userRepository.findById(Id);
         if (foundUser.isPresent()) {

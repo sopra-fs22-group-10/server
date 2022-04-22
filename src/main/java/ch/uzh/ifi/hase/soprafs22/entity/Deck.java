@@ -30,10 +30,11 @@ public class Deck implements Serializable {
     @Column(nullable = false)
     private DeckStatus deckstatus;
 
+    //Right now Template has many to one Relationship but could be changed to One to One
     @ManyToOne
     private Template template;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Card> cardList;
 
 

@@ -60,12 +60,17 @@ public class DeckController {
 
         return deck;
     }
-
-    @DeleteMapping("/deck/{deckId}")
+    //Needs rework, since it doesn't work properly
+    @DeleteMapping("/decks/{deckId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
     public void deleteDeck(@PathVariable Long deckId){
         Deck deckToDelete = deckService.getDeckById(deckId);
+        for(User user: userService.getUsers()){
+            if(user.getDeckList().contains(deckToDelete)){
+                userService.removeDeck(deckId, user.getUserId());
+            }
+        }
 
         deckRepository.deleteById(deckId);
     }

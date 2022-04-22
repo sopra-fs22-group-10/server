@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
+import org.springframework.data.annotation.Reference;
 
 import javax.persistence.*;
 import java.io.Serial;
@@ -41,7 +42,7 @@ public class User implements Serializable {
     @Column(nullable = false)
     private UserStatus status;
 
-    @OneToMany
+    @OneToMany(cascade=CascadeType.PERSIST)
     private List<Deck> deckList;
 
     public Long getUserId() {

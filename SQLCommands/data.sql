@@ -41,7 +41,7 @@ insert into CARD_CARDSTATS(card_card_id, cardstats_stat_id) VALUES
                                                                 ( '53', '65' );
 
 insert into TEMPLATE(template_id,statcount) VALUES
-    ('66', '51');
+    ('66', '3');
 
 insert into TEMPLATE_TEMPLATESTATS(template_template_id, templatestats_stat_id) VALUES
     ('66', '54' ),

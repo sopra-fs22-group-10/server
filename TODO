@@ -1,15 +1,10 @@
 To Do:
-    Entities:   -Template
-                -Card
-                -Deck
+    ENtities:
+        -Change Template to Deck Relationship
+        -Create Change Template or Delete Template Function/Endpoint:
+            Make check that only Template can be changed if no cards are present
+            Ask Question
+    Authorization:
+        -Create Authorization Checks for all requests
 
-    repository: -CardRepository
-                -DeckRepository
-                -TemplateRepository
-
-    service:    -CardService
-                -TemplateService
-                -DeckService
-
-    controller: -CardController
-                 -TemplateController
+    -Add Deck Function should create new Deck instead of adding te real deck, since if two Users have the same Deck, if one is changed the other does aswell.
