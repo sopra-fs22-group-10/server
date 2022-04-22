@@ -1,10 +1,12 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
+import org.springframework.data.annotation.Reference;
 
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Internal User Representation
@@ -39,6 +41,9 @@ public class User implements Serializable {
 
     @Column(nullable = false)
     private UserStatus status;
+
+    @OneToMany(cascade=CascadeType.PERSIST)
+    private List<Deck> deckList;
 
     public Long getUserId() {
         return userId;
@@ -79,5 +84,12 @@ public class User implements Serializable {
         this.status = status;
     }
 
+    public List<Deck> getDeckList() {
+        return deckList;
+    }
+
+    public void setDeckList(List<Deck> deckList) {
+        this.deckList = deckList;
+    }
 }
 

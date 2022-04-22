@@ -36,6 +36,9 @@ public class StatService {
 
     public Stat createStat(Stat newStat) {
 
+        if(newStat.getStatname() == null || newStat.getStattype() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A created Stat has to have at least a statnam and stattype");
+        }
 
         newStat = statRepository.save(newStat);
         statRepository.flush();
@@ -57,6 +60,25 @@ public class StatService {
         return potentialStat.get();
 
     }
+
+    public boolean changeStatIfExists(Stat newStat){
+        if(newStat.getStatId() == null){
+            return false;
+        }
+        if(statRepository.existsById(newStat.getStatId()))
+        {
+
+            Stat statToChange = statRepository.findByStatId(newStat.getStatId());
+            statToChange.setStatvalue(newStat.getStatvalue());
+            statRepository.flush();
+            return true;
+        }
+        return false;
+
+
+    }
+
+
 
 
 

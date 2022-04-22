@@ -65,6 +65,8 @@ public class UserServiceIntegrationTest {
 
     }
 
+
+
     @Test
     public void createUser_duplicateUsername_throwsException() {
         assertNull(userRepository.findByUsername("testUsername"));

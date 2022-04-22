@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
@@ -27,9 +28,12 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final DeckService deckService;
+
     @Autowired
-    public UserService(@Qualifier("userRepository") UserRepository userRepository) {
+    public UserService(@Qualifier("userRepository") UserRepository userRepository, DeckService deckService) {
         this.userRepository = userRepository;
+        this.deckService = deckService;
     }
 
     public List<User> getUsers() {
@@ -59,6 +63,25 @@ public class UserService {
     */
 
 
+    //Later will include AccessCode to addPrivate Decks
+    public void addDeck(Long deckId, Long userId){
+        Deck deckToAdd = deckService.getDeckById(deckId);
+        User user = getUserByID(userId);
+        List<Deck> deckList = user.getDeckList();
+        deckList.add(deckToAdd);
+        user.setDeckList(deckList);
+        userRepository.flush();
+
+    }
+
+    public void removeDeck(Long deckId, Long userId){
+        Deck deckToRemove = deckService.getDeckById(deckId);
+        User user = getUserByID(userId);
+        List<Deck> deckList = user.getDeckList();
+        deckList.remove(deckToRemove);
+        user.setDeckList(deckList);
+        userRepository.flush();
+    }
 
     public User getUserByID(Long Id) throws ResponseStatusException{
         Optional<User> foundUser = userRepository.findById(Id);
@@ -67,6 +90,11 @@ public class UserService {
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No account for this userID was found!");
     }
+    //Only for Testing Purpose
+    public void add_Deck_when_user_Created(Long userId){
+
+    }
+
 
     public User saveUser(User user) {
         // saves the given entity but data is only persisted in the database once
@@ -105,7 +133,7 @@ public class UserService {
     public void logoutUser(Long userId, String auth){
         Optional <User> loggedOutUser = userRepository.findById(userId);
         if (loggedOutUser.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.resolve(404), "No account for this userID was found!");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No account for this userID was found!");
         } else {
             if (!auth.equals(loggedOutUser.get().getAuthentication())){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authorized!");

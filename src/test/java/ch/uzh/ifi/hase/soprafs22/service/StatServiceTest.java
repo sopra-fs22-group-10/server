@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.StatTypes;
+import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Stat;
 import ch.uzh.ifi.hase.soprafs22.repository.StatRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,11 +39,14 @@ public class StatServiceTest {
 
         // when -> any object is being saved in the statRepository -> return the dummy
         // testStat
+        Optional<Stat> optionalStat = Optional.of(testStat);
+        Mockito.when(statRepository.findById(Mockito.any())).thenReturn(optionalStat);
+        Mockito.when(statRepository.save(Mockito.any())).thenReturn(testStat);
         Mockito.when(statRepository.save(Mockito.any())).thenReturn(testStat);
     }
 
     @Test
-    public void createStat_success() {
+    public void createStats_validInputs_success() {
         // when -> any object is being saved in the statRepository -> return the dummy
         // testStat
         Stat createdStat = statService.createStat(testStat);
@@ -53,6 +59,24 @@ public class StatServiceTest {
         assertEquals(testStat.getStatvalue(), createdStat.getStatvalue());
         assertEquals(testStat.getStattype(), createdStat.getStattype());
     }
-    //Removed duplicate name/password check since passwords should not throw an exception if they are not unique
+
+    @Test
+    public void getStatById() {
+        // given
+
+        Mockito.when(statRepository.findByStatId(Mockito.any())).thenReturn(testStat);
+
+        // when
+        Stat recoveredStat = statService.getStatById(testStat.getStatId());
+
+        // then
+        assertEquals(testStat.getStatId(), recoveredStat.getStatId());
+        assertEquals(testStat.getStatname(), recoveredStat.getStatname());
+        assertEquals(testStat.getStattype(), recoveredStat.getStattype());
+        assertEquals(testStat.getStatvalue(), recoveredStat.getStatvalue());
+
+    }
+
+
 
 }

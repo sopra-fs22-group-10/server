@@ -2,15 +2,14 @@ package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
 public class SessionPostDTO {
 
-    private String hostUsername;
-    private Long deckId;
+    private String username;
     private int maxPlayers;
+    private Long deckId;
 
 
+    public String getUsername() { return username; }
 
-    public String getHostUsername() { return hostUsername; }
-
-    public void setHostUsername(String hostUsername) { this.hostUsername = hostUsername; }
+    public void setUsername(String username) { this.username = username; }
 
     public Long getDeckId() { return deckId; }
 

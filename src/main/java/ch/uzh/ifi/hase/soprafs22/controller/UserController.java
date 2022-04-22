@@ -1,10 +1,15 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserLoginDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
+import ch.uzh.ifi.hase.soprafs22.service.CardService;
+import ch.uzh.ifi.hase.soprafs22.service.DeckService;
+import ch.uzh.ifi.hase.soprafs22.service.TemplateService;
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 /**
  * User Controller
@@ -25,10 +32,30 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-
     UserController(UserService userService) {
         this.userService = userService;
     }
+
+
+
+    //Just for Testing from Here
+    //==============================================================================
+    /*
+    private final UserService userService;
+    private final DeckService deckService;
+    private final DeckRepository deckRepository;
+
+    UserController(UserService userService , DeckService deckService, DeckRepository deckRepository) {
+        this.userService = userService;
+        this.deckService = deckService;
+        this.deckRepository = deckRepository;
+    }
+
+     */
+
+
+    //To here
+    //======================================================================================================================================
 
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
@@ -45,6 +72,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{userId}")
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public UserGetDTO getUserById(@PathVariable Long userId, HttpServletResponse response) {
         response.addHeader("Accept", "application/json"); //tell accepted return type in header
@@ -54,26 +82,39 @@ public class UserController {
             foundUser = userService.getUserByID(userId);
         } catch (ResponseStatusException e){throw e;}*/
 
-        response.setStatus(200);//if user is found
+        //if user is found
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(foundUser);
     }
 
     @PostMapping("/users")
+    @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public UserGetDTO createUser(@RequestBody UserLoginDTO userLoginDTO, HttpServletResponse response) {
         response.addHeader("Accept", "application/json"); //tell accepted return type in header
 
         User userInput = DTOMapper.INSTANCE.convertUserLoginDTOtoEntity(userLoginDTO);
         User createdUser = userService.createUser(userInput);
-        /*try{
-            createdUser = userService.createUser(userInput);}
-        catch (ResponseStatusException e){throw e;}*/
+
+        //Deck defaultDeck = deckService.createDefaultDeck();
 
         response.addHeader("Access-Control-Expose-Headers", "Authentication");
         response.addHeader("Authentication", createdUser.getAuthentication());
-        response.setStatus(201);
+
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
     }
+    /*
+    public Deck addDeck_whenUser_Created(Long userId){
+
+
+        DeckController deckController = new DeckController(deckService, templateService, cardService);
+        deckController.createDeck(userId, DeckForTesting.Json)
+
+    }
+
+     */
+
+
+
 
     @PostMapping("/users/login")
     @ResponseStatus(HttpStatus.OK)
@@ -104,6 +145,7 @@ public class UserController {
     }
 
     @PutMapping("/users/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
     public void updateUserById(@PathVariable Long userId,
                                      @RequestBody UserPostDTO userPostDTO,
@@ -117,10 +159,10 @@ public class UserController {
         } catch(ResponseStatusException e){throw e;}*/
 
         if (!auth.equals(userToUpdate.getAuthentication())){
-            throw new ResponseStatusException(HttpStatus.resolve(401), "Not authorized");}
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized");}
 
         userToUpdate.setUsername(userPostDTO.getUsername());
         userService.saveUser(userToUpdate);
-        response.setStatus(204);//if update is successful
+       //if update is successful
     }
 }

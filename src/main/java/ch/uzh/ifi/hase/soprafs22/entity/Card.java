@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
+import org.springframework.data.annotation.Reference;
+
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
@@ -15,20 +17,17 @@ public class Card implements Serializable {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private Long cardId;
 
     //Not sure if necessary
-    //@ManyToOne
-    //@JoinColumn(name = "deck_id")
-    //private Deck deck;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String cardname;
 
     @Column(nullable = false)
     private String image;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.REMOVE)
     private List<Stat> cardstats;
 
     public String getImage(){
@@ -39,12 +38,12 @@ public class Card implements Serializable {
         this.image = image;
     }
 
-    public Long getId() {
-        return id;
+    public Long getCardId() {
+        return cardId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setCardId(Long id) {
+        this.cardId = id;
     }
 
     public String getCardname() {
@@ -55,11 +54,14 @@ public class Card implements Serializable {
         this.cardname = cardname;
     }
 
-    public void addStat(Stat stat){
-        this.cardstats.add(stat);
+
+    public void setCardstats(List<Stat> cardstats) {
+        this.cardstats = cardstats;
     }
 
-
+    public List<Stat> getCardstats() {
+        return cardstats;
+    }
 }
 
 

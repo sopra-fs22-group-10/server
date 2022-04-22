@@ -5,6 +5,7 @@ package ch.uzh.ifi.hase.soprafs22.entity;
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
@@ -21,34 +22,39 @@ public class Deck implements Serializable {
     @GeneratedValue
     private Long deckId;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Card> cardlist;
-
     //the Deck name doesn't have to be unique since User can get public Decks and Decks from other people
     @Column(nullable = false)
     private String deckname;
 
-
     //Deck private or public
-
-    @Column
+    @Column(nullable = false)
     private DeckStatus deckstatus;
 
-
+    //Right now Template has many to one Relationship but could be changed to One to One
     @ManyToOne
     private Template template;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Card> cardList;
 
-    public List<Card> getCardlist() {
-        return cardlist;
+
+    public List<Card> getCardList() {
+        return cardList;
+    }
+
+    public void setCardList(List<Card> cardList) {
+        this.cardList = cardList;
     }
 
     public void addCard(Card card){
-        this.cardlist.add(card);
+        if(cardList == null || cardList.isEmpty()){
+            cardList = new ArrayList<>();
+        }
+        this.cardList.add(card);
     }
 
     public void removeCard(Card card){
-        this.cardlist.remove(card);
+        this.cardList.remove(card);
     }
 
     public Long getDeckId() {
