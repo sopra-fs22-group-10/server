@@ -28,11 +28,6 @@ public class Template implements Serializable {
 
 
 
-
-
-
-
-
     public Long getTemplateId() {
         return templateId;
     }
