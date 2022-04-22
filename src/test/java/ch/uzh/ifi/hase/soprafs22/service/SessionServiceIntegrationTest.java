@@ -146,10 +146,11 @@ public class SessionServiceIntegrationTest {
 
         //create a session to join
         Session createdSession = sessionService.createSession(testSession);
-        createdSession.addUser(testUser2.getUsername());
+        //createdSession.addUser(testUser2.getUsername());
 
         //when
         Session joinedSession = sessionService.joinSessionByGameCode(createdSession.getGameCode(), createdUser2.getUsername());
+        createdSession = sessionService.getSessionByGameCode(createdSession.getGameCode());
 
         // then
         assertEquals(createdSession.getSessionId(), joinedSession.getSessionId());
@@ -171,14 +172,13 @@ public class SessionServiceIntegrationTest {
 
         //create a session to join
         Session createdSession = sessionService.createSession(testSession);
-        createdSession.addUser(testUser2.getUsername());
 
         // check that an error is thrown
         assertThrows(ResponseStatusException.class, () -> sessionService.joinSessionByGameCode(0, createdUser2.getUsername()));
     }
 
     @Test
-    public void joinSessionWhereSessionIsFull() {
+    public void joinSessionWhenSessionIsFull() {
 
         //create second testUser which should join the Session
         User testUser2 = new User();
@@ -200,6 +200,73 @@ public class SessionServiceIntegrationTest {
 
         // check that an error is thrown
         assertThrows(ResponseStatusException.class, () -> sessionService.joinSessionByGameCode(sessionToJoin.getGameCode(), createdUser3.getUsername()));
+    }
+
+    @Test
+    public void updateSessionSuccess() throws Exception {
+        //create a session to update
+        Session existingSession = sessionService.createSession(testSession);
+
+        //create a Session with updated details (maxPlayers +1)
+        Session sessionInput = new Session();
+        sessionInput.setGameCode(existingSession.getGameCode());
+        sessionInput.setSessionId(existingSession.getSessionId());
+        sessionInput.setHostUsername(existingSession.getHostUsername());
+        sessionInput.setMaxPlayers(existingSession.getMaxPlayers() + 1);
+        sessionInput.setUserList(existingSession.getUserList());
+        sessionInput.setDeckId(existingSession.getDeckId());
+
+
+        Session updatedSession = sessionService.updateSession(sessionInput);
+        existingSession = sessionService.getSessionByGameCode(existingSession.getGameCode());
+
+        // then
+        assertEquals(existingSession.getSessionId(), updatedSession.getSessionId());
+        assertEquals(existingSession.getHostUsername(), updatedSession.getHostUsername());
+        assertEquals(existingSession.getGameCode(), updatedSession.getGameCode());
+        assertEquals(existingSession.getMaxPlayers(), updatedSession.getMaxPlayers());
+        assertEquals(existingSession.getDeckId(), updatedSession.getDeckId());
+        assertEquals(existingSession.getUserList().size(), updatedSession.getUserList().size());
+
+    }
+
+    @Test
+    public void updateSessionInvalidGameCode() throws Exception {
+        //create a session to update
+        Session existingSession = sessionService.createSession(testSession);
+
+        //create a Session with updated details (maxPlayers +1)
+        Session sessionInput = new Session();
+        sessionInput.setGameCode(0);
+        sessionInput.setSessionId(existingSession.getSessionId());
+        sessionInput.setHostUsername(existingSession.getHostUsername());
+        sessionInput.setMaxPlayers(existingSession.getMaxPlayers() + 1);
+        sessionInput.setUserList(existingSession.getUserList());
+        sessionInput.setDeckId(existingSession.getDeckId());
+
+
+        // check that an error is thrown
+        assertThrows(ResponseStatusException.class, () -> sessionService.updateSession(sessionInput));
+    }
+
+    @Test //wrong deckID
+    public void updateSessionInvalidInformation() throws Exception {
+        //create a session to update
+        Session existingSession = sessionService.createSession(testSession);
+
+        //create a Session with updated details (maxPlayers +1)
+        Session sessionInput = new Session();
+        sessionInput.setGameCode(existingSession.getGameCode());
+        sessionInput.setSessionId(existingSession.getSessionId());
+        sessionInput.setHostUsername(existingSession.getHostUsername());
+        sessionInput.setMaxPlayers(existingSession.getMaxPlayers());
+        sessionInput.setUserList(existingSession.getUserList());
+        sessionInput.setDeckId(0L);
+
+
+        // check that an error is thrown
+        assertThrows(ResponseStatusException.class, () -> sessionService.updateSession(sessionInput));
+
     }
 
 

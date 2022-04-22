@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -86,6 +87,7 @@ public class    SessionService {
         throw new ResponseStatusException(HttpStatus.resolve(404), "No session for this sessionId found");
     }
 
+    @Transactional(propagation=Propagation.REQUIRED)
     public Session joinSessionByGameCode(int gameCode, String username) throws ResponseStatusException{
         User user;
         Session sessionToJoin;
@@ -105,15 +107,31 @@ public class    SessionService {
         } catch(ResponseStatusException e) {throw e; }
 
         sessionToJoin.addUser(username);
+        sessionRepository.save(sessionToJoin);
+        sessionRepository.flush();
 
 
         return sessionToJoin;
 
     }
 
+    @Transactional(propagation= Propagation.REQUIRED)
+    public Session updateSession(Session sessionInput) throws ResponseStatusException {
+        Session sessionToUpdate;
+        try{
+            sessionToUpdate = getSessionByGameCode(sessionInput.getGameCode());
+        } catch (ResponseStatusException e) {throw e; }
 
-    public Session updateSession(Session sessionToUpdate) throws ResponseStatusException {
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+        try{
+            checkSessionCreationInput(sessionInput);
+        }catch (ResponseStatusException e) {throw e; }
+
+        sessionToUpdate.setDeckId(sessionInput.getDeckId());
+        sessionToUpdate.setMaxPlayers(sessionInput.getMaxPlayers());
+        sessionToUpdate.setHostUsername(sessionInput.getHostUsername());
+        sessionRepository.save(sessionToUpdate);
+        sessionRepository.flush();
+        return sessionToUpdate;
     }
 
     public Session getSessionByGameCode(int gameCode) throws ResponseStatusException{

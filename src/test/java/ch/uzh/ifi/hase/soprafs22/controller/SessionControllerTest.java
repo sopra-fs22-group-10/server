@@ -216,7 +216,7 @@ public class SessionControllerTest {
     }
 
     @Test //Post /session/join/{gameCode} -> 404 : fail to join session since Session does not exist
-    public void joinSessionWithWrongGameCode() throws Exception{
+    public void joinSessionWithInvalidGameCode() throws Exception{
         // given predfined session
         JoinSessionPostDTO joinSessionPostDTO = new JoinSessionPostDTO();
         joinSessionPostDTO.setUsername("username2");
@@ -255,6 +255,72 @@ public class SessionControllerTest {
         mockMvc.perform(postRequest)
                 .andExpect(status().is(404));
 
+    }
+
+    @Test //Put /session/{gameCode} -> 200 : successfully updated session gets returned
+    public void updateSessionSuccess() throws Exception {
+        // given predefined session
+        SessionPostDTO sessionPostDTO = new SessionPostDTO();
+        sessionPostDTO.setHostUsername(session.getHostUsername());
+        sessionPostDTO.setDeckId(session.getDeckId());
+        sessionPostDTO.setMaxPlayers(session.getMaxPlayers()+1);
+
+        given(sessionService.updateSession(Mockito.any())).willReturn(session);
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder postRequest = put("/session/"+session.getGameCode())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(sessionPostDTO));
+
+        // then
+        MvcResult mvcResult = mockMvc.perform(postRequest)
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.gameCode", is(session.getGameCode())))
+                .andExpect(jsonPath("$.hostUsername", is(session.getHostUsername())))
+                .andExpect(jsonPath("$.userList", is(session.getUserList())))
+                .andExpect(jsonPath("$.deckId", is(session.getDeckId().intValue())))
+                .andExpect(jsonPath("$.maxPlayers", is(session.getMaxPlayers())))
+                .andReturn();
+    }
+
+    @Test //Put /session/{gameCode} -> 404: session to be updated does not exist
+    public void updateSessionWithInvalidGameCode() throws Exception {
+// given predefined session
+        SessionPostDTO sessionPostDTO = new SessionPostDTO();
+        sessionPostDTO.setHostUsername(session.getHostUsername());
+        sessionPostDTO.setDeckId(session.getDeckId());
+        sessionPostDTO.setMaxPlayers(session.getMaxPlayers()+1);
+
+        given(sessionService.updateSession(Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "There exists no Session with given gamecode"));
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder postRequest = put("/session/"+0)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(sessionPostDTO));
+
+        // then
+        mockMvc.perform(postRequest)
+                .andExpect(status().is(404));
+    }
+
+    @Test //Put /session/{gameCode} -> 404: Deck to be updated does not exist
+    public void updateSessionWithInvalidInformation() throws Exception {
+        // given predefined session
+        SessionPostDTO sessionPostDTO = new SessionPostDTO();
+        sessionPostDTO.setHostUsername(session.getHostUsername());
+        sessionPostDTO.setDeckId(0L);
+        sessionPostDTO.setMaxPlayers(session.getMaxPlayers());
+
+        given(sessionService.updateSession(Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "There exists no Deck with given DeckId"));
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder postRequest = put("/session/"+session.getGameCode())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(sessionPostDTO));
+
+        // then
+        mockMvc.perform(postRequest)
+                .andExpect(status().is(404));
     }
     /*
     @Test //post /users -> 409 : register for taken username

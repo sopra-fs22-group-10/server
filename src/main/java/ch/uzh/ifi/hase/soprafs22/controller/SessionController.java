@@ -67,12 +67,17 @@ public class SessionController {
 
     @PutMapping("/session/{gameCode}")
     @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
     public SessionGetDTO updateSessionByGameCode(@PathVariable int gameCode, @RequestBody SessionPostDTO sessionPostDTO) {
 
         Session sessionToUpdate = DTOMapper.INSTANCE.convertSessionPostDTOtoEntity(sessionPostDTO);
+
+        sessionToUpdate.setGameCode(gameCode);
 
         Session updatedSession = sessionService.updateSession(sessionToUpdate);
 
         return DTOMapper.INSTANCE.convertEntityToSessionGetDTO(updatedSession);
     }
+
+
 }

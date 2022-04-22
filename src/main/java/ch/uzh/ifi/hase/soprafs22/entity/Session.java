@@ -39,7 +39,7 @@ public class Session implements Serializable {
     @Column(nullable = false)
     private Long deckId;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> userList;
 
 
