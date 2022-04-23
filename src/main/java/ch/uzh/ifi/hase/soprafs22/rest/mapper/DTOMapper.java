@@ -69,13 +69,16 @@ public interface DTOMapper {
 
 
     //sessionMappings
-    @Mapping(source = "username", target = "username")
+    @Mapping(source = "hostUsername", target = "hostUsername")
     @Mapping(source = "deckId", target = "deckId")
     @Mapping(source = "maxPlayers", target = "maxPlayers")
     Session convertSessionPostDTOtoEntity(SessionPostDTO sessionPostDTO);
 
-    @Mapping(source = "sessionId", target = "sessionId")
     @Mapping(source = "gameCode", target = "gameCode")
+    @Mapping(source = "hostUsername", target = "hostUsername")
+    @Mapping(source = "userList", target = "userList")
+    @Mapping(source = "maxPlayers", target = "maxPlayers")
+    @Mapping(source = "deckId", target = "deckId")
     SessionGetDTO convertEntityToSessionGetDTO(Session session);
 
 }

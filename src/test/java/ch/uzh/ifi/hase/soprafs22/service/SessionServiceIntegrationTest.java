@@ -119,7 +119,7 @@ public class SessionServiceIntegrationTest {
     public void createSessionWrongDeck() {
         //try to create a session with nonExisting Deck
         Session testSession2 = testSession;
-        testSession2.setDeckId(testDeck.getDeckId() + testDeck.getDeckId());
+        testSession2.setDeckId(0L);
 
         // check that an error is thrown
         assertThrows(ResponseStatusException.class, () -> sessionService.createSession(testSession2));

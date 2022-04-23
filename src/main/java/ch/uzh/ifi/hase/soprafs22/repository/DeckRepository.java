@@ -15,4 +15,6 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
 
     List<Deck> findBydeckstatus(DeckStatus deckstatus);
     //List<Deck> findAll(DeckStatus status);
+
+    Deck findByDeckId(Long deckId);
 }
