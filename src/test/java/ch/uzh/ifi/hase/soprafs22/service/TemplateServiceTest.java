@@ -46,7 +46,6 @@ public class TemplateServiceTest {
         // given
         testTemplate = new Template();
         testTemplate.setTemplateId(1L);
-        testTemplate.setStatcount(0);
 
 
         testStat = new Stat();
@@ -83,7 +82,7 @@ public class TemplateServiceTest {
         Mockito.verify(templateRepository, Mockito.times(1)).save(Mockito.any());
 
         assertEquals(testTemplate.getTemplateId(), createdTemplate.getTemplateId());
-        assertEquals(testTemplate.getStatcount(), createdTemplate.getStatcount());
+        assertEquals(testTemplate.getTemplatestats().size(), createdTemplate.getTemplatestats().size());
         assertEquals(testTemplate.getTemplatestats(), createdTemplate.getTemplatestats());
     }
 
@@ -106,7 +105,6 @@ public class TemplateServiceTest {
         List<Stat> templateStats = new ArrayList<>();
         templateStats.add(someStat);
         testTemplate.setTemplatestats(templateStats);
-        testTemplate.setStatcount(1);
 
 
         // when

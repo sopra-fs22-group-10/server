@@ -1,22 +1,24 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
-import ch.uzh.ifi.hase.soprafs22.entity.Card;
-import ch.uzh.ifi.hase.soprafs22.entity.Deck;
-import ch.uzh.ifi.hase.soprafs22.entity.Template;
-import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
+import ch.uzh.ifi.hase.soprafs22.entity.*;
+import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.CardService;
 import ch.uzh.ifi.hase.soprafs22.service.DeckService;
 import ch.uzh.ifi.hase.soprafs22.service.TemplateService;
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 public class DeckController {
@@ -26,15 +28,54 @@ public class DeckController {
     private final CardService cardService;
     private final UserService userService;
     private final DeckRepository deckRepository;
+    //private EntityManager entityManager;
+    /*
+    private final UserRepository userRepository;
 
-    DeckController(DeckService deckService, DeckRepository deckRepository, TemplateService templateService, CardService cardService, UserService userService) {
+    private final CardRepository cardRepository;
+    private final StatRepository statRepository;
+    private final TemplateRepository templateRepository;
+
+     */
+
+
+    private EntityManager entityManager;
+
+
+    @Qualifier(value = "entityManager")
+    private EntityManager createentityManager(EntityManagerFactory entityManagerFactory) {
+        return entityManagerFactory.createEntityManager();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    DeckController(DeckService deckService, DeckRepository deckRepository, TemplateService templateService, CardService cardService, UserService userService, EntityManager entityManager){//, UserRepository userRepository, CardRepository cardRepository, TemplateRepository templateRepository, StatRepository statRepository) {
         this.deckService = deckService;
         this.templateService = templateService;
         this.cardService = cardService;
         this.userService = userService;
-        this.deckRepository = deckRepository;
 
+        this.deckRepository = deckRepository;
+        /*
+        this.userRepository = userRepository;
+        this.templateRepository = templateRepository;
+        this.cardRepository = cardRepository;
+        this.statRepository = statRepository;
+
+         */
+
+        this.entityManager = entityManager;
     }
+
 
     
     @GetMapping("/decks")
@@ -90,6 +131,91 @@ public class DeckController {
         return createdDeck;
     }
 
+    @PutMapping("/decks/users/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void AddExistingDeckToUser(@PathVariable Long userId, @RequestBody DeckPutDTO deckPutDTO){
+        //Check if user exists
+        User user = userService.getUserByID(userId);
+
+        Long deckId = deckPutDTO.getDeckId();
+        Deck existingDeck = deckService.getDeckById(deckId);
+        Template existingTemplate = existingDeck.getTemplate();
+        List <Card> cardList = existingDeck.getCardList();
+
+
+        for(Stat stat: existingDeck.getTemplate().getTemplatestats()){
+            entityManager.detach(stat);
+            stat.setStatId(null);
+        }
+        entityManager.detach(existingTemplate);
+        List <Card> newCardList = new ArrayList<>();
+
+        for(Card card : cardList){
+            for(Stat stat: card.getCardstats()){
+                entityManager.detach(stat);
+                stat.setStatId(null);
+
+            }
+            entityManager.detach(card);
+            card.setCardId(null);
+            newCardList.add(cardService.createCard(card, existingTemplate));
+        }
+
+        entityManager.detach(existingDeck);
+        existingDeck.getTemplate().setTemplateId(null);
+        existingDeck.setTemplate(templateService.createTemplate(existingTemplate));
+        existingDeck.setCardList(newCardList);
+        existingDeck.setDeckId(null);
+        existingDeck.setDeckname(null);
+        existingDeck = deckService.createDeck(existingDeck);
+
+       userService.addDeck(existingDeck.getDeckId(), userId);
+    }
+    /*
+    @PutMapping("/decks/users/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void AddExistingDeckToUser(@PathVariable Long userId, @RequestBody DeckPutDTO deckPutDTO){
+        //Check if user exists
+        User user = userService.getUserByID(userId);
+
+        Long deckId = deckPutDTO.getDeckId();
+        Deck existingDeck = deckService.getDeckById(deckId);
+        Template existingTemplate = existingDeck.getTemplate();
+        List <Card> cardList = existingDeck.getCardList();
+
+
+        for(Stat stat: existingDeck.getTemplate().getTemplatestats()){
+            statRepository.detach(stat);
+            stat.setStatId(null);
+        }
+        templateRepository.detach(existingTemplate);
+        List <Card> newCardList = new ArrayList<>();
+
+        for(Card card : cardList){
+            for(Stat stat: card.getCardstats()){
+                statRepository.detach(stat);
+                stat.setStatId(null);
+
+            }
+            cardRepository.detach(card);
+            card.setCardId(null);
+            newCardList.add(cardService.createCard(card, existingTemplate));
+        }
+
+        deckRepository.detach(existingDeck);
+        existingDeck.getTemplate().setTemplateId(null);
+        existingDeck.setTemplate(templateService.createTemplate(existingTemplate));
+        existingDeck.setCardList(newCardList);
+        existingDeck.setDeckId(null);
+        existingDeck.setDeckname(null);
+        existingDeck = deckService.createDeck(existingDeck);
+
+        userService.addDeck(existingDeck.getDeckId(), userId);
+    }
+
+     */
 
 
     @PostMapping("/decks/{deckId}/templates")
@@ -122,9 +248,12 @@ public class DeckController {
     @PutMapping("/decks/{deckId}/cards/{cardId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void changeCard(@PathVariable Long deckId, @RequestBody CardPutDTO cardPutDTO){
+    public void changeCard(@PathVariable Long deckId, @PathVariable Long cardId, @RequestBody CardPutDTO cardPutDTO){
         Card putCard = DTOMapper.INSTANCE.convertCardPutDTOtoEntity(cardPutDTO);
-        deckService.checkIfCardIdIsInDeck(deckId, putCard.getCardId());
+        if(!Objects.equals(cardId, cardPutDTO.getCardId())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The cardId in the Path doesn't match the Id from the Card Put Entity.");
+        }
+        deckService.checkIfCardIdIsInDeck(putCard.getCardId(), deckId);
         cardService.changeCard(putCard, deckService.getDeckById(deckId).getTemplate());
 
 
@@ -133,7 +262,7 @@ public class DeckController {
     @DeleteMapping("/decks/{deckId}/cards/{cardId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void deleteCard(@PathVariable Long deckId, Long cardId){
+    public void deleteCard(@PathVariable Long deckId,@PathVariable Long cardId){
 
         deckService.checkIfCardIdIsInDeck(deckId, cardId);
         cardService.deleteCard(cardId);

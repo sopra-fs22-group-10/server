@@ -75,7 +75,6 @@ public class TemplateService {
 
         checkStatFormat(newTemplate.getTemplatestats());
 
-        newTemplate.setStatcount(newStats.size());
 
         newTemplate = templateRepository.save(newTemplate);
         templateRepository.flush();

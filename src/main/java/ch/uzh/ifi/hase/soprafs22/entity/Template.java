@@ -20,9 +20,6 @@ public class Template implements Serializable {
     private Long templateId;
 
 
-    @Column(nullable = false)
-    private int statcount;
-
     @OneToMany
     private List<Stat> templatestats;
 
@@ -37,39 +34,27 @@ public class Template implements Serializable {
     }
 
     //Maybe needs to raise an error
-    //When stat is added the statcount is increased aswell
+    //When stat is added the is increased aswell
     /*
     public void addStats(Stats stat){
-        statcount += 1;
+
         templatestats.add(stat);
     }
 
-    //Maybe needs to raise an error if you remove stat when statcount is zero
+    //Maybe needs to raise an error if you remove stat whe is zero
     public void deleteStats(Stats stat){
-        statcount -=1;
+
         templatestats.remove(stat);
     }
 
      */
     public void setTemplatestats( List<Stat> templatestats){
         this.templatestats=templatestats;
-        this.statcount = templatestats.size();
     }
 
     public List<Stat> getTemplatestats() {
         return templatestats;
     }
-
-
-
-    public int getStatcount() {
-        return statcount;
-    }
-
-    public void setStatcount(int statcount) {
-        this.statcount = statcount;
-    }
-
 
 
 }

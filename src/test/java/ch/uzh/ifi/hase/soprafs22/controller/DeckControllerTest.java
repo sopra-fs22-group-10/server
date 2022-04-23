@@ -2,14 +2,10 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
 import ch.uzh.ifi.hase.soprafs22.constant.StatTypes;
-import ch.uzh.ifi.hase.soprafs22.entity.Card;
-import ch.uzh.ifi.hase.soprafs22.entity.Deck;
-import ch.uzh.ifi.hase.soprafs22.entity.Stat;
-import ch.uzh.ifi.hase.soprafs22.entity.Template;
-import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.CardPostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.DeckPostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.TemplatePostDTO;
+import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs22.entity.*;
+import ch.uzh.ifi.hase.soprafs22.repository.*;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs22.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,14 +24,13 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.web.server.ResponseStatusException;
 
 
-
+import javax.persistence.EntityManager;
 import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @WebMvcTest(DeckController.class)
@@ -43,6 +38,7 @@ public class DeckControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
 
     @MockBean
     private DeckService deckService;
@@ -60,6 +56,21 @@ public class DeckControllerTest {
     private DeckRepository deckRepository;
 
     @MockBean
+    private UserRepository userRepository;
+    @MockBean
+    private CardRepository cardRepository;
+    @MockBean
+    private StatRepository statRepository;
+    @MockBean
+    private TemplateRepository templateRepository;
+
+
+    @MockBean
+    EntityManager createentityManager;
+
+
+
+    @MockBean
     private UserService userService;
 
     private Deck testDeck;
@@ -67,6 +78,8 @@ public class DeckControllerTest {
     private Stat templateStat;
     private Stat cardStat;
     private Card testCard;
+    private EntityManager entityManager;
+
 
     @BeforeEach
     public void setup() {
@@ -83,18 +96,13 @@ public class DeckControllerTest {
         cardStat.setStatId(1L);
         cardStat.setStattype(StatTypes.NUMBER);
         
-        
-        
-        
 
         testTemplate = new Template();
         List<Stat> templateStats = new ArrayList<>();
         templateStats.add(templateStat);
         testTemplate.setTemplatestats(templateStats);
         testTemplate.setTemplateId(1L);
-        testTemplate.setStatcount(1);
 
-        
         testCard = new Card();
         List<Stat> cardStats = new ArrayList<>();
         cardStats.add(cardStat);
@@ -102,17 +110,13 @@ public class DeckControllerTest {
         testCard.setCardId(1L);
         testCard.setCardname("testCard1");
         testCard.setImage("hhtpsblablabla");
-        
-        
+
         // given
         testDeck = new Deck();
         testDeck.setDeckId(1L);
         testDeck.setDeckname("Yess");
         testDeck.setDeckstatus(DeckStatus.PUBLIC);
-      
 
-        // when -> any object is being save in the deckRepository -> return the dummy
-        // testDeck
 
     }
 
@@ -195,7 +199,6 @@ public class DeckControllerTest {
         TemplatePostDTO template_1 = new TemplatePostDTO();
         templateStats.add(templateStat);
         template_1.setTemplatestats(templateStats);
-        template_1.setStatcount(1);
 
 
         testDeck.setTemplate(testTemplate);
@@ -206,7 +209,6 @@ public class DeckControllerTest {
         MockHttpServletRequestBuilder postRequest = post("/decks/1/templates")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(template_1));
-
 
 
         /*
@@ -225,7 +227,7 @@ public class DeckControllerTest {
         LinkedHashMap<Object,Object> map = new LinkedHashMap<>();
         map.put("templateid",testTemplate.getTemplateId().intValue());
         map.put("templatename", testTemplate.getTemplatename());
-        map.put("statcount", testTemplate.getStatcount());
+
         map.put("templatestats", ja);
         
          */
@@ -242,8 +244,6 @@ public class DeckControllerTest {
 
         //Why is template it Linked Hash map ?
     }
-
-
 
 
     @Test //Get request to Deck but with wrong ID
@@ -267,15 +267,12 @@ public class DeckControllerTest {
     @Test
     public void createCard_with_valid_INPUT()throws Exception{
 
-        
         CardPostDTO card_1 = new CardPostDTO();
         Stat postStat = new Stat();
         
         postStat.setStatvalue("200");
         postStat.setStatname("postStat1");
         postStat.setStattype(StatTypes.NUMBER);
-
-
 
         List<Stat> cardStats = new ArrayList<>();
         cardStats.add(postStat);
@@ -311,16 +308,6 @@ public class DeckControllerTest {
         //.andExpect(jsonPath("$.template", equalToObject(testDeck.getTemplate())));
         
     }
-    /*
-    public void addTemplate(
-            
-            
-    ){}
-    
-    public void addwrongTemplate(){
-        
-    }
-    */
 
     //The testDeck doesn't contain the testCraad to be Deleteed
     @Test
@@ -336,13 +323,94 @@ public class DeckControllerTest {
     }
 
 
+    @Test
+    public void add_Existing_Deck_to_User()throws Exception{
+
+        testDeck.setTemplate(testTemplate);
+        List<Card> cardList = new ArrayList<>();
+        cardList.add(testCard);
+        testDeck.setCardList(cardList);
+
+        User TestUser = new User();
+        TestUser.setUsername("Username1");
+        TestUser.setStatus(UserStatus.ONLINE);
+        TestUser.setPassword("password");
+        TestUser.setAuthentication("3");
+
+         Stat templateStat2 = new Stat();
+        templateStat2.setStatname("templateStat1");
+        templateStat2.setStatId(1L);
+        templateStat2.setStattype(StatTypes.NUMBER);
+
+        Stat cardStat2 = new Stat();
+        cardStat2.setStatvalue("200");
+        cardStat2.setStatname("cardStat1");
+        cardStat2.setStatId(1L);
+        cardStat2.setStattype(StatTypes.NUMBER);
+
+
+        Template testTemplate2 = new Template();
+        List<Stat> templateStats2 = new ArrayList<>();
+        templateStats2.add(templateStat2);
+        testTemplate2.setTemplatestats(templateStats2);
+        testTemplate2.setTemplateId(1L);
+
+        Card testCard2 = new Card();
+        List<Stat> cardStats = new ArrayList<>();
+        cardStats.add(cardStat);
+        testCard2.setCardstats(cardStats);
+        testCard2.setCardId(1L);
+        testCard2.setCardname("testCard1");
+        testCard2.setImage("hhtpsblablabla");
+
+        //TestUser.setDeckList(new ArrayList<>(List.of(testDeck)));
+
+        User TestUser2 = new User();
+        TestUser2.setUserId(33L);
+        TestUser.setUsername("Username2");
+        TestUser.setStatus(UserStatus.ONLINE);
+        TestUser.setPassword("password");
+        TestUser.setAuthentication("34");
+
+        Deck testDeck2 = new Deck();
+        testDeck2.setDeckId(1L);
+        testDeck2.setDeckname("Yess");
+        testDeck2.setDeckstatus(DeckStatus.PUBLIC);
+        testDeck2.setTemplate(testTemplate2);
+
+        DeckPutDTO deckPutDTO = new DeckPutDTO();
+        deckPutDTO.setDeckId(1L);
+
+
+        given(userService.getUserByID(Mockito.any())).willReturn(TestUser2);
+        given(deckService.getDeckById(Mockito.any())).willReturn(testDeck);
+        given(cardService.createCard(Mockito.any(), Mockito.any())).willReturn(testCard2);
+        given(deckService.createDeck(Mockito.any())).willReturn(testDeck2);
+        given(templateService.createTemplate(Mockito.any())).willReturn(testTemplate2);
+        /*doAnswer(invocation -> {
+            Object arg0 = invocation.getArgument(0);
+            Object arg1 = invocation.getArgument(1);
+
+            assertEquals(3, arg0);
+            assertEquals("answer me", arg1);
+            return null;
+        }).when(entityManager).detach(any(Object.class));
+
+         */
+
+
+        //given(entityManager)).willReturn(entitymanager);
+        //doNothing().when(entityManager).detach(Mockito.any());
 
 
 
+        MockHttpServletRequestBuilder putRequest = put("/decks/users/33")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(deckPutDTO));
 
+        mockMvc.perform(putRequest).andExpect(status().isNoContent());
 
-
-
+    }
 
 
 

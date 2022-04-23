@@ -90,10 +90,7 @@ public class UserService {
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No account for this userID was found!");
     }
-    //Only for Testing Purpose
-    public void add_Deck_when_user_Created(Long userId){
 
-    }
 
 
     public User saveUser(User user) {

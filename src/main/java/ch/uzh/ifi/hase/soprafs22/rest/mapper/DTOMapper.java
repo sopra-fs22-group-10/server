@@ -19,7 +19,6 @@ public interface DTOMapper {
 
 
   @Mapping(source = "templatestats", target = "templatestats")
-  @Mapping(source = "statcount", target = "statcount")
   @Mapping(target = "templateId", ignore = true)
   Template convertTemplatePostDTOtoEntity(TemplatePostDTO templatePostDTO);
 

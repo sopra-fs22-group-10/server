@@ -66,7 +66,6 @@ public class TemplateServiceIntegrationTest {
         List<Stat> templateStats = new ArrayList<>();
         templateStats.add(testStat);
         testTemplate.setTemplatestats(templateStats);
-        testTemplate.setStatcount(1);
 
 
         // when
@@ -96,7 +95,6 @@ public class TemplateServiceIntegrationTest {
         List<Stat> templateStats = new ArrayList<>();
         templateStats.add(testStat);
         testTemplate.setTemplatestats(templateStats);
-        testTemplate.setStatcount(1);
 
 
         // when
@@ -123,7 +121,6 @@ public class TemplateServiceIntegrationTest {
         List<Stat> templateStats = new ArrayList<>();
         templateStats.add(testStat);
         testTemplate.setTemplatestats(templateStats);
-        testTemplate.setStatcount(1);
 
         assertThrows(ResponseStatusException.class, () -> templateService.createTemplate(testTemplate));
         // when
