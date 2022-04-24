@@ -63,7 +63,7 @@ public class CardServiceIntegrationTest {
         testCard.setImage("randomLink");
 
         testTemplate = new Template();
-        testTemplate.setStatcount(1);
+
 
 
         TemplateStat = new Stat();
@@ -110,7 +110,7 @@ public class CardServiceIntegrationTest {
 
         //If cardtemplate Null
         ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> cardService.createCard(testCard, testTemplate2));
-        assertEquals(thrown.getStatus(), HttpStatus.BAD_REQUEST);
+        assertEquals(thrown.getStatus(), HttpStatus.CONFLICT);
 
     }
 

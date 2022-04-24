@@ -44,7 +44,6 @@ public class TemplateRepositoryIntegrationTest {
         List<Stat> templateStats = new ArrayList<>();
         templateStats.add(testStat);
         template.setTemplatestats(templateStats);
-        template.setStatcount(1);
 
         // given
         entityManager.persist(template);
@@ -56,7 +55,7 @@ public class TemplateRepositoryIntegrationTest {
         // then
         assertNotNull(found.getTemplateId());
         assertEquals(found.getTemplatestats().get(0), testStat);
-        assertEquals(found.getStatcount(), templateStats.size());
+        assertEquals(found.getTemplatestats().size(), templateStats.size());
 
     }
 

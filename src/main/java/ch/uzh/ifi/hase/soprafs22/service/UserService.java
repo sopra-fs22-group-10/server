@@ -74,6 +74,14 @@ public class UserService {
 
     }
 
+    public User getUserByAuthentication(String Authentication){
+        User user = userRepository.findByAuthentication(Authentication);
+        if(user == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no user associated with this Authentication");
+        }
+        return user;
+    }
+
     public void removeDeck(Long deckId, Long userId){
         Deck deckToRemove = deckService.getDeckById(deckId);
         User user = getUserByID(userId);
@@ -90,10 +98,7 @@ public class UserService {
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No account for this userID was found!");
     }
-    //Only for Testing Purpose
-    public void add_Deck_when_user_Created(Long userId){
 
-    }
 
 
     public User saveUser(User user) {

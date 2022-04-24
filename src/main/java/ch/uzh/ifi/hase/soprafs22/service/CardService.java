@@ -47,6 +47,7 @@ public class CardService {
         }
 
          */
+
         newCard =checkCardMatchesTemplateAndHasValidStats(newCard, cardTemplate);
 
 
@@ -73,8 +74,12 @@ public class CardService {
 
     //Checks if the Card and Template have the same Stat Structure and then creates the new Stats, adds the to the Card Entity and returns the updated one.
     public Card checkCardMatchesTemplateAndHasValidStats(Card card, Template template){
+        if(template.getTemplatestats() == null || template.getTemplatestats().size() < 1){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "The Template has a wrong format. A Template must at least have one Stat.");
+        }
 
-        if(card.getCardstats().size() != template.getStatcount()){
+
+        if(card.getCardstats().size() != template.getTemplatestats().size()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Card StatCount doesn't match the template StatCount");
         }
         List<Stat> newStats = new ArrayList<>();

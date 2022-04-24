@@ -89,7 +89,6 @@ public class DeckServiceIntegrationTest {
     @Test
     public void setTemplate_with_valid_INPUT(){
         Template testTemplate = new Template();
-        testTemplate.setStatcount(0);
 
 
         Stat testStat = new Stat();
@@ -111,7 +110,7 @@ public class DeckServiceIntegrationTest {
 
 
         assertEquals(newDeck.getTemplate().getTemplateId(), testTemplate.getTemplateId());
-        assertEquals(newDeck.getTemplate().getStatcount(), testTemplate.getStatcount());
+        assertEquals(newDeck.getTemplate().getTemplatestats().size(), testTemplate.getTemplatestats().size());
         assertEquals(newDeck.getTemplate().getTemplatestats(), testTemplate.getTemplatestats());
 
 
@@ -138,7 +137,6 @@ public class DeckServiceIntegrationTest {
         List<Stat> templateStats = new ArrayList<>();
         templateStats.add(templateStat);
         testTemplate.setTemplatestats(templateStats);
-        testTemplate.setStatcount(1);
 
 
         Card testCard = new Card();
@@ -186,7 +184,6 @@ public class DeckServiceIntegrationTest {
         List<Stat> templateStats = new ArrayList<>();
         templateStats.add(templateStat);
         testTemplate.setTemplatestats(templateStats);
-        testTemplate.setStatcount(1);
 
 
         Card testCard = new Card();
@@ -217,7 +214,6 @@ public class DeckServiceIntegrationTest {
         List<Stat> templateStats = new ArrayList<>();
         templateStats.add(templateStat);
         testTemplate.setTemplatestats(templateStats);
-        testTemplate.setStatcount(1);
 
 
         Stat cardStat = new Stat();

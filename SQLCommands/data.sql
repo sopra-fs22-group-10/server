@@ -40,8 +40,8 @@ insert into CARD_CARDSTATS(card_card_id, cardstats_stat_id) VALUES
                                                                 ( '53', '64' ),
                                                                 ( '53', '65' );
 
-insert into TEMPLATE(template_id,statcount) VALUES
-    ('66', '3');
+insert into TEMPLATE(template_id) VALUES
+    ('66');
 
 insert into TEMPLATE_TEMPLATESTATS(template_template_id, templatestats_stat_id) VALUES
     ('66', '54' ),
@@ -63,7 +63,8 @@ insert into DECK_CARD_LIST(deck_deck_id, card_list_card_id) VALUES
 
 
 insert into USER(user_id, authentication, password, status, username) VALUES
-    ( '68', '3fe3bc056961ed22', 'Testpassword1', '1', 'TestUser1');
+    ( '68', '3fe3bc056961ed22', 'Testpassword1', '1', 'TestUser1'),
+    ( '69', '3fe3bc056861ed22', 'Testpassword2', '1', 'TestUser2');
 
 
 insert into USER_DECK_LIST(user_user_id, deck_list_deck_id) VALUES
