@@ -7,4 +7,10 @@ To Do:
     Authorization:
         -Create Authorization Checks for all requests
 
-    -Add Deck Function should create new Deck instead of adding te real deck, since if two Users have the same Deck, if one is changed the other does aswell.
+    -Add add_existing_deck with access code Check
+
+    To write Tests for:
+        -User getUserByAuthentication(String Authentication)
+        -UserRepository:  User findByAuthentication(String authentication);
+        -DeckRepository:  Deck findByCardListContaining(Card card);
+        -DeckController getCard(@PathVariable Long cardId, @RequestHeader("Authentication") String auth){

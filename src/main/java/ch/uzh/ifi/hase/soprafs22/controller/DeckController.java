@@ -39,6 +39,7 @@ public class DeckController {
      */
 
 
+
     private EntityManager entityManager;
 
 
@@ -255,6 +256,21 @@ public class DeckController {
         }
         deckService.checkIfCardIdIsInDeck(putCard.getCardId(), deckId);
         cardService.changeCard(putCard, deckService.getDeckById(deckId).getTemplate());
+
+
+    }
+
+    @GetMapping("cards/{cardId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public Card getCard(@PathVariable Long cardId, @RequestHeader("Authentication") String auth){
+        Card cardToReturn = cardService.getCardById(cardId);
+        Deck deck = deckRepository.findByCardListContaining(cardToReturn);
+        User user = userService.getUserByAuthentication(auth);
+        if(!user.getDeckList().contains(deck)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The User from the provided Authentication doesn't have access to this resource");
+        }
+        return cardToReturn;
 
 
     }

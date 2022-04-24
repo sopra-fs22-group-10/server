@@ -74,6 +74,14 @@ public class UserService {
 
     }
 
+    public User getUserByAuthentication(String Authentication){
+        User user = userRepository.findByAuthentication(Authentication);
+        if(user == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no user associated with this Authentication");
+        }
+        return user;
+    }
+
     public void removeDeck(Long deckId, Long userId){
         Deck deckToRemove = deckService.getDeckById(deckId);
         User user = getUserByID(userId);
