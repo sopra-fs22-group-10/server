@@ -87,6 +87,7 @@ public class SessionServiceIntegrationTest {
         testSession.setDeckId(createdDeck.getDeckId());
         testSession.setGameCode(1);
         testSession.setHostUsername(createdUser.getUsername());
+        testSession.setHostId(createdUser.getUserId());
         testSession.addUser(createdUser.getUsername());
 
     }
@@ -109,6 +110,7 @@ public class SessionServiceIntegrationTest {
         // then
         assertEquals(testSession.getSessionId(), createdSession.getSessionId());
         assertEquals(testSession.getHostUsername(), createdSession.getHostUsername());
+        assertEquals(testSession.getHostId(), createdSession.getHostId());
         assertEquals(testSession.getGameCode(), createdSession.getGameCode());
         assertEquals(testSession.getMaxPlayers(), createdSession.getMaxPlayers());
         assertEquals(testSession.getDeckId(), createdSession.getDeckId());
@@ -155,6 +157,7 @@ public class SessionServiceIntegrationTest {
         // then
         assertEquals(createdSession.getSessionId(), joinedSession.getSessionId());
         assertEquals(createdSession.getHostUsername(), joinedSession.getHostUsername());
+        assertEquals(testSession.getHostId(), joinedSession.getHostId());
         assertEquals(createdSession.getGameCode(), joinedSession.getGameCode());
         assertEquals(createdSession.getMaxPlayers(), joinedSession.getMaxPlayers());
         assertEquals(createdSession.getDeckId(), joinedSession.getDeckId());
@@ -212,6 +215,7 @@ public class SessionServiceIntegrationTest {
         sessionInput.setGameCode(existingSession.getGameCode());
         sessionInput.setSessionId(existingSession.getSessionId());
         sessionInput.setHostUsername(existingSession.getHostUsername());
+        sessionInput.setHostId(existingSession.getHostId());
         sessionInput.setMaxPlayers(existingSession.getMaxPlayers() + 1);
         sessionInput.setUserList(existingSession.getUserList());
         sessionInput.setDeckId(existingSession.getDeckId());
@@ -223,6 +227,7 @@ public class SessionServiceIntegrationTest {
         // then
         assertEquals(existingSession.getSessionId(), updatedSession.getSessionId());
         assertEquals(existingSession.getHostUsername(), updatedSession.getHostUsername());
+        assertEquals(existingSession.getHostId(), updatedSession.getHostId());
         assertEquals(existingSession.getGameCode(), updatedSession.getGameCode());
         assertEquals(existingSession.getMaxPlayers(), updatedSession.getMaxPlayers());
         assertEquals(existingSession.getDeckId(), updatedSession.getDeckId());
@@ -240,6 +245,7 @@ public class SessionServiceIntegrationTest {
         sessionInput.setGameCode(0);
         sessionInput.setSessionId(existingSession.getSessionId());
         sessionInput.setHostUsername(existingSession.getHostUsername());
+        sessionInput.setHostId(existingSession.getHostId());
         sessionInput.setMaxPlayers(existingSession.getMaxPlayers() + 1);
         sessionInput.setUserList(existingSession.getUserList());
         sessionInput.setDeckId(existingSession.getDeckId());
@@ -259,6 +265,7 @@ public class SessionServiceIntegrationTest {
         sessionInput.setGameCode(existingSession.getGameCode());
         sessionInput.setSessionId(existingSession.getSessionId());
         sessionInput.setHostUsername(existingSession.getHostUsername());
+        sessionInput.setHostId(existingSession.getHostId());
         sessionInput.setMaxPlayers(existingSession.getMaxPlayers());
         sessionInput.setUserList(existingSession.getUserList());
         sessionInput.setDeckId(0L);

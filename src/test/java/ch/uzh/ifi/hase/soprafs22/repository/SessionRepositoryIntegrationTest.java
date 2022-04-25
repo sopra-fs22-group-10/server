@@ -29,6 +29,8 @@ public class SessionRepositoryIntegrationTest {
         session.setDeckId(1L);
         session.setGameCode(1);
         session.setHostUsername("username");
+        session.setHostId(1L);
+
 
         entityManager.persist(session);
         entityManager.flush();
@@ -39,6 +41,7 @@ public class SessionRepositoryIntegrationTest {
         // then
         assertNotNull(found.getSessionId());
         assertEquals(found.getHostUsername(), session.getHostUsername());
+        assertEquals(found.getHostId(), session.getHostId());
         assertEquals(found.getGameCode(), session.getGameCode());
         assertEquals(found.getDeckId(), session.getDeckId());
         assertEquals(found.getMaxPlayers(), session.getMaxPlayers());

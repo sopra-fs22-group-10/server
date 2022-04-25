@@ -74,6 +74,7 @@ public class DTOMapperTest {
         //create PostDTO
         SessionPostDTO sessionPostDTO = new SessionPostDTO();
         sessionPostDTO.setHostUsername("username");
+        sessionPostDTO.setHostId(1L);
         sessionPostDTO.setMaxPlayers(1);
         sessionPostDTO.setDeckId(1L);
 
@@ -82,6 +83,7 @@ public class DTOMapperTest {
 
         //check
         assertEquals(sessionPostDTO.getHostUsername(), session.getHostUsername());
+        assertEquals(sessionPostDTO.getHostId(), session.getHostId());
         assertEquals(sessionPostDTO.getDeckId(), session.getDeckId());
         assertEquals(sessionPostDTO.getMaxPlayers(), session.getMaxPlayers());
     }
@@ -95,6 +97,7 @@ public class DTOMapperTest {
         session.setDeckId(1L);
         session.setGameCode(1);
         session.setHostUsername("username");
+        session.setHostId(1L);
 
         //MAP create SessionGetDTO
         SessionGetDTO sessionGetDTO = DTOMapper.INSTANCE.convertEntityToSessionGetDTO(session);
@@ -102,6 +105,7 @@ public class DTOMapperTest {
         //check
         assertEquals(session.getGameCode(), sessionGetDTO.getGameCode());
         assertEquals(session.getHostUsername(), sessionGetDTO.getHostUsername());
+        assertEquals(session.getHostId(), sessionGetDTO.getHostId());
         assertEquals(session.getUserList(), sessionGetDTO.getUserList());
         assertEquals(session.getMaxPlayers(), sessionGetDTO.getMaxPlayers());
         assertEquals(session.getDeckId(), sessionGetDTO.getDeckId());

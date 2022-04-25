@@ -7,6 +7,7 @@ public class SessionGetDTO {
 
     private int gameCode;
     private String hostUsername;
+    private Long hostId;
     private List<String> userList;
     private int maxPlayers;
     private Long deckId;
@@ -18,6 +19,10 @@ public class SessionGetDTO {
     public String getHostUsername() { return hostUsername; }
 
     public void setHostUsername(String hostUsername) {this.hostUsername = hostUsername; }
+
+    public Long getHostId() { return hostId; }
+
+    public void setHostId(Long hostId) {this.hostId = hostId; }
 
     public List<String> getUserList() { return userList; }
 
