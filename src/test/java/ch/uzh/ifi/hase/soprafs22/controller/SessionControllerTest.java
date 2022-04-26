@@ -55,6 +55,7 @@ public class SessionControllerTest {
         session.setDeckId(1L);
         session.setGameCode(1);
         session.setHostUsername("username");
+        session.setHostId(1L);
         session.addUser("username");
     }
 
@@ -87,6 +88,7 @@ public class SessionControllerTest {
                 .andExpect(status().is(201))
                 .andExpect(jsonPath("$.gameCode", is(session.getGameCode())))
                 .andExpect(jsonPath("$.hostUsername", is(session.getHostUsername())))
+                .andExpect(jsonPath("$.hostId", is(session.getHostId().intValue())))
                 .andExpect(jsonPath("$.userList", is(session.getUserList())))
                 .andExpect(jsonPath("$.deckId", is(session.getDeckId().intValue())))
                 .andExpect(jsonPath("$.maxPlayers", is(session.getMaxPlayers())))
@@ -112,6 +114,7 @@ public class SessionControllerTest {
         // given predefined session
         SessionPostDTO sessionPostDTO = new SessionPostDTO();
         sessionPostDTO.setHostUsername(session.getHostUsername());
+        sessionPostDTO.setHostId(session.getHostId());
         sessionPostDTO.setDeckId(9L);
         sessionPostDTO.setMaxPlayers(session.getMaxPlayers());
         given(sessionService.createSession(Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.resolve(404), "Given Deck does not exist"));
@@ -143,6 +146,7 @@ public class SessionControllerTest {
         // given predefined session
         SessionPostDTO sessionPostDTO = new SessionPostDTO();
         sessionPostDTO.setHostUsername(session.getHostUsername());
+        sessionPostDTO.setHostId(session.getHostId());
         sessionPostDTO.setDeckId(session.getDeckId());
         sessionPostDTO.setMaxPlayers(9);
         given(sessionService.createSession(Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.resolve(400), "Maximum number of players is 6!"));
@@ -161,6 +165,7 @@ public class SessionControllerTest {
         // given predfined session
         JoinSessionPostDTO joinSessionPostDTO = new JoinSessionPostDTO();
         joinSessionPostDTO.setUsername("username2");
+        joinSessionPostDTO.setUserId(2L);
 
         session.addUser(joinSessionPostDTO.getUsername());
         // this mocks the SessionService -> we define above what the sessionService should return when getSessionByGameCode() is called
@@ -176,6 +181,7 @@ public class SessionControllerTest {
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.gameCode", is(session.getGameCode())))
                 .andExpect(jsonPath("$.hostUsername", is(session.getHostUsername())))
+                .andExpect(jsonPath("$.hostId", is(session.getHostId().intValue())))
                 .andExpect(jsonPath("$.userList", is(session.getUserList())))
                 .andExpect(jsonPath("$.deckId", is(session.getDeckId().intValue())))
                 .andExpect(jsonPath("$.maxPlayers", is(session.getMaxPlayers())))
@@ -187,6 +193,7 @@ public class SessionControllerTest {
     // given predfined session
         JoinSessionPostDTO joinSessionPostDTO = new JoinSessionPostDTO();
         joinSessionPostDTO.setUsername("username2");
+        joinSessionPostDTO.setUserId(2L);
 
         session.addUser(joinSessionPostDTO.getUsername());
         // this mocks the SessionService -> we define above what the sessionService should return when getSessionByGameCode() is called
@@ -207,6 +214,7 @@ public class SessionControllerTest {
         // given predfined session
         JoinSessionPostDTO joinSessionPostDTO = new JoinSessionPostDTO();
         joinSessionPostDTO.setUsername("username2");
+        joinSessionPostDTO.setUserId(2L);
 
 
         // this mocks the SessionService -> we define above what the sessionService should return when getSessionByGameCode() is called
@@ -228,6 +236,7 @@ public class SessionControllerTest {
         // given predfined session
         JoinSessionPostDTO joinSessionPostDTO = new JoinSessionPostDTO();
         joinSessionPostDTO.setUsername("username2");
+        joinSessionPostDTO.setUserId(2L);
 
 
         // this mocks the SessionService -> we define above what the sessionService should return when getSessionByGameCode() is called
@@ -249,6 +258,7 @@ public class SessionControllerTest {
         // given predefined session
         SessionPostDTO sessionPostDTO = new SessionPostDTO();
         sessionPostDTO.setHostUsername(session.getHostUsername());
+        sessionPostDTO.setHostId(session.getHostId());
         sessionPostDTO.setDeckId(session.getDeckId());
         sessionPostDTO.setMaxPlayers(session.getMaxPlayers()+1);
 
@@ -264,6 +274,7 @@ public class SessionControllerTest {
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.gameCode", is(session.getGameCode())))
                 .andExpect(jsonPath("$.hostUsername", is(session.getHostUsername())))
+                .andExpect(jsonPath("$.hostId", is(session.getHostId().intValue())))
                 .andExpect(jsonPath("$.userList", is(session.getUserList())))
                 .andExpect(jsonPath("$.deckId", is(session.getDeckId().intValue())))
                 .andExpect(jsonPath("$.maxPlayers", is(session.getMaxPlayers())))
@@ -275,6 +286,7 @@ public class SessionControllerTest {
 // given predefined session
         SessionPostDTO sessionPostDTO = new SessionPostDTO();
         sessionPostDTO.setHostUsername(session.getHostUsername());
+        sessionPostDTO.setHostId(session.getHostId());
         sessionPostDTO.setDeckId(session.getDeckId());
         sessionPostDTO.setMaxPlayers(session.getMaxPlayers()+1);
 
@@ -295,6 +307,7 @@ public class SessionControllerTest {
         // given predefined session
         SessionPostDTO sessionPostDTO = new SessionPostDTO();
         sessionPostDTO.setHostUsername(session.getHostUsername());
+        sessionPostDTO.setHostId(session.getHostId());
         sessionPostDTO.setDeckId(0L);
         sessionPostDTO.setMaxPlayers(session.getMaxPlayers());
 

@@ -31,6 +31,9 @@ public class Session implements Serializable {
     private String hostUsername;
 
     @Column(nullable = false)
+    private Long hostId;
+
+    @Column(nullable = false)
     private int gameCode;
 
     @Column(nullable = false)
@@ -50,6 +53,10 @@ public class Session implements Serializable {
     public void setHostUsername(String hostUsername) {this.hostUsername = hostUsername; }
 
     public String getHostUsername() { return hostUsername; }
+
+    public void setHostId(Long hostId) {this.hostId = hostId; }
+
+    public Long getHostId() { return hostId; }
 
     public void setGameCode(int gameCode) {this.gameCode = gameCode; }
 

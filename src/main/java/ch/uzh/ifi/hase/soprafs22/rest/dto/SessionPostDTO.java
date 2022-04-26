@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.rest.dto;
 public class SessionPostDTO {
 
     private String hostUsername;
+    private Long hostId;
     private int maxPlayers;
     private Long deckId;
 
@@ -10,6 +11,10 @@ public class SessionPostDTO {
     public String getHostUsername() { return hostUsername; }
 
     public void setHostUsername(String username) { this.hostUsername = username; }
+
+    public Long getHostId() { return hostId; }
+
+    public void setHostId(Long hostId) {this.hostId = hostId; }
 
     public Long getDeckId() { return deckId; }
 

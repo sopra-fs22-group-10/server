@@ -49,7 +49,8 @@ public class SessionServiceTest {
         testSession.setDeckId(2L);
         testSession.setGameCode(1);
         testSession.setHostUsername("username");
-        testSession.setUserList(new ArrayList<String>());
+        testSession.setHostId(3L);
+        testSession.setUserList(new ArrayList<>());
 
         testUser = new User();
         testUser.setUsername("username");
@@ -81,6 +82,7 @@ public class SessionServiceTest {
 
         assertEquals(testSession.getSessionId(), createdSession.getSessionId());
         assertEquals(testSession.getHostUsername(), createdSession.getHostUsername());
+        assertEquals(testSession.getHostId(), createdSession.getHostId());
         assertEquals(testSession.getGameCode(), createdSession.getGameCode());
         assertEquals(testSession.getMaxPlayers(), createdSession.getMaxPlayers());
         assertEquals(testSession.getDeckId(), createdSession.getDeckId());
@@ -98,6 +100,7 @@ public class SessionServiceTest {
 
         assertEquals(testSession.getSessionId(), sessionToJoin.getSessionId());
         assertEquals(testSession.getHostUsername(), sessionToJoin.getHostUsername());
+        assertEquals(testSession.getHostId(), sessionToJoin.getHostId());
         assertEquals(testSession.getGameCode(), sessionToJoin.getGameCode());
         assertEquals(testSession.getMaxPlayers(), sessionToJoin.getMaxPlayers());
         assertEquals(testSession.getDeckId(), sessionToJoin.getDeckId());
@@ -129,12 +132,14 @@ public class SessionServiceTest {
         inputSession.setDeckId(testSession.getDeckId());
         inputSession.setGameCode(testSession.getGameCode());
         inputSession.setHostUsername(testSession.getHostUsername());
+        inputSession.setHostId(testSession.getHostId());
 
         Session updatedSession = sessionService.updateSession(inputSession);
 
         //then verify
         assertEquals(testSession.getSessionId(), updatedSession.getSessionId());
         assertEquals(testSession.getHostUsername(), updatedSession.getHostUsername());
+        assertEquals(testSession.getHostId(), updatedSession.getHostId());
         assertEquals(testSession.getGameCode(), updatedSession.getGameCode());
         assertEquals(testSession.getMaxPlayers(), updatedSession.getMaxPlayers());
         assertEquals(testSession.getDeckId(), updatedSession.getDeckId());
@@ -149,6 +154,7 @@ public class SessionServiceTest {
         inputSession.setDeckId(testSession.getDeckId());
         inputSession.setGameCode(testSession.getGameCode());
         inputSession.setHostUsername(testSession.getHostUsername());
+        inputSession.setHostId(testSession.getHostId());
 
         //throw an error when trying to find the Session with given gamecode
         Mockito.when(sessionRepository.findByGameCode(Mockito.anyInt())).thenThrow(ResponseStatusException.class);
