@@ -50,15 +50,6 @@ public class DeckController {
 
 
 
-
-
-
-
-
-
-
-
-
     DeckController(DeckService deckService, DeckRepository deckRepository, TemplateService templateService, CardService cardService, UserService userService, EntityManager entityManager){//, UserRepository userRepository, CardRepository cardRepository, TemplateRepository templateRepository, StatRepository statRepository) {
         this.deckService = deckService;
         this.templateService = templateService;
@@ -78,7 +69,6 @@ public class DeckController {
     }
 
 
-    
     @GetMapping("/decks")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -173,50 +163,6 @@ public class DeckController {
 
        userService.addDeck(existingDeck.getDeckId(), userId);
     }
-    /*
-    @PutMapping("/decks/users/{userId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ResponseBody
-    public void AddExistingDeckToUser(@PathVariable Long userId, @RequestBody DeckPutDTO deckPutDTO){
-        //Check if user exists
-        User user = userService.getUserByID(userId);
-
-        Long deckId = deckPutDTO.getDeckId();
-        Deck existingDeck = deckService.getDeckById(deckId);
-        Template existingTemplate = existingDeck.getTemplate();
-        List <Card> cardList = existingDeck.getCardList();
-
-
-        for(Stat stat: existingDeck.getTemplate().getTemplatestats()){
-            statRepository.detach(stat);
-            stat.setStatId(null);
-        }
-        templateRepository.detach(existingTemplate);
-        List <Card> newCardList = new ArrayList<>();
-
-        for(Card card : cardList){
-            for(Stat stat: card.getCardstats()){
-                statRepository.detach(stat);
-                stat.setStatId(null);
-
-            }
-            cardRepository.detach(card);
-            card.setCardId(null);
-            newCardList.add(cardService.createCard(card, existingTemplate));
-        }
-
-        deckRepository.detach(existingDeck);
-        existingDeck.getTemplate().setTemplateId(null);
-        existingDeck.setTemplate(templateService.createTemplate(existingTemplate));
-        existingDeck.setCardList(newCardList);
-        existingDeck.setDeckId(null);
-        existingDeck.setDeckname(null);
-        existingDeck = deckService.createDeck(existingDeck);
-
-        userService.addDeck(existingDeck.getDeckId(), userId);
-    }
-
-     */
 
 
     @PostMapping("/decks/{deckId}/templates")
