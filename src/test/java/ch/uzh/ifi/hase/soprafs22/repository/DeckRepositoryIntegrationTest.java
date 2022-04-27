@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
@@ -19,6 +20,7 @@ public class DeckRepositoryIntegrationTest {
     @Autowired
     private TestEntityManager entityManager;
 
+    @Qualifier("deckRepository")
     @Autowired
     private DeckRepository deckRepository;
 
@@ -70,7 +72,7 @@ public class DeckRepositoryIntegrationTest {
     @Test
     public void findMultipleByDeckStatus_success() {
         // given
-
+        deckRepository.deleteAll();
         Deck testDeck = new Deck();
 
         testDeck.setDeckname("TestDeck1");

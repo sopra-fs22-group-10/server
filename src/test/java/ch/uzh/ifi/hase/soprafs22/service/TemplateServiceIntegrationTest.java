@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.constant.StatTypes;
 import ch.uzh.ifi.hase.soprafs22.constant.ValuesTypes;
 import ch.uzh.ifi.hase.soprafs22.entity.Stat;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
+import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.TemplateRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -32,6 +33,10 @@ public class TemplateServiceIntegrationTest {
     @Autowired
     private TemplateRepository templateRepository;
 
+    @Qualifier("deckRepository")
+    @Autowired
+    private DeckRepository deckRepository;
+
     @Autowired
     private TemplateService templateService;
 
@@ -42,11 +47,15 @@ public class TemplateServiceIntegrationTest {
 
     @BeforeEach
     public void setup() {
+        deckRepository.deleteAll();
         templateRepository.deleteAll();
     }
 
     @AfterEach
-    public void teardown(){templateRepository.deleteAll();}
+    public void teardown(){
+        deckRepository.deleteAll();
+        templateRepository.deleteAll();
+    }
 
     @Test
     public void createTemplate_validInputs_success() {

@@ -121,6 +121,28 @@ public class DeckController {
 
         return createdDeck;
     }
+    @PostMapping("/users")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public UserGetDTO createUser(@RequestBody UserLoginDTO userLoginDTO, HttpServletResponse response) {
+        response.addHeader("Accept", "application/json"); //tell accepted return type in header
+
+        User userInput = DTOMapper.INSTANCE.convertUserLoginDTOtoEntity(userLoginDTO);
+        User createdUser = userService.createUser(userInput);
+
+        //Deck defaultDeck = deckService.createDefaultDeck();
+
+        response.addHeader("Access-Control-Expose-Headers", "Authentication");
+        response.addHeader("Authentication", createdUser.getAuthentication());
+
+        //Adds TemplateDeck to every user created
+        DeckPutDTO deckPutDTO = new DeckPutDTO();
+        deckPutDTO.setDeckId(67L);
+        AddExistingDeckToUser(createdUser.getUserId(), deckPutDTO);
+
+        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
+    }
+
 
     @PutMapping("/decks/users/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

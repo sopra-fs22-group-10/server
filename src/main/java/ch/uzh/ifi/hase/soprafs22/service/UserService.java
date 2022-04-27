@@ -68,6 +68,10 @@ public class UserService {
         Deck deckToAdd = deckService.getDeckById(deckId);
         User user = getUserByID(userId);
         List<Deck> deckList = user.getDeckList();
+        if(user.getDeckList() == null){
+            deckList = new ArrayList<>();
+        }
+
         deckList.add(deckToAdd);
         user.setDeckList(deckList);
         userRepository.flush();
