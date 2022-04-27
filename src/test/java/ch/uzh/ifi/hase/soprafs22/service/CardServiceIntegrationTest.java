@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.StatTypes;
-import ch.uzh.ifi.hase.soprafs22.constant.ValuesTypes;
 import ch.uzh.ifi.hase.soprafs22.entity.Card;
 import ch.uzh.ifi.hase.soprafs22.entity.Stat;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
@@ -12,7 +11,6 @@ import ch.uzh.ifi.hase.soprafs22.repository.TemplateRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,9 +19,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 
@@ -171,7 +167,7 @@ public class CardServiceIntegrationTest {
         CardStat2.setStatvalue("3");
         CardStat2.setStatId(1L);
         CardStat2.setStattype(StatTypes.STARS);
-        CardStat2.setValuestypes(ValuesTypes.KMH);
+        CardStat2.setValuestypes("KMH");
 
         List<Stat> cardStats = new ArrayList<>();
         cardStats.add(CardStat2);

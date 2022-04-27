@@ -86,7 +86,7 @@ public class CardService {
         for(int i = 0; i<card.getCardstats().size(); i++){
              Stat StatCard= card.getCardstats().get(i);
              Stat StatTemplate = template.getTemplatestats().get(i);
-             if(StatCard.getStattype() != StatTemplate.getStattype() || StatCard.getValuestypes() != StatTemplate.getValuestypes()){
+             if(StatCard.getStattype() != StatTemplate.getStattype() || !Objects.equals(StatCard.getValuestypes(), StatTemplate.getValuestypes())){
                  throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The StatType or ValuesType of the card and Template doesn't match!");
              }
             if(!Objects.equals(StatCard.getStatname(), StatTemplate.getStatname())){

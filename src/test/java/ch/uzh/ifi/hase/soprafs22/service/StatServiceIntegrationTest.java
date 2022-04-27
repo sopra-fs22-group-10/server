@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.StatTypes;
-import ch.uzh.ifi.hase.soprafs22.constant.ValuesTypes;
 import ch.uzh.ifi.hase.soprafs22.entity.Stat;
 import ch.uzh.ifi.hase.soprafs22.repository.CardRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
@@ -10,12 +9,10 @@ import ch.uzh.ifi.hase.soprafs22.repository.TemplateRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.web.server.ResponseStatusException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -71,7 +68,8 @@ public class StatServiceIntegrationTest {
         Stat testStat = new Stat();
         testStat.setStatvalue("200");
         testStat.setStatname("testStat1");
-        testStat.setStattype(StatTypes.NUMBER);
+        testStat.setStattype(StatTypes.VALUE);
+        testStat.setValuestypes("hhhh");
 
 
         // when
@@ -83,6 +81,7 @@ public class StatServiceIntegrationTest {
         assertEquals(testStat.getStatname(), createdStat.getStatname());
         assertEquals(testStat.getStattype(), createdStat.getStattype());
         assertEquals(testStat.getStatvalue(), createdStat.getStatvalue());
+        assertEquals(testStat.getValuestypes(), createdStat.getValuestypes());
 
     }
 

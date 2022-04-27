@@ -2,7 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.entity;
 
 
 import ch.uzh.ifi.hase.soprafs22.constant.StatTypes;
-import ch.uzh.ifi.hase.soprafs22.constant.ValuesTypes;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -25,7 +25,7 @@ public class Stat implements Serializable {
     private StatTypes stattype;
 
     @Column
-    private ValuesTypes valuestypes;
+    private String valuestypes;
 
     public void setStatvalue(String statvalue) {
         this.statvalue = statvalue;
@@ -51,11 +51,11 @@ public class Stat implements Serializable {
         return stattype;
     }
 
-    public void setValuestypes(ValuesTypes valuestypes) {
+    public void setValuestypes(String valuestypes) {
         this.valuestypes = valuestypes;
     }
 
-    public ValuesTypes getValuestypes() {
+    public String getValuestypes() {
         return valuestypes;
     }
 

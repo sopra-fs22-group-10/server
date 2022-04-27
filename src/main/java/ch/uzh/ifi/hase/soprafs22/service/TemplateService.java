@@ -2,7 +2,6 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 
 import ch.uzh.ifi.hase.soprafs22.constant.StatTypes;
-import ch.uzh.ifi.hase.soprafs22.constant.ValuesTypes;
 import ch.uzh.ifi.hase.soprafs22.entity.Stat;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
 import ch.uzh.ifi.hase.soprafs22.repository.TemplateRepository;
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -97,10 +95,10 @@ public class TemplateService {
             if (stat.getStatvalue() != null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Template can't have a Stat Value");
             }
-            ValuesTypes valuestype = stat.getValuestypes();
+            String valuestype = stat.getValuestypes();
             if (stat.getStattype() == StatTypes.VALUE) {
-                if (!(valuestype == ValuesTypes.KMH || valuestype == ValuesTypes.mps)) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Values Type has the wrong format.");
+                if (valuestype == null || valuestype.length()<1) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Values Type must be a not empty String.");
                 }
             }
             if (stat.getStattype() != StatTypes.VALUE) {
