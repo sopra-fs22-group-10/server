@@ -121,7 +121,7 @@ public class DeckController {
     @PostMapping("/decks/users/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Deck createDeck(@PathVariable Long userId, DeckPostDTO deckPostDTO){
+    public Deck createDeck(@PathVariable Long userId, @RequestBody DeckPostDTO deckPostDTO){
 
         Deck newDeck = DTOMapper.INSTANCE.convertDeckPostDTOtoEntity(deckPostDTO);
 
