@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * DTOMapperTest
@@ -72,7 +73,8 @@ public class DTOMapperTest {
     public void createSessionEntitySuccess(){
         //create PostDTO
         SessionPostDTO sessionPostDTO = new SessionPostDTO();
-        sessionPostDTO.setUsername("username");
+        sessionPostDTO.setHostUsername("username");
+        sessionPostDTO.setHostId(1L);
         sessionPostDTO.setMaxPlayers(1);
         sessionPostDTO.setDeckId(1L);
 
@@ -80,7 +82,8 @@ public class DTOMapperTest {
         Session session = DTOMapper.INSTANCE.convertSessionPostDTOtoEntity(sessionPostDTO);
 
         //check
-        assertEquals(sessionPostDTO.getUsername(), session.getUsername());
+        assertEquals(sessionPostDTO.getHostUsername(), session.getHostUsername());
+        assertEquals(sessionPostDTO.getHostId(), session.getHostId());
         assertEquals(sessionPostDTO.getDeckId(), session.getDeckId());
         assertEquals(sessionPostDTO.getMaxPlayers(), session.getMaxPlayers());
     }
@@ -93,13 +96,18 @@ public class DTOMapperTest {
         session.setMaxPlayers(1);
         session.setDeckId(1L);
         session.setGameCode(1);
-        session.setUsername("username");
+        session.setHostUsername("username");
+        session.setHostId(1L);
 
         //MAP create SessionGetDTO
         SessionGetDTO sessionGetDTO = DTOMapper.INSTANCE.convertEntityToSessionGetDTO(session);
 
         //check
-        assertEquals(session.getSessionId(), sessionGetDTO.getSessionId());
         assertEquals(session.getGameCode(), sessionGetDTO.getGameCode());
+        assertEquals(session.getHostUsername(), sessionGetDTO.getHostUsername());
+        assertEquals(session.getHostId(), sessionGetDTO.getHostId());
+        assertEquals(session.getUserList(), sessionGetDTO.getUserList());
+        assertEquals(session.getMaxPlayers(), sessionGetDTO.getMaxPlayers());
+        assertEquals(session.getDeckId(), sessionGetDTO.getDeckId());
     }
 }

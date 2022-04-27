@@ -1,9 +1,11 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Internal Session Representation.
@@ -19,14 +21,17 @@ import java.io.Serializable;
 @Table(name = "SESSION")
 public class Session implements Serializable {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue
     private Long sessionId;
 
     @Column(nullable = false)
-    private String username;
+    private String hostUsername;
+
+    @Column(nullable = false)
+    private Long hostId;
 
     @Column(nullable = false)
     private int gameCode;
@@ -37,14 +42,21 @@ public class Session implements Serializable {
     @Column(nullable = false)
     private Long deckId;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> userList;
+
 
     public void setSessionId(Long sessionId) {this.sessionId = sessionId; }
 
     public Long getSessionId() { return sessionId;    }
 
-    public void setUsername(String username) {this.username = username; }
+    public void setHostUsername(String hostUsername) {this.hostUsername = hostUsername; }
 
-    public String getUsername() { return username; }
+    public String getHostUsername() { return hostUsername; }
+
+    public void setHostId(Long hostId) {this.hostId = hostId; }
+
+    public Long getHostId() { return hostId; }
 
     public void setGameCode(int gameCode) {this.gameCode = gameCode; }
 
@@ -58,4 +70,11 @@ public class Session implements Serializable {
 
     public Long getDeckId() { return deckId;    }
 
+    public void addUser(String user) { this.userList.add(user); }
+
+    public void removeUser(String user) { this.userList.remove(user); }
+
+    public void setUserList(List<String> userList) {this.userList = userList; }
+
+    public List<String> getUserList() { return userList; }
 }
