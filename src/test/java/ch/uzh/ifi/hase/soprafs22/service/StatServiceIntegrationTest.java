@@ -3,7 +3,10 @@ package ch.uzh.ifi.hase.soprafs22.service;
 import ch.uzh.ifi.hase.soprafs22.constant.StatTypes;
 import ch.uzh.ifi.hase.soprafs22.constant.ValuesTypes;
 import ch.uzh.ifi.hase.soprafs22.entity.Stat;
+import ch.uzh.ifi.hase.soprafs22.repository.CardRepository;
+import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.StatRepository;
+import ch.uzh.ifi.hase.soprafs22.repository.TemplateRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +31,18 @@ public class StatServiceIntegrationTest {
     @Autowired
     private StatRepository statRepository;
 
+    @Qualifier("cardRepository")
+    @Autowired
+    private CardRepository cardRepository;
+
+    @Qualifier("deckRepository")
+    @Autowired
+    private DeckRepository deckRepository;
+
+    @Qualifier("templateRepository")
+    @Autowired
+    private TemplateRepository templateRepository;
+
     @Autowired
     private StatService statService;
 
@@ -35,11 +50,17 @@ public class StatServiceIntegrationTest {
 
     @BeforeEach
     public void setup() {
+        deckRepository.deleteAll();
+        cardRepository.deleteAll();
+        templateRepository.deleteAll();
         statRepository.deleteAll();
     }
 
     @AfterEach
-    public void teardown(){statRepository.deleteAll();}
+    public void teardown(){deckRepository.deleteAll();
+        cardRepository.deleteAll();
+        templateRepository.deleteAll();
+        statRepository.deleteAll();}
 
     @Test
     public void createStats_validInputs_success() {

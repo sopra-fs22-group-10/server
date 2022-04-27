@@ -8,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs22.entity.Template;
 import ch.uzh.ifi.hase.soprafs22.repository.CardRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.StatRepository;
+import ch.uzh.ifi.hase.soprafs22.repository.TemplateRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,14 +39,26 @@ public class CardServiceIntegrationTest {
     @Autowired
     private CardRepository cardRepository;
 
+    @Qualifier("deckRepository")
+    @Autowired
+    private DeckRepository deckRepository;
+
+    @Qualifier("templateRepository")
+    @Autowired
+    private TemplateRepository templateRepository;
+
     @Autowired
     private CardService cardService;
+
 
     @Autowired
     private StatRepository statRepository;
 
     @Autowired
     private StatService statService;
+
+    @Autowired
+    private TemplateService templateService;
 
     private Card testCard;
     private Template testTemplate;
@@ -55,6 +68,7 @@ public class CardServiceIntegrationTest {
 
     @BeforeEach
     public void setup() {
+        deckRepository.deleteAll();
         cardRepository.deleteAll();
 
 
@@ -84,17 +98,21 @@ public class CardServiceIntegrationTest {
         testTemplate.setTemplatestats(templateStat);
 
 
+
+
     }
     @AfterEach
     public void teardown(){
+        deckRepository.deleteAll();
         cardRepository.deleteAll();
+        templateRepository.deleteAll();
         statRepository.deleteAll();
     }
 
     @Test
     public void create_Card_success(){
 
-
+        templateService.createTemplate(testTemplate);
         Card createdCard = cardService.createCard(testCard, testTemplate);
 
         // then
@@ -118,12 +136,13 @@ public class CardServiceIntegrationTest {
     public void create_Card_invalidINPUT_different_Statcount(){
         Stat TemplateStat2 = new Stat();
         TemplateStat2.setStatname("testTemplateStat1");
-        TemplateStat2.setStatId(1L);
+        //TemplateStat2.setStatId(1L);
         TemplateStat2.setStattype(StatTypes.NUMBER);
 
         List<Stat> templateStats = testTemplate.getTemplatestats();
         templateStats.add(TemplateStat2);
         testTemplate.setTemplatestats(templateStats);
+        templateService.createTemplate(testTemplate);
 
         assertThrows(ResponseStatusException.class,()-> cardService.createCard(testCard, testTemplate));
 
@@ -139,6 +158,7 @@ public class CardServiceIntegrationTest {
         List<Stat> templateStats = new ArrayList<>();
         templateStats.add(TemplateStat2);
         testTemplate.setTemplatestats(templateStats);
+        templateService.createTemplate(testTemplate);
 
         assertThrows(ResponseStatusException.class,()-> cardService.createCard(testCard, testTemplate));
     }
@@ -156,6 +176,7 @@ public class CardServiceIntegrationTest {
         List<Stat> cardStats = new ArrayList<>();
         cardStats.add(CardStat2);
         testCard.setCardstats(cardStats);
+        templateService.createTemplate(testTemplate);
 
         assertThrows(ResponseStatusException.class,()-> cardService.createCard(testCard, testTemplate));
         

@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.DeckPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserLoginDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
@@ -85,36 +86,6 @@ public class UserController {
         //if user is found
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(foundUser);
     }
-
-    @PostMapping("/users")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public UserGetDTO createUser(@RequestBody UserLoginDTO userLoginDTO, HttpServletResponse response) {
-        response.addHeader("Accept", "application/json"); //tell accepted return type in header
-
-        User userInput = DTOMapper.INSTANCE.convertUserLoginDTOtoEntity(userLoginDTO);
-        User createdUser = userService.createUser(userInput);
-
-        //Deck defaultDeck = deckService.createDefaultDeck();
-
-        response.addHeader("Access-Control-Expose-Headers", "Authentication");
-        response.addHeader("Authentication", createdUser.getAuthentication());
-
-        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
-    }
-    /*
-    public Deck addDeck_whenUser_Created(Long userId){
-
-
-        DeckController deckController = new DeckController(deckService, templateService, cardService);
-        deckController.createDeck(userId, DeckForTesting.Json)
-
-    }
-
-     */
-
-
-
 
     @PostMapping("/users/login")
     @ResponseStatus(HttpStatus.OK)

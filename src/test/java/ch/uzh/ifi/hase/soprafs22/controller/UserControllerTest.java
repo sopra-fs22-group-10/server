@@ -90,48 +90,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$[0].username", is(user.getUsername())));
     }
 
-    @Test //post /users -> 201 : successful register
-    public void createUser_validInput_userCreated() throws Exception {
-        // given predefined user
-        UserLoginDTO userLoginDTO = new UserLoginDTO();
-        userLoginDTO.setUsername(user.getUsername());
-        userLoginDTO.setPassword(user.getPassword());
 
-        given(userService.createUser(Mockito.any())).willReturn(user);
-
-        // when/then -> do the request + validate the result
-        MockHttpServletRequestBuilder postRequest = post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(userLoginDTO));
-
-        // then
-        MvcResult mvcResult = mockMvc.perform(postRequest)
-                .andExpect(status().is(201))
-                .andExpect(jsonPath("$.username", is(user.getUsername())))
-                .andReturn();
-        String authentication = mvcResult.getResponse().getHeader("Authentication");
-        assertEquals(authentication, user.getAuthentication());
-    }
-
-    @Test //post /users -> 409 : register for taken username
-    public void createUser_usernameTaken() throws Exception {
-        // given predefined user
-        UserLoginDTO userLoginDTO = new UserLoginDTO();
-        userLoginDTO.setUsername(user.getUsername());
-        userLoginDTO.setPassword(user.getPassword());
-        given(userService.createUser(Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.CONFLICT, "Username is taken!"));
-
-
-        // when/then -> do the request + validate the result
-        MockHttpServletRequestBuilder postRequest = post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-
-                .content(asJsonString(userLoginDTO));
-
-        // then
-        mockMvc.perform(postRequest)
-                .andExpect(status().is(409));
-    }
 
     @Test //get /users/1 -> 200 : successfully retrieve data for user with ID 1
     public void get_user_from_ID() throws Exception {
