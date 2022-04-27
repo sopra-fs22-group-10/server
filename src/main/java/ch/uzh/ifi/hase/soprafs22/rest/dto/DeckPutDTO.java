@@ -2,7 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
 public class DeckPutDTO {
     private Long deckId;
-    private String deckAccessCode;
+    private Integer deckAccessCode;
 
     public Long getDeckId() {
         return deckId;
@@ -12,11 +12,11 @@ public class DeckPutDTO {
         this.deckId = deckId;
     }
 
-    public String getDeckAccessCode() {
+    public Integer getDeckAccessCode() {
         return deckAccessCode;
     }
 
-    public void setDeckAccessCode(String deckAccessCode) {
+    public void setDeckAccessCode(Integer deckAccessCode) {
         this.deckAccessCode = deckAccessCode;
     }
 }

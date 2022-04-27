@@ -7,6 +7,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
 
@@ -31,7 +32,7 @@ public class Deck implements Serializable {
     private DeckStatus deckstatus;
 
     @Column
-    private Long deckacesscode;
+    private Integer deckacesscode;
 
 
     //Right now Template has many to one Relationship but could be changed to One to One
@@ -82,6 +83,16 @@ public class Deck implements Serializable {
     }
 
     public void setDeckstatus(DeckStatus deckstatus) {
+        if(deckstatus == DeckStatus.PRIVATE){
+            Random random = new Random();
+            setDeckacesscode(random.nextInt(10000));
+        }
+        else{
+            if(getDeckacesscode() != null){
+                setDeckacesscode(null);
+            }
+
+        }
         this.deckstatus = deckstatus;
     }
 
@@ -92,5 +103,14 @@ public class Deck implements Serializable {
     public Template getTemplate() {
         return template;
     }
+
+    public Integer getDeckacesscode() {
+        return deckacesscode;
+    }
+
+    public void setDeckacesscode(Integer deckacesscode) {
+        this.deckacesscode = deckacesscode;
+    }
+
 }
 
