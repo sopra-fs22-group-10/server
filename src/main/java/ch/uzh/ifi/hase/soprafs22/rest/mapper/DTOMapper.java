@@ -1,11 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
 
-import ch.uzh.ifi.hase.soprafs22.entity.Card;
-import ch.uzh.ifi.hase.soprafs22.entity.Session;
-import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.entity.Deck;
-import ch.uzh.ifi.hase.soprafs22.entity.Template;
+import ch.uzh.ifi.hase.soprafs22.entity.*;
 
 
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
@@ -81,6 +77,15 @@ public interface DTOMapper {
     @Mapping(source = "maxPlayers", target = "maxPlayers")
     @Mapping(source = "deckId", target = "deckId")
     SessionGetDTO convertEntityToSessionGetDTO(Session session);
+
+
+    @Mapping(source = "currentPlayer", target = "currentPlayer")
+    @Mapping(source = "opponentPlayer", target = "opponentPlayer")
+    @Mapping(source = "playerList", target = "playerList")
+    @Mapping(source = "currentStatName", target = "currentStatName")
+    @Mapping(source = "roundStatus", target = "roundStatus")
+    @Mapping(source = "winner", target = "winner")
+    GameGetDTO convertEntityToGameGetDTO(Game game);
 
 }
 /*
