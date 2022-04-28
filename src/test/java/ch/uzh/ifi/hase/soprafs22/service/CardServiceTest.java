@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.StatTypes;
-import ch.uzh.ifi.hase.soprafs22.constant.ValuesTypes;
 import ch.uzh.ifi.hase.soprafs22.entity.Stat;
 import ch.uzh.ifi.hase.soprafs22.entity.Card;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
@@ -19,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -155,7 +153,7 @@ public class CardServiceTest {
         CardStat2.setStatvalue("3");
         CardStat2.setStatId(1L);
         CardStat2.setStattype(StatTypes.STARS);
-        CardStat2.setValuestypes(ValuesTypes.KMH);
+        CardStat2.setValuestypes("KMH");
 
         List<Stat> cardStats = new ArrayList<>();
         cardStats.add(CardStat2);

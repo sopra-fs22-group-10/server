@@ -33,6 +33,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -156,7 +157,7 @@ public class DeckControllerTest {
         given(deckService.getPublicDecks()).willReturn(allDecks);
 
         // when
-        MockHttpServletRequestBuilder getRequest = get("/decks").contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder getRequest = get("/decks").contentType(MediaType.APPLICATION_JSON).header("Authentication", user.getAuthentication());
 
         // then
         mockMvc.perform(getRequest).andExpect(status().is(200))
@@ -179,6 +180,7 @@ public class DeckControllerTest {
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = post("/decks/users/1")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authentication", user.getAuthentication())
                 .content(asJsonString(deckPostDTO));
 
         // then
@@ -193,12 +195,19 @@ public class DeckControllerTest {
     public void get_Deck_with_DeckGet_with_Id() throws Exception{
 
         testDeck.setTemplate(testTemplate);
+
+        List<Deck> deckList = new ArrayList<>();
+        deckList.add(testDeck);
+        user.setDeckList(deckList);
+
         given(deckService.getDeckById(testDeck.getDeckId())).willReturn(testDeck);
+        given(deckService.getDeckById(Mockito.any())).willReturn(testDeck);
+        given(userService.getUserByAuthentication(Mockito.any())).willReturn(user);
 
         // when/then -> do the request + validate the result
         
 
-        MockHttpServletRequestBuilder getRequest = get("/decks/1").contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder getRequest = get("/decks/1").header("Authentication", user.getAuthentication()).contentType(MediaType.APPLICATION_JSON);
 
         // then
         mockMvc.perform(getRequest).andExpect(status().isOk())
@@ -217,14 +226,19 @@ public class DeckControllerTest {
         templateStats.add(templateStat);
         template_1.setTemplatestats(templateStats);
 
-
         testDeck.setTemplate(testTemplate);
+        List<Deck> deckList = new ArrayList<>();
+        deckList.add(testDeck);
+        user.setDeckList(deckList);
 
         given(templateService.createTemplate(testTemplate)).willReturn(testTemplate);
         given(deckService.setTemplate(Mockito.any(),Mockito.any())).willReturn(testDeck);
+        given(userService.getUserByAuthentication(Mockito.any())).willReturn(user);
+        given(deckService.getDeckById(Mockito.any())).willReturn(testDeck);
 
         MockHttpServletRequestBuilder postRequest = post("/decks/1/templates")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authentication", user.getAuthentication())
                 .content(asJsonString(template_1));
 
 
@@ -272,7 +286,7 @@ public class DeckControllerTest {
 
         given(deckService.getDeckById(Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage, "ID", "is")));
 
-        MockHttpServletRequestBuilder getRequest = get("/decks/2");
+        MockHttpServletRequestBuilder getRequest = get("/decks/2").header("Authentication", user.getAuthentication());
 
         // then
         mockMvc.perform(getRequest)
@@ -299,9 +313,14 @@ public class DeckControllerTest {
         card_1.setImage("https:somestuff.com");
 
         testDeck.setTemplate(testTemplate);
-        
+
+        List<Deck> deckList = new ArrayList<>();
+        deckList.add(testDeck);
+        user.setDeckList(deckList);
+
         given(cardService.createCard(Mockito.any(), Mockito.any())).willReturn(testCard);
         given(deckService.getDeckById(Mockito.any())).willReturn(testDeck);
+        given(userService.getUserByAuthentication(Mockito.any())).willReturn(user);
 
         List<Card> cardlist = new ArrayList<>();
         cardlist.add(testCard);
@@ -310,6 +329,7 @@ public class DeckControllerTest {
         given(deckService.addNewCard(Mockito.any(), Mockito.any())).willReturn(testDeck);
 
         MockHttpServletRequestBuilder postRequest = post("/decks/1/cards")
+                .header("Authentication", user.getAuthentication())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(card_1));
         
@@ -329,16 +349,76 @@ public class DeckControllerTest {
     //The testDeck doesn't contain the testCraad to be Deleteed
     @Test
     public void deleteCard_when_Card_not_in_Deck()throws Exception {
+        List<Deck> deckList = new ArrayList<>();
+        deckList.add(testDeck);
+        user.setDeckList(deckList);
 
         given(deckService.checkIfCardIdIsInDeck(Mockito.any(), Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "The provided CardId doesn't correspond to a Card in the Deck." ));
+        given(deckService.getDeckById(Mockito.any())).willReturn(testDeck);
+        given(userService.getUserByAuthentication(Mockito.any())).willReturn(user);
 
         MockHttpServletRequestBuilder deleteRequest = delete("/decks/1/cards/1")
+                .header("Authentication", user.getAuthentication())
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(deleteRequest).andExpect(status().isNotFound());
 
     }
 
+    @Test
+    public void change_Card_with_valid_Input() throws Exception{
+
+        CardPutDTO cardPutDTO = new CardPutDTO();
+
+        Stat postStat = new Stat();
+
+        Stat cardStat2 = new Stat();
+        cardStat2.setStatvalue("300");
+        cardStat2.setStatname("cardStat1");
+        cardStat2.setStatId(1L);
+        cardStat2.setStattype(StatTypes.NUMBER);
+
+
+        Template testTemplate = new Template();
+        List<Stat> templateStats = new ArrayList<>();
+        templateStats.add(templateStat);
+        testTemplate.setTemplatestats(templateStats);
+        testTemplate.setTemplateId(1L);
+
+
+        List<Stat> cardStats = new ArrayList<>();
+        cardStats.add(cardStat2);
+        cardPutDTO.setCardstats(cardStats);
+        cardPutDTO.setCardId(1L);
+        cardPutDTO.setCardname("testCard1");
+        cardPutDTO.setImage("newImage");
+
+        testDeck.setTemplate(testTemplate);
+
+        List<Deck> deckList = new ArrayList<>();
+        deckList.add(testDeck);
+        List<Card> cardlist = new ArrayList<>();
+        cardlist.add(testCard);
+        testDeck.setCardList(cardlist);
+        user.setDeckList(deckList);
+
+        given(cardService.createCard(Mockito.any(), Mockito.any())).willReturn(testCard);
+        given(deckService.getDeckById(Mockito.any())).willReturn(testDeck);
+        given(userService.getUserByAuthentication(Mockito.any())).willReturn(user);
+        doNothing().when(cardService).changeCard(Mockito.any(),Mockito.any());
+
+
+        MockHttpServletRequestBuilder putRequest = put("/decks/" + testDeck.getDeckId()+"/cards/"+ cardPutDTO.getCardId())
+                .header("Authentication", user.getAuthentication())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(cardPutDTO));
+
+        mockMvc.perform(putRequest).andExpect(status().isNoContent());
+                //.andExpect(jsonPath("$.cardList", hasSize(1)))
+
+
+
+    }
 
     @Test
     public void add_Existing_Deck_to_User()throws Exception{
@@ -384,10 +464,10 @@ public class DeckControllerTest {
 
         User TestUser2 = new User();
         TestUser2.setUserId(33L);
-        TestUser.setUsername("Username2");
-        TestUser.setStatus(UserStatus.ONLINE);
-        TestUser.setPassword("password");
-        TestUser.setAuthentication("34");
+        TestUser2.setUsername("Username2");
+        TestUser2.setStatus(UserStatus.ONLINE);
+        TestUser2.setPassword("password");
+        TestUser2.setAuthentication("34");
 
         Deck testDeck2 = new Deck();
         testDeck2.setDeckId(1L);
@@ -400,6 +480,7 @@ public class DeckControllerTest {
 
 
         given(userService.getUserByID(Mockito.any())).willReturn(TestUser2);
+        given(userService.getUserByAuthentication(Mockito.any())).willReturn(TestUser2);
         given(deckService.getDeckById(Mockito.any())).willReturn(testDeck);
         given(cardService.createCard(Mockito.any(), Mockito.any())).willReturn(testCard2);
         given(deckService.createDeck(Mockito.any())).willReturn(testDeck2);
@@ -423,11 +504,52 @@ public class DeckControllerTest {
 
         MockHttpServletRequestBuilder putRequest = put("/decks/users/33")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authentication", TestUser2.getAuthentication())
                 .content(asJsonString(deckPutDTO));
 
         mockMvc.perform(putRequest).andExpect(status().isNoContent());
 
     }
+    @Test
+    public void getUserDecks_correct_Input() throws Exception{
+
+        List<Card> cardlist = new ArrayList<>();
+        cardlist.add(testCard);
+        testDeck.setCardList(cardlist);
+        testDeck.setTemplate(testTemplate);
+
+        List<Deck> decklist = new ArrayList<>();
+        decklist.add(testDeck);
+
+        given(userService.getUserByID(Mockito.any())).willReturn(user);
+        given(deckService.getDeckById(Mockito.any())).willReturn(testDeck);
+        given(userService.getUserByAuthentication(Mockito.any())).willReturn(user);
+
+
+        user.setDeckList(decklist);
+
+        // then
+        MockHttpServletRequestBuilder getRequest = get("/decks/users/"+user.getUserId())
+                .header("Authentication", user.getAuthentication())
+                .contentType(MediaType.APPLICATION_JSON);
+
+
+        mockMvc.perform(getRequest).andExpect(status().is(200))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].deckname", is(testDeck.getDeckname())))
+                .andExpect(jsonPath("$[0].deckstatus", is(testDeck.getDeckstatus().toString())))
+                .andExpect(jsonPath("$.[0].deckname", is(testDeck.getDeckname())))
+                .andExpect(jsonPath("$.[0].template.templatestats[0].statvalue",is(testTemplate.getTemplatestats().get(0).getStatvalue())))
+                .andExpect(jsonPath("$.[0].template.templatestats[0].statname",is(testTemplate.getTemplatestats().get(0).getStatname())))
+                .andExpect(jsonPath("$.[0].cardList[0].cardstats[0].statvalue",is(testCard.getCardstats().get(0).getStatvalue())))
+                .andExpect(jsonPath("$.[0].cardList[0].cardstats[0].statname",is(testCard.getCardstats().get(0).getStatname())))
+                .andExpect(jsonPath("$.[0].cardList[0].cardstats[0].stattype",is(testCard.getCardstats().get(0).getStattype().toString())))
+                .andExpect(jsonPath("$.[0].cardList[0].cardstats[0].valuestypes",is(testCard.getCardstats().get(0).getValuestypes())));
+
+
+
+    }
+
 
     @Test //post /users -> 201 : successful register
     public void createUser_validInput_userCreated() throws Exception {
@@ -518,6 +640,8 @@ public class DeckControllerTest {
         }).when(userService).addDeck(Mockito.any(), Mockito.any());
 
         given(userService.createUser(Mockito.any())).willReturn(user);
+        given(userService.getUserByID(Mockito.any())).willReturn(user);
+        given(userService.getUserByAuthentication(Mockito.any())).willReturn(user);
 
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = post("/users")

@@ -162,6 +162,14 @@ public class UserService {
      *
      */
 
+
+    public void checkIfUserExistsByAuthentication(String auth){
+        if (userRepository.findByAuthentication(auth) == null){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "To acess this resource you have to be a logged in user with a valid Authentication!");
+        }
+
+    }
+
     private void checkIfUserExists(User userToBeCreated) {
         User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
 

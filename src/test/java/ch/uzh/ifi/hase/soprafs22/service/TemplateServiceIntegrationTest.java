@@ -1,12 +1,10 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.StatTypes;
-import ch.uzh.ifi.hase.soprafs22.constant.ValuesTypes;
 import ch.uzh.ifi.hase.soprafs22.entity.Stat;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
 import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.TemplateRepository;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +34,8 @@ public class TemplateServiceIntegrationTest {
     @Qualifier("deckRepository")
     @Autowired
     private DeckRepository deckRepository;
+
+
 
     @Autowired
     private TemplateService templateService;
@@ -122,7 +122,7 @@ public class TemplateServiceIntegrationTest {
         Stat testStat = new Stat();
         testStat.setStatname("testStat1");
         testStat.setStattype(StatTypes.NUMBER);
-        testStat.setValuestypes(ValuesTypes.KMH);
+        testStat.setValuestypes("KMH");
 
         Template testTemplate = new Template();
 

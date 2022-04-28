@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.*;
 import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
@@ -72,8 +73,9 @@ public class DeckController {
     @GetMapping("/decks")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<Deck> getAllDecks() {
+    public List<Deck> getAllDecks(@RequestHeader("Authentication") String auth) {
         // fetch all decks in the internal representation
+        userService.checkIfUserExistsByAuthentication(auth);
         List<Deck> decks = deckService.getPublicDecks();
 
         //Authentification Check
@@ -84,22 +86,49 @@ public class DeckController {
     @GetMapping("/decks/{deckId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Deck getDeckById(@PathVariable Long deckId) {
+    public Deck getDeckById(@PathVariable Long deckId, @RequestHeader("Authentication") String auth) {
         // fetch all decks in the internal representation
+        userService.checkIfUserExistsByAuthentication(auth);
         Deck deck = deckService.getDeckById(deckId);
+        if(deck.getDeckstatus()==DeckStatus.PRIVATE){
+            User user = userService.getUserByAuthentication(auth);
+            if(!user.getDeckList().contains(deck)){
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The User has no access to this resource");
+            }
 
-        //Authentification Check
+        }
+
 
         return deck;
     }
+    @GetMapping("/decks/users/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<Deck> getUserDecks(@PathVariable Long userId, @RequestHeader("Authentication") String auth) {
+        // fetch all decks in the internal representation
+        User user = userService.getUserByID(userId);
+        if(user != userService.getUserByAuthentication(auth)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The User has no access to this resource");
+        }
+        if(user.getDeckList() == null){
+            return new ArrayList<Deck>();
+        }
+        return user.getDeckList();
+
+    }
+
+
     //Needs rework, since it doesn't work properly
     @DeleteMapping("/decks/{deckId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void deleteDeck(@PathVariable Long deckId){
+    public void deleteDeck(@PathVariable Long deckId, @RequestHeader("Authentication") String auth){
         Deck deckToDelete = deckService.getDeckById(deckId);
         for(User user: userService.getUsers()){
             if(user.getDeckList().contains(deckToDelete)){
+                if(!Objects.equals(user.getAuthentication(), auth)){
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The User by Authentication can't alter/acess this resource !");
+                }
                 userService.removeDeck(deckId, user.getUserId());
             }
         }
@@ -111,8 +140,11 @@ public class DeckController {
     @PostMapping("/decks/users/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Deck createDeck(@PathVariable Long userId, @RequestBody DeckPostDTO deckPostDTO){
+    public Deck createDeck(@PathVariable Long userId, @RequestBody DeckPostDTO deckPostDTO, @RequestHeader("Authentication") String auth){
 
+        if(userService.getUserByID(userId) != userService.getUserByAuthentication(auth)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The User by Authentication can't alter/acess this resource !");
+        }
         Deck newDeck = DTOMapper.INSTANCE.convertDeckPostDTOtoEntity(deckPostDTO);
 
         //In create Deck the userId has to be added to link decks with user accounts
@@ -138,7 +170,7 @@ public class DeckController {
         //Adds TemplateDeck to every user created
         DeckPutDTO deckPutDTO = new DeckPutDTO();
         deckPutDTO.setDeckId(67L);
-        AddExistingDeckToUser(createdUser.getUserId(), deckPutDTO);
+        AddExistingDeckToUser(createdUser.getUserId(), deckPutDTO, createdUser.getAuthentication());
 
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
     }
@@ -147,12 +179,22 @@ public class DeckController {
     @PutMapping("/decks/users/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void AddExistingDeckToUser(@PathVariable Long userId, @RequestBody DeckPutDTO deckPutDTO){
+    public void AddExistingDeckToUser(@PathVariable Long userId, @RequestBody DeckPutDTO deckPutDTO, @RequestHeader("Authentication") String auth){
         //Check if user exists
         User user = userService.getUserByID(userId);
 
+        if(user != userService.getUserByAuthentication(auth)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The User by Authentication can't alter/acess this resource !");
+        }
+
         Long deckId = deckPutDTO.getDeckId();
         Deck existingDeck = deckService.getDeckById(deckId);
+        if(existingDeck.getDeckstatus() == DeckStatus.PRIVATE){
+            if(deckPutDTO.getDeckAccessCode() != null && !Objects.equals(deckPutDTO.getDeckAccessCode(), existingDeck.getDeckacesscode())){
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The provided Deck Access Code is wrong.");
+            }
+        }
+
         Template existingTemplate = existingDeck.getTemplate();
         List <Card> cardList = existingDeck.getCardList();
 
@@ -190,9 +232,13 @@ public class DeckController {
     @PostMapping("/decks/{deckId}/templates")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Deck CreateTemplate(@PathVariable Long deckId, @RequestBody TemplatePostDTO templatePostDTO, HttpServletResponse responseheader ){
+    public Deck CreateTemplate(@PathVariable Long deckId, @RequestBody TemplatePostDTO templatePostDTO, HttpServletResponse responseheader , @RequestHeader("Authentication") String auth){
         responseheader.setHeader("Accept", "application/jason");
         Template userTemplate = DTOMapper.INSTANCE.convertTemplatePostDTOtoEntity(templatePostDTO);
+        User user = userService.getUserByAuthentication(auth);
+        if(!user.getDeckList().contains(deckService.getDeckById(deckId))){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The User by Authentication can't alter/acess this resource !");
+        }
         Template deckTemplate = templateService.createTemplate(userTemplate);
 
         //The template doesn't have to be transformed to a TemplateGetDTO since no info must be left out
@@ -202,12 +248,15 @@ public class DeckController {
     @PostMapping("/decks/{deckId}/cards")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Deck CreateCard(@PathVariable Long deckId, @RequestBody CardPostDTO cardPostDTO, HttpServletResponse responseheader ) {
+    public Deck CreateCard(@PathVariable Long deckId, @RequestBody CardPostDTO cardPostDTO, HttpServletResponse responseheader, @RequestHeader("Authentication") String auth ) {
         responseheader.setHeader("Accept", "application/jason");
+        User user = userService.getUserByAuthentication(auth);
 
         Card userCard = DTOMapper.INSTANCE.convertCardPostDTOtoEntity(cardPostDTO);
         Deck theDeck = deckService.getDeckById(deckId);
-
+        if(!user.getDeckList().contains(deckService.getDeckById(deckId))){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The User by Authentication can't alter/acess this resource !");
+        }
         Card deckCard = cardService.createCard(userCard, theDeck.getTemplate());
         Deck deckToReturn = deckService.addNewCard(deckCard, deckId);
         //The template doesn't have to be transformed to a TemplateGetDTO since no info must be left out
@@ -217,10 +266,14 @@ public class DeckController {
     @PutMapping("/decks/{deckId}/cards/{cardId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void changeCard(@PathVariable Long deckId, @PathVariable Long cardId, @RequestBody CardPutDTO cardPutDTO){
+    public void changeCard(@PathVariable Long deckId, @PathVariable Long cardId, @RequestBody CardPutDTO cardPutDTO, @RequestHeader("Authentication") String auth ){
         Card putCard = DTOMapper.INSTANCE.convertCardPutDTOtoEntity(cardPutDTO);
         if(!Objects.equals(cardId, cardPutDTO.getCardId())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The cardId in the Path doesn't match the Id from the Card Put Entity.");
+        }
+        User user = userService.getUserByAuthentication(auth);
+        if(!user.getDeckList().contains(deckService.getDeckById(deckId))){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The User by Authentication can't alter/acess this resource !");
         }
         deckService.checkIfCardIdIsInDeck(putCard.getCardId(), deckId);
         cardService.changeCard(putCard, deckService.getDeckById(deckId).getTemplate());
@@ -246,11 +299,16 @@ public class DeckController {
     @DeleteMapping("/decks/{deckId}/cards/{cardId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void deleteCard(@PathVariable Long deckId,@PathVariable Long cardId){
+    public void deleteCard(@PathVariable Long deckId,@PathVariable Long cardId, @RequestHeader("Authentication") String auth){
+        User user = userService.getUserByAuthentication(auth);
+        if(!user.getDeckList().contains(deckService.getDeckById(deckId))){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The User from the provided Authentication doesn't have access to this resource");
+        }
 
         deckService.checkIfCardIdIsInDeck(deckId, cardId);
         cardService.deleteCard(cardId);
     }
+
 
 
 
