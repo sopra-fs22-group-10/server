@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
+import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
+import ch.uzh.ifi.hase.soprafs22.constant.PlayerStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.*;
 import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.GameRepository;
@@ -14,109 +16,93 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-/**
- * User Service
- * This class is the "worker" and responsible for all functionality related to
- * the user
- * (e.g., it creates, modifies, deletes, finds). The result will be passed back
- * to the caller.
- */
 @Service
 @Transactional
 public class GameService {
-
     private final Logger log = LoggerFactory.getLogger(GameService.class);
 
     private final GameRepository gameRepository;
-
-    private final SessionRepository sessionRepository;
-
+    private final SessionService sessionService;
     private final UserRepository userRepository;
 
-    private final DeckRepository deckRepository;
-
-    private final PlayerService playerService;
 
 
     @Autowired
-    public GameService(@Qualifier("gameRepository") GameRepository gameRepository,@Qualifier("sessionRepository") SessionRepository sessionRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("deckRepository") DeckRepository deckRepository, PlayerService playerService) {
+    public GameService(@Qualifier("gameRepository") GameRepository gameRepository, @Qualifier("userRepository")UserRepository userRepository, SessionService sessionService) {
         this.gameRepository = gameRepository;
-        this.sessionRepository = sessionRepository;
+        this.sessionService = sessionService;
         this.userRepository = userRepository;
-        this.deckRepository = deckRepository;
-        this.playerService = playerService;
     }
 
-
-
-    public Game createGame(Long gameCode){
-
-        //create a Game and set the gameCode as Id
-        Game newGame = new Game();
-        newGame.setGameCode(gameCode);
-        newGame.setPlayerList(new ArrayList<>());
-
-        //find corresponding session
-        Session session;
-        try{
-            session = sessionRepository.findByGameCode(newGame.getGameCode().intValue());
-        } catch (ResponseStatusException e) {throw e; }
-
-        //create a Player entity for each user in the session and store them in playerList
-        addPlayers(newGame, session);
-
-        //distribute Cards evenly to the players
-        distributeCards(newGame, session);
-
-        gameRepository.save(newGame);
-        gameRepository.flush();
-        return newGame;
-    }
-    public Game findGameByGameCode(Long gameCode) throws ResponseStatusException {
+    public Game findGameByGameCode(Long gameCode) {
         Game foundGame = gameRepository.findByGameCode(gameCode);
 
         if(foundGame == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There exists no Game with given GameCode");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No game found with given game Code");
         }
         return foundGame;
     }
 
+    public Game createGame(Long gameCode){
+        //find corresponding Session
+        Session foundSession = sessionService.getSessionByGameCode(gameCode.intValue());
+
+        Game newGame = new Game();
+        newGame.setGameCode(gameCode);
+        newGame.setPlayerList(new ArrayList<Player>());
+
+        newGame = addPlayers(newGame, foundSession);
+
+        newGame = gameRepository.save(newGame);
+        gameRepository.flush();
+
+        return newGame;
+    }
+
+    public Game gameUpdate(Long gameCode){
+        return gameRepository.findByGameCode(gameCode);
+    }
+
+
+
 
     //helper methods
-    private void shuffle(List<Card> cardList){
-        Collections.shuffle(cardList);
-    }
+    private Game addPlayers(Game game, Session session){
 
-    private void addPlayers(Game newGame, Session session){
-
-        List<String> userList = session.getUserList();
-        for (String s : userList) {
-            User user = userRepository.findByUsername(s);
-            Player createdPlayer = playerService.createPlayer(user.getUserId());
-            newGame.addPlayer(createdPlayer);
-        }
-    }
-
-    private void distributeCards(Game game, Session session){
-        Deck deck = deckRepository.findByDeckId(session.getDeckId());
-
-        List<Card> cardList = deck.getCardList();
-        shuffle(cardList);
+        List<String> allUsers = session.getUserList();
         List<Player> playerList = game.getPlayerList();
 
-        //remove cards from deck until they can evenly be distributed
-        while(cardList.size() % playerList.size() != 0){
-            cardList = cardList.subList(0, cardList.size()- 2);
-        }
+        //for each user in userList a new Player should be created and added to playerList
+        for(String username : allUsers){
+            User user = userRepository.findByUsername(username);
+            Player playerToAdd = createPlayer(game, user);
+            playerList.add(playerToAdd);
 
-        //cards can be distributed evenly
-        for(int i = 0; i < cardList.size(); i++){
-            int currentPlayerIndex = (cardList.size() % playerList.size());
-            Player currentPlayer = playerList.get(currentPlayerIndex);
-            playerService.addCardToHand(currentPlayer, cardList.get(i));
+            //save the entity
+            game = gameRepository.save(game);
+            gameRepository.flush();
         }
+        return game;
+    }
+
+    private Player createPlayer(Game game, User user){
+        Player newPlayer = new Player();
+
+        newPlayer.setPlayerId(user.getUserId());
+        newPlayer.setPlayerName(user.getUsername());
+        newPlayer.setPlayerStatus(PlayerStatus.ACTIVE);
+        newPlayer.setHand(new ArrayList<Card>());
+        newPlayer.setPlayedCards(new ArrayList<Card>());
+        //newPlayer.setGame(game);
+
+        return newPlayer;
     }
 }
+
+
 
