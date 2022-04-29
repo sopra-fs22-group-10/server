@@ -45,6 +45,9 @@ public class Session implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> userList;
 
+    @Column
+    private Boolean hasGame;
+
     public void setSessionId(Long sessionId) {this.sessionId = sessionId; }
 
     public Long getSessionId() { return sessionId;    }
@@ -76,4 +79,12 @@ public class Session implements Serializable {
     public void setUserList(List<String> userList) {this.userList = userList; }
 
     public List<String> getUserList() { return userList; }
+
+    public Boolean getHasGame() {
+        return hasGame;
+    }
+
+    public void setHasGame(Boolean hasGame) {
+        this.hasGame = hasGame;
+    }
 }
