@@ -11,7 +11,6 @@ public class SessionGetDTO {
     private List<String> userList;
     private int maxPlayers;
     private Long deckId;
-    private boolean hasGame;
 
     public int getGameCode() { return gameCode; }
 
@@ -36,8 +35,4 @@ public class SessionGetDTO {
     public Long getDeckId() { return deckId;   }
 
     public void setDeckId(Long deckId) {this.deckId = deckId; }
-
-    public boolean isHasGame() { return hasGame; }
-
-    public void setHasGame(boolean hasGame) { this.hasGame = hasGame;  }
 }

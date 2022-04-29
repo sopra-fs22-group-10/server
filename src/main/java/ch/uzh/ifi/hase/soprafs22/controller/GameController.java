@@ -94,7 +94,7 @@ public class GameController {
     }
 
     @PostMapping("/session/{gameCode}/game")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
     @ResponseBody
     public GameGetDTO createGame(@PathVariable Long gameCode) {
         // fetch game in the internal representation
