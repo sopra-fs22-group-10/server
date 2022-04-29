@@ -1,11 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
-import ch.uzh.ifi.hase.soprafs22.entity.Card;
-import ch.uzh.ifi.hase.soprafs22.entity.Player;
-
-import java.util.List;
-
-public class GamePostDTO {
+public class  GamePostDTO {
 
 
     private Long gameCode;

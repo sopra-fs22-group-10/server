@@ -82,10 +82,12 @@ public interface DTOMapper {
     @Mapping(source = "currentPlayer", target = "currentPlayer")
     @Mapping(source = "opponentPlayer", target = "opponentPlayer")
     @Mapping(source = "playerList", target = "playerList")
-    @Mapping(source = "currentStatName", target = "currentStatName")
-    @Mapping(source = "roundStatus", target = "roundStatus")
     @Mapping(source = "winner", target = "winner")
     GameGetDTO convertEntityToGameGetDTO(Game game);
+
+    @Mapping(source = "currentStatName", target = "currentStatName")
+    @Mapping(source = "roundStatus", target = "roundStatus")
+    RoundGetDTO convertEntityToRoundGetDTO(Game game);
 
 }
 /*
