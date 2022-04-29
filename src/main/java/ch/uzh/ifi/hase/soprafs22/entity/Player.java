@@ -25,10 +25,10 @@ public class Player implements Serializable {
     @Column
     private PlayerStatus playerStatus;
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Card> hand;
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Card> playedCards;
     /*
     @ManyToOne(cascade = CascadeType.MERGE)
