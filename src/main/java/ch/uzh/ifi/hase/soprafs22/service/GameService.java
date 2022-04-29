@@ -55,17 +55,21 @@ public class GameService {
         //find corresponding Session
         Session foundSession = sessionService.getSessionByGameCode(gameCode.intValue());
 
+
         Game newGame = new Game();
         newGame.setGameCode(gameCode);
         newGame.setPlayerList(new ArrayList<Player>());
 
         newGame = addPlayers(newGame, foundSession);
+        distributeCards(newGame, foundSession);
+
 
         distributeCards(newGame, foundSession);
 
         newGame = gameRepository.save(newGame);
         gameRepository.flush();
 
+        sessionService.checkIfSessionHasGame(foundSession);
         return newGame;
     }
 
@@ -132,7 +136,6 @@ public class GameService {
         }
 
     }
-
     private void checkIfGameExists(Long gameCode){
         Game foundGame = gameRepository.findByGameCode(gameCode);
 
