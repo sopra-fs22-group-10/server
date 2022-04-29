@@ -167,21 +167,47 @@ public class GameService {
         }
     }
 
-    private void updateOpponentPlayer(Game game, Long opponentPlayer) throws ResponseStatusException{
-        Player opponent = playerRepository.findByPlayerId(opponentPlayer);
+    private void updateOpponentPlayer(Game game, Long opponentPlayerId) throws ResponseStatusException{
+        Player opponentPlayer = playerRepository.findByPlayerId(opponentPlayerId);
 
-        if(opponent == null){
+        if(opponentPlayer == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There exists no player with given playerId");
         }
 
-        if(opponent.getPlayerStatus() == PlayerStatus.INACTIVE){
+        if(opponentPlayer.getPlayerStatus() == PlayerStatus.INACTIVE){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"The chosen opponent has no cards left [PlayerStatus = INACTIVE]");
         }
 
-        game.setOpponentPlayer(opponentPlayer);
+        game.setOpponentPlayer(opponentPlayerId);
+
+        //now the first card of both's hand will be appendend in playedCards
+        Player currentPlayer = playerRepository.findByPlayerId(game.getCurrentPlayer());
+
+        List<Card> currentPlayerHand = currentPlayer.getHand();
+        List<Card> opponentPlayerHand = opponentPlayer.getHand();
+
+        List<Card> currentPlayerPlayedCards = currentPlayer.getPlayedCards();
+        List<Card> opponentPlayerPlayedCards = opponentPlayer.getPlayedCards();
+
+        currentPlayerPlayedCards.add(currentPlayerHand.remove(0));
+        opponentPlayerPlayedCards.add(opponentPlayerHand.remove(0));
+
+        currentPlayer.setHand(currentPlayerHand);
+        currentPlayer.setPlayedCards(currentPlayerPlayedCards);
+        opponentPlayer.setHand(opponentPlayerHand);
+        opponentPlayer.setPlayedCards(opponentPlayerPlayedCards);
+
 
         game = gameRepository.save(game);
         gameRepository.flush();
+    }
+
+    private void playRound(Game game, String currentStatName){
+        Player currentPlayer = playerRepository.findByPlayerId(game.getCurrentPlayer());
+        Player opponentPlayer = playerRepository.findByPlayerId(game.getOpponentPlayer());
+
+        //get the two stats to compare
+
     }
 }
 

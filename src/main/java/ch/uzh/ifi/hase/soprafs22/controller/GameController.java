@@ -70,7 +70,7 @@ public class GameController {
 
 
     @GetMapping("/session/{gameCode}/game")
-    @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public GameGetDTO getGameByGameCode(@PathVariable Long gameCode) {
         // fetch game in the internal representation
