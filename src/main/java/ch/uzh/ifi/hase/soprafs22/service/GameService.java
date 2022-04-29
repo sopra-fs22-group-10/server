@@ -33,7 +33,7 @@ public class GameService {
 
 
     @Autowired
-    public GameService(@Qualifier("gameRepository") GameRepository gameRepository, @Qualifier("userRepository")UserRepository userRepository, @Qualifier("deckRepository")DeckRepository deckRepository, SessionService sessionService) {
+    public GameService(@Qualifier("gameRepository") GameRepository gameRepository, @Qualifier("userRepository")UserRepository userRepository, @Qualifier("deckRepository") DeckRepository deckRepository, SessionService sessionService) {
         this.gameRepository = gameRepository;
         this.sessionService = sessionService;
         this.userRepository = userRepository;
@@ -50,6 +50,10 @@ public class GameService {
     }
 
     public Game createGame(Long gameCode){
+        //check if game already exists
+        try{
+            checkIfGameExists(gameCode);
+        } catch (ResponseStatusException e) { throw e; }
         //find corresponding Session
         Session foundSession = sessionService.getSessionByGameCode(gameCode.intValue());
 
@@ -57,7 +61,6 @@ public class GameService {
         Game newGame = new Game();
         newGame.setGameCode(gameCode);
         newGame.setPlayerList(new ArrayList<Player>());
-
 
         newGame = addPlayers(newGame, foundSession);
         distributeCards(newGame, foundSession);
@@ -155,10 +158,14 @@ public class GameService {
             hand.add(currentCard);
             currentPlayer.setHand(hand);
         }
-    }
 
-    private void updateOpponentPlayer(Long playerId){
-        //
+    }
+    private void checkIfGameExists(Long gameCode){
+        Game foundGame = gameRepository.findByGameCode(gameCode);
+
+        if(foundGame != null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There already exists a Game with given gameCode");
+        }
     }
 }
 
