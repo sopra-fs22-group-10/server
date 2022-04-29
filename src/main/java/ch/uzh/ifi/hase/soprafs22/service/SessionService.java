@@ -2,11 +2,9 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
-import ch.uzh.ifi.hase.soprafs22.entity.Game;
 import ch.uzh.ifi.hase.soprafs22.entity.Session;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.SessionRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
@@ -41,14 +39,11 @@ public class    SessionService {
 
     private final DeckRepository deckRepository;
 
-    private final GameRepository gameRepository;
-
     @Autowired
-    public SessionService(@Qualifier("sessionRepository") SessionRepository sessionRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("deckRepository") DeckRepository deckRepository, @Qualifier("gameRepository") GameRepository gameRepository) {
+    public SessionService(@Qualifier("sessionRepository") SessionRepository sessionRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("deckRepository") DeckRepository deckRepository) {
         this.sessionRepository = sessionRepository;
         this.userRepository = userRepository;
         this.deckRepository = deckRepository;
-        this.gameRepository = gameRepository;
     }
 
     public List<Session> getSessions() {
@@ -70,7 +65,6 @@ public class    SessionService {
         }catch (ResponseStatusException e) {throw e; }
 
         newSession.addUser(newSession.getHostUsername());
-        checkIfSessionHasGame(newSession);
 
         log.debug("Created Information for User: {}", newSession);
 
@@ -213,18 +207,6 @@ public class    SessionService {
         if(current == maxPlayers) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Session is already full");
         }
-    }
-
-    public void checkIfSessionHasGame(Session session){
-
-        Game foundGame = gameRepository.findByGameCode((long) session.getGameCode());
-        if(foundGame == null){
-            session.setHasGame(false);
-        } else {
-            session.setHasGame(true);
-        }
-        sessionRepository.save(session);
-        sessionRepository.flush();
     }
 
 }
