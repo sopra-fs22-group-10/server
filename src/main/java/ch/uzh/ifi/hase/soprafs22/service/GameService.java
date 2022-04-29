@@ -52,15 +52,18 @@ public class GameService {
         //find corresponding Session
         Session foundSession = sessionService.getSessionByGameCode(gameCode.intValue());
 
+
         Game newGame = new Game();
         newGame.setGameCode(gameCode);
         newGame.setPlayerList(new ArrayList<Player>());
 
         newGame = addPlayers(newGame, foundSession);
 
+
         newGame = gameRepository.save(newGame);
         gameRepository.flush();
 
+        sessionService.checkIfSessionHasGame(foundSession);
         return newGame;
     }
 
