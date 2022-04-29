@@ -2,9 +2,11 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
+import ch.uzh.ifi.hase.soprafs22.entity.Game;
 import ch.uzh.ifi.hase.soprafs22.entity.Session;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
+import ch.uzh.ifi.hase.soprafs22.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.SessionRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +32,8 @@ public class SessionServiceTest {
     private UserRepository userRepository;
     @Mock
     private DeckRepository deckRepository;
+    @Mock
+    private GameRepository gameRepository;
 
     @InjectMocks
     private SessionService sessionService;
@@ -37,6 +41,7 @@ public class SessionServiceTest {
     private Session testSession;
     private User testUser;
     private Deck testDeck;
+    private Game testGame;
 
     @BeforeEach
     public void setup() {
@@ -59,9 +64,13 @@ public class SessionServiceTest {
         testDeck = new Deck();
         testDeck.setDeckname("deck");
 
+        testGame = new Game();
+        testGame.setGameCode((long) testSession.getGameCode());
+
         Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
         Mockito.when(deckRepository.findByDeckId(Mockito.any())).thenReturn(testDeck);
         Mockito.when(sessionRepository.findByGameCode(Mockito.anyInt())).thenReturn(testSession);
+        Mockito.when(gameRepository.findByGameCode(Mockito.anyLong())).thenReturn(testGame);
 
         // when -> any object is being saved in the sessionRepository -> return the dummy
         // testSession
@@ -78,7 +87,7 @@ public class SessionServiceTest {
 
 
         // then
-        Mockito.verify(sessionRepository, Mockito.times(1)).save(Mockito.any());
+        Mockito.verify(sessionRepository, Mockito.times(2)).save(Mockito.any());
 
         assertEquals(testSession.getSessionId(), createdSession.getSessionId());
         assertEquals(testSession.getHostUsername(), createdSession.getHostUsername());
