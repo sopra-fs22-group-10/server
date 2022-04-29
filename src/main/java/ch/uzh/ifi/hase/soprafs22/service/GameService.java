@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -29,14 +26,16 @@ public class GameService {
     private final GameRepository gameRepository;
     private final SessionService sessionService;
     private final UserRepository userRepository;
+    private final DeckRepository deckRepository;
 
 
 
     @Autowired
-    public GameService(@Qualifier("gameRepository") GameRepository gameRepository, @Qualifier("userRepository")UserRepository userRepository, SessionService sessionService) {
+    public GameService(@Qualifier("gameRepository") GameRepository gameRepository, @Qualifier("userRepository")UserRepository userRepository, @Qualifier("deckRepository") DeckRepository deckRepository, SessionService sessionService) {
         this.gameRepository = gameRepository;
         this.sessionService = sessionService;
         this.userRepository = userRepository;
+        this.deckRepository = deckRepository;
     }
 
     public Game findGameByGameCode(Long gameCode) {
@@ -49,6 +48,10 @@ public class GameService {
     }
 
     public Game createGame(Long gameCode){
+        //check if game already exists
+        try{
+            checkIfGameExists(gameCode);
+        } catch (ResponseStatusException e) { throw e; }
         //find corresponding Session
         Session foundSession = sessionService.getSessionByGameCode(gameCode.intValue());
 
@@ -57,6 +60,8 @@ public class GameService {
         newGame.setPlayerList(new ArrayList<Player>());
 
         newGame = addPlayers(newGame, foundSession);
+
+        distributeCards(newGame, foundSession);
 
         newGame = gameRepository.save(newGame);
         gameRepository.flush();
@@ -101,6 +106,39 @@ public class GameService {
         //newPlayer.setGame(game);
 
         return newPlayer;
+    }
+
+    private void distributeCards(Game game, Session session){
+        Deck deck = deckRepository.findByDeckId(session.getDeckId());
+
+        List<Card> cardList = deck.getCardList();
+        Collections.shuffle(cardList);
+        List<Player> playerList = game.getPlayerList();
+
+        //remove cards from deck until they can evenly be distributed
+        while(cardList.size() % playerList.size() != 0){
+            cardList = cardList.subList(0, cardList.size()- 1);
+        }
+
+        //cards can be distributed evenly
+        for(int i = 0; i < cardList.size(); i++){
+            int currentPlayerIndex = (i % playerList.size());
+            Player currentPlayer = playerList.get(currentPlayerIndex);
+            Card currentCard = cardList.get(i);
+
+            List<Card> hand = currentPlayer.getHand();
+            hand.add(currentCard);
+            currentPlayer.setHand(hand);
+        }
+
+    }
+
+    private void checkIfGameExists(Long gameCode){
+        Game foundGame = gameRepository.findByGameCode(gameCode);
+
+        if(foundGame != null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There already exists a Game with given gameCode");
+        }
     }
 }
 
