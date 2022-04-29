@@ -108,12 +108,12 @@ public class GameController {
     @PutMapping("/session/{gameCode}/round")
     @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
     //@ResponseBody
-    public void getGameByGameCode(@PathVariable Long gameCode, @RequestBody GamePutDTO gamePutDTO) {
+    public RoundGetDTO getGameByGameCode(@PathVariable Long gameCode, @RequestBody GamePutDTO gamePutDTO) {
         // fetch game in the internal representation
-       //Game game = gameService.gameUpdate(gamePutDTO.getOpponentPlayer(), gamePutDTO.getCurrentStatName()); //should be GamePutDTO
+       Game game = gameService.gameUpdate(gameCode, gamePutDTO.getOpponentPlayer(), gamePutDTO.getCurrentStatName()); //should be GamePutDTO
 
         //Authentification Check
 
-        //return DTOMapper.INSTANCE.convertEntityToRoundGetDTO(game);
+        return DTOMapper.INSTANCE.convertEntityToRoundGetDTO(game);
     }
 }

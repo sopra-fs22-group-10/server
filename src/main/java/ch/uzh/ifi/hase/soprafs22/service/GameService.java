@@ -3,10 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.service;
 import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
 import ch.uzh.ifi.hase.soprafs22.constant.PlayerStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.*;
-import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.GameRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.SessionRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.GamePostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.GamePutDTO;
 import org.slf4j.Logger;
@@ -29,15 +26,15 @@ public class GameService {
     private final SessionService sessionService;
     private final UserRepository userRepository;
     private final DeckRepository deckRepository;
-
-
+    private final PlayerRepository playerRepository;
 
     @Autowired
-    public GameService(@Qualifier("gameRepository") GameRepository gameRepository, @Qualifier("userRepository")UserRepository userRepository, @Qualifier("deckRepository") DeckRepository deckRepository, SessionService sessionService) {
+    public GameService(@Qualifier("gameRepository") GameRepository gameRepository, @Qualifier("userRepository")UserRepository userRepository, @Qualifier("deckRepository") DeckRepository deckRepository,@Qualifier("playerRepository") PlayerRepository playerRepository, SessionService sessionService) {
         this.gameRepository = gameRepository;
         this.sessionService = sessionService;
         this.userRepository = userRepository;
         this.deckRepository = deckRepository;
+        this.playerRepository = playerRepository;
     }
 
     public Game findGameByGameCode(Long gameCode) {
@@ -73,8 +70,8 @@ public class GameService {
         sessionService.checkIfSessionHasGame(foundSession);
         return newGame;
     }
-/*
-    public Game gameUpdate(Long opponentPlayer, String currentStatName){
+
+    public Game gameUpdate(Long gameCode, Long opponentPlayer, String currentStatName){
         //The gameUpdate gets a PutDTO with opponentPlayer[id] and currentStatName [string]
         //The method should check which of the input gets updated and act accordingly
         //The method should set the opponent playerId when requested
@@ -85,10 +82,12 @@ public class GameService {
         //The method should compare the currentStats from both currentPlayerHand and define wether theres a winner or draw
         //draw both players should draw a new card from hand
         //winner should be given all the cards and then the Roundstatus gets updated
-
+        Game game = gameRepository.findByGameCode(gameCode);
         if(currentStatName == null && opponentPlayer != null){
-            updateOpponentPlayer(opponentPlayer);
+            updateOpponentPlayer(game, opponentPlayer);
         }
+
+
 
         if(currentStatName != null && opponentPlayer == null){
             //playRound(currentStatName);
@@ -98,8 +97,8 @@ public class GameService {
 
 
 
-
-    }*/
+        return game;
+    }
 
 
 
@@ -160,12 +159,29 @@ public class GameService {
         }
 
     }
-    private void checkIfGameExists(Long gameCode){
+    private void checkIfGameExists(Long gameCode) throws ResponseStatusException{
         Game foundGame = gameRepository.findByGameCode(gameCode);
 
         if(foundGame != null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There already exists a Game with given gameCode");
         }
+    }
+
+    private void updateOpponentPlayer(Game game, Long opponentPlayer) throws ResponseStatusException{
+        Player opponent = playerRepository.findByPlayerId(opponentPlayer);
+
+        if(opponent == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There exists no player with given playerId");
+        }
+
+        if(opponent.getPlayerStatus() == PlayerStatus.INACTIVE){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"The chosen opponent has no cards left [PlayerStatus = INACTIVE]");
+        }
+
+        game.setOpponentPlayer(opponentPlayer);
+
+        game = gameRepository.save(game);
+        gameRepository.flush();
     }
 }
 
