@@ -304,8 +304,12 @@ public class DeckController {
         if(!user.getDeckList().contains(deckService.getDeckById(deckId))){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The User from the provided Authentication doesn't have access to this resource");
         }
-
-        deckService.checkIfCardIdIsInDeck(deckId, cardId);
+        Deck deck = deckService.getDeckById(deckId);
+        deckService.checkIfCardIdIsInDeck(cardId, deckId);
+        List<Card> cardList = deck.getCardList();
+        cardList.remove(cardService.getCardById(cardId));
+        deck.setCardList(cardList);
+        deckRepository.flush();
         cardService.deleteCard(cardId);
     }
 
