@@ -293,6 +293,7 @@ public class GameService {
         // 1: if the hand of a player is empty -> PlayerStatus.INACTIVE
         // 2: if hand.size() equals allDistributedCards.size() then this player is the winner
         game = checkForWinner(game);
+        game.setOpponentPlayer(null);
 
         game = gameRepository.save(game);
         gameRepository.flush();
