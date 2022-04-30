@@ -209,7 +209,8 @@ public class GameService {
         gameRepository.flush();
     }
 
-    private void playRound(Game game, String currentStatName) {
+    private void playRound(Game gameInput, String currentStatName) {
+        Game game = gameInput;
         game.setCurrentStatName(currentStatName);
         Player currentPlayer = playerRepository.findByPlayerId(game.getCurrentPlayer());
         Player opponentPlayer = playerRepository.findByPlayerId(game.getOpponentPlayer());
@@ -236,9 +237,31 @@ public class GameService {
         }
 
         if (currentStatValue == opponentStatValue) {
-            //DRAW implement later idea: append new cards to playedCards from hand and recursive call to playRound
+            //idea: append new cards to playedCards from hand and return
             //player can choose a new stat to compare after a draw
+            game.setRoundStatus(RoundStatus.DRAW);
+
+            //get the next card from hand and append it to playedCards
+            //do nothing if the player has no more cards left in the hand
+            List<Card> currentPlayerHand = currentPlayer.getHand();
+            if(!currentPlayerHand.isEmpty()){
+                Card nextCard = currentPlayerHand.remove(0);
+                currentPlayerPlayedCards.add(nextCard);
+                currentPlayer.setHand(currentPlayerHand);
+                currentPlayer.setPlayedCards(currentPlayerPlayedCards);
+            }
+
+            List<Card> opponentPlayerHand = opponentPlayer.getHand();
+            if(!opponentPlayerHand.isEmpty()){
+                Card nextCard = opponentPlayerHand.remove(0);
+                opponentPlayerHand.add(nextCard);
+                opponentPlayer.setHand(opponentPlayerHand);
+                opponentPlayer.setPlayedCards(opponentPlayerPlayedCards);
+            }
+
+            game.setCurrentStatName(null);
         }
+
         if (currentStatValue > opponentStatValue) {
             //currentPlayer wins the round --> set roundStatus to WON
             game.setRoundStatus(RoundStatus.WON);
@@ -249,7 +272,7 @@ public class GameService {
             for(int i = 0; i < currentPlayerPlayedCards.size(); i++){
                 currentPlayerPlayedCards.remove(0);
             }
-            currentPlayer.setPlayedCards(currentPlayerPlayedCards);
+            currentPlayer.setPlayedCards(new ArrayList<Card>());
 
 
             //take all cards from opponentPlayedCards and append them to wonCards
@@ -257,18 +280,21 @@ public class GameService {
             for(int i = 0; i < opponentPlayerPlayedCards.size(); i++){
                 opponentPlayerPlayedCards.remove(0);
             }
-            opponentPlayer.setPlayedCards(opponentPlayerPlayedCards);
+            opponentPlayer.setPlayedCards(new ArrayList<Card>());
 
-            //shuffle and append won Cards to currenPlayerHand
+            //shuffle and append won Cards to currentPlayerHand
             Collections.shuffle(wonCards);
             List<Card> currentPlayerHand = currentPlayer.getHand();
             currentPlayerHand.addAll(wonCards);
 
             //update currentPlayerHand
             currentPlayer.setHand(currentPlayerHand);
+            //check for  and update opponent
+            game = checkForWinner(game);
+            game.setOpponentPlayer(null);
 
         }
-        else {
+        if(currentStatValue < opponentStatValue) {
             //opponentPlayer wins the round --> set roundStatus to LOST
             game.setRoundStatus(RoundStatus.LOST);
 
@@ -278,14 +304,14 @@ public class GameService {
             for(int i = 0; i < currentPlayerPlayedCards.size(); i++){
                 currentPlayerPlayedCards.remove(0);
             }
-            currentPlayer.setPlayedCards(currentPlayerPlayedCards);
+            currentPlayer.setPlayedCards(new ArrayList<Card>());
 
             //take all cards from opponentPlayedCards and append them to wonCards
             wonCards.addAll(opponentPlayerPlayedCards);
             for(int i = 0; i < opponentPlayerPlayedCards.size(); i++){
                 opponentPlayerPlayedCards.remove(0);
             }
-            opponentPlayer.setPlayedCards(opponentPlayerPlayedCards);
+            opponentPlayer.setPlayedCards(new ArrayList<Card>());
 
             //shuffle and append won Cards to opponentPLayer
             Collections.shuffle(wonCards);
@@ -296,15 +322,11 @@ public class GameService {
             //update currentPlayerHand
             opponentPlayer.setHand(opponentPlayerHand);
 
-            //set opponent as current since he has won
+            //set opponent as current since he has won and check for winner
             game.setCurrentPlayer(opponentPlayer.getPlayerId());
+            game.setOpponentPlayer(null);
+            game = checkForWinner(game);
         }
-
-        //iterate through all players and check for
-        // 1: if the hand of a player is empty -> PlayerStatus.INACTIVE
-        // 2: if hand.size() equals allDistributedCards.size() then this player is the winner
-        game = checkForWinner(game);
-        game.setOpponentPlayer(null);
 
         game = gameRepository.save(game);
         gameRepository.flush();
@@ -328,7 +350,7 @@ public class GameService {
         List<Card> cardList = deck.getCardList();
         List<Player> playerList = game.getPlayerList();
 
-        //remove cards from deck until they can evenly be distributed
+        //remove cards from deck until they can evenly be distributed inorder to compare to hand.size()
         while(cardList.size() % playerList.size() != 0){
             cardList = cardList.subList(0, cardList.size()- 1);
         }
