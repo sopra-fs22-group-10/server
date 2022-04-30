@@ -155,8 +155,8 @@ public class GameService {
             hand.add(currentCard);
             currentPlayer.setHand(hand);
         }
-
     }
+
     private void checkIfGameExists(Long gameCode) throws ResponseStatusException{
         Game foundGame = gameRepository.findByGameCode(gameCode);
 
@@ -286,7 +286,13 @@ public class GameService {
 
             //update currentPlayerHand
             opponentPlayer.setHand(opponentPlayerHand);
+
         }
+
+        //iterate through all players and check for
+        // 1: if the hand of a player is empty -> PlayerStatus.INACTIVE
+        // 2: if hand.size() equals allDistributedCards.size() then this player is the winner
+        game = checkForWinner(game);
 
         game = gameRepository.save(game);
         gameRepository.flush();
@@ -300,6 +306,30 @@ public class GameService {
             }
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no statName which equals the given one");
+    }
+
+    private Game checkForWinner(Game game){
+        Session foundSession = sessionService.getSessionByGameCode(game.getGameCode().intValue());
+        Deck deck = deckRepository.findByDeckId(foundSession.getDeckId());
+
+        List<Card> cardList = deck.getCardList();
+        List<Player> playerList = game.getPlayerList();
+
+        //remove cards from deck until they can evenly be distributed
+        while(cardList.size() % playerList.size() != 0){
+            cardList = cardList.subList(0, cardList.size()- 1);
+        }
+
+        //iterate over all players and check for winner and inactive players
+        for(Player player : playerList){
+            if(player.getHand().size() == cardList.size()){
+                game.setWinner(player.getPlayerId());
+            }
+            if(player.getHand().isEmpty()){
+                player.setPlayerStatus(PlayerStatus.INACTIVE);
+            }
+        }
+        return game;
     }
 }
 
