@@ -83,7 +83,10 @@ public class GameService {
         //The method should compare the currentStats from both currentPlayerHand and define wether theres a winner or draw
         //draw both players should draw a new card from hand
         //winner should be given all the cards and then the Roundstatus gets updated
-        Game game = gameRepository.findByGameCode(gameCode);
+        Game game;
+        try{
+            game = findGameByGameCode(gameCode);
+        } catch (ResponseStatusException e) { throw e;}
 
         if(currentStatName == null && opponentPlayer != null){
             updateOpponentPlayer(game, opponentPlayer);
@@ -199,6 +202,8 @@ public class GameService {
         opponentPlayer.setHand(opponentPlayerHand);
         opponentPlayer.setPlayedCards(opponentPlayerPlayedCards);
 
+        game.setCurrentStatName(null);
+        game.setRoundStatus(null);
 
         game = gameRepository.save(game);
         gameRepository.flush();
@@ -293,7 +298,6 @@ public class GameService {
 
             //set opponent as current since he has won
             game.setCurrentPlayer(opponentPlayer.getPlayerId());
-
         }
 
         //iterate through all players and check for
@@ -307,6 +311,7 @@ public class GameService {
     }
 
     private int getStatValue(Card card, String currentStatName) throws ResponseStatusException{
+        //always compare the stats of the last card in playedCards (when they have drawn the new card gets appended)
         for(int i = 0;i < card.getCardstats().size(); i++ ){
             String statName = card.getCardstats().get(i).getStatname();
             if(Objects.equals(currentStatName, statName)){
@@ -339,6 +344,7 @@ public class GameService {
         }
         return game;
     }
+
 }
 
 

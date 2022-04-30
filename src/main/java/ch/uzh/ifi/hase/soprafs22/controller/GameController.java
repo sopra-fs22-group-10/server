@@ -82,7 +82,7 @@ public class GameController {
     }
 
     @GetMapping("/session/{gameCode}/round")
-    @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public RoundGetDTO getRoundByGameCode(@PathVariable Long gameCode) {
         // fetch game in the internal representation
@@ -94,7 +94,7 @@ public class GameController {
     }
 
     @PostMapping("/session/{gameCode}/game")
-    @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
+    @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public GameGetDTO createGame(@PathVariable Long gameCode) {
         // fetch game in the internal representation
@@ -106,7 +106,7 @@ public class GameController {
     }
 
     @PutMapping("/session/{gameCode}/round")
-    @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public RoundGetDTO getGameByGameCode(@PathVariable Long gameCode, @RequestBody GamePutDTO gamePutDTO) {
         // fetch game in the internal representation
