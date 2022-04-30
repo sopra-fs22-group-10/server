@@ -47,6 +47,11 @@ public class GameService {
         return foundGame;
     }
 
+    public void deleteGameByGameCode(Long gameCode){
+        gameRepository.deleteByGameCode(gameCode);
+    }
+
+
     public Game createGame(Long gameCode){
         //check if game already exists
         try{
