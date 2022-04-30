@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
 import ch.uzh.ifi.hase.soprafs22.constant.PlayerStatus;
+import ch.uzh.ifi.hase.soprafs22.constant.RoundStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.*;
 import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.GamePostDTO;
@@ -72,30 +73,27 @@ public class GameService {
     }
 
     public Game gameUpdate(Long gameCode, Long opponentPlayer, String currentStatName){
-        //The gameUpdate gets a PutDTO with opponentPlayer[id] and currentStatName [string]
+        //The gameUpdate gets a PutDTO with updated opponentPlayer[id] or currentStatName [string]
         //The method should check which of the input gets updated and act accordingly
         //The method should set the opponent playerId when requested
-        //after that the game should return (only opponent player changes)
+        //take the cards from hand and move them to playedCards
+        //after that the game should return (opponentPlayer and hand/playedCards should change)
 
         //when only currentStatName gets changed:
-        //take the cards from hand and move them to playedCards
         //The method should compare the currentStats from both currentPlayerHand and define wether theres a winner or draw
         //draw both players should draw a new card from hand
         //winner should be given all the cards and then the Roundstatus gets updated
         Game game = gameRepository.findByGameCode(gameCode);
+
         if(currentStatName == null && opponentPlayer != null){
             updateOpponentPlayer(game, opponentPlayer);
         }
 
-
-
         if(currentStatName != null && opponentPlayer == null){
-            //playRound(currentStatName);
+            playRound(game,currentStatName);
         }
 
         //else there should be errorChecks
-
-
 
         return game;
     }
@@ -175,12 +173,12 @@ public class GameService {
         }
 
         if(opponentPlayer.getPlayerStatus() == PlayerStatus.INACTIVE){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"The chosen opponent has no cards left [PlayerStatus = INACTIVE]");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"This opponent has no cards left [PlayerStatus = INACTIVE]");
         }
 
         game.setOpponentPlayer(opponentPlayerId);
 
-        //now the first card of both's hand will be appendend in playedCards
+        //now the first card of both's hand will be appended in playedCards
         Player currentPlayer = playerRepository.findByPlayerId(game.getCurrentPlayer());
 
         List<Card> currentPlayerHand = currentPlayer.getHand();
@@ -202,12 +200,106 @@ public class GameService {
         gameRepository.flush();
     }
 
-    private void playRound(Game game, String currentStatName){
+    private void playRound(Game game, String currentStatName) {
+        game.setCurrentStatName(currentStatName);
         Player currentPlayer = playerRepository.findByPlayerId(game.getCurrentPlayer());
         Player opponentPlayer = playerRepository.findByPlayerId(game.getOpponentPlayer());
 
-        //get the two stats to compare
+        //get the two stats to compare [Always take the last Card in playedCards this way
+        //if there is a draw this should be the most recent one]
 
+        List<Card> currentPlayerPlayedCards = currentPlayer.getPlayedCards();
+        List<Card> opponentPlayerPlayedCards = opponentPlayer.getPlayedCards();
+
+        //retrieve the last card of playedCard from both players
+        Card currentPlayerCard = currentPlayerPlayedCards.get(currentPlayerPlayedCards.size() - 1);
+        Card opponentPlayerCard = opponentPlayerPlayedCards.get(opponentPlayerPlayedCards.size() - 1);
+
+        //get the statValue of both cards and compare them
+        int currentStatValue;
+        int opponentStatValue;
+        try {
+            currentStatValue = getStatValue(currentPlayerCard, currentStatName);
+            opponentStatValue = getStatValue(opponentPlayerCard, currentStatName);
+        }
+        catch (ResponseStatusException e) {
+            throw e;
+        }
+
+        if (currentStatValue == opponentStatValue) {
+            //DRAW implement later idea: append new cards to playedCards from hand and recursive call to playRound
+            //player can choose a new stat to compare after a draw
+        }
+        if (currentStatValue > opponentStatValue) {
+            //currentPlayer wins the round --> set roundStatus to WON
+            game.setRoundStatus(RoundStatus.WON);
+
+            //NEXT: take all cards in playedCards of both players, shuffle them and append to currentPLayerHand
+            //take all cards from currentPlayedCards and append them to wonCards
+            List<Card> wonCards = new ArrayList<>(currentPlayerPlayedCards);
+            for(int i = 0; i < currentPlayerPlayedCards.size(); i++){
+                currentPlayerPlayedCards.remove(0);
+            }
+            currentPlayer.setPlayedCards(currentPlayerPlayedCards);
+
+
+            //take all cards from opponentPlayedCards and append them to wonCards
+            wonCards.addAll(opponentPlayerPlayedCards);
+            for(int i = 0; i < opponentPlayerPlayedCards.size(); i++){
+                opponentPlayerPlayedCards.remove(0);
+            }
+            opponentPlayer.setPlayedCards(opponentPlayerPlayedCards);
+
+            //shuffle and append won Cards to currenPlayerHand
+            Collections.shuffle(wonCards);
+            List<Card> currentPlayerHand = currentPlayer.getHand();
+            currentPlayerHand.addAll(wonCards);
+
+            //update currentPlayerHand
+            currentPlayer.setHand(currentPlayerHand);
+
+        }
+        else {
+            //opponentPlayer wins the round --> set roundStatus to LOST
+            game.setRoundStatus(RoundStatus.LOST);
+
+            //NEXT: take all cards in playedCards of both players, shuffle them and append to currentPLayerHand
+            //take all cards from currentPlayedCards and append them to wonCards
+            List<Card> wonCards = new ArrayList<>(currentPlayerPlayedCards);
+            for(int i = 0; i < currentPlayerPlayedCards.size(); i++){
+                currentPlayerPlayedCards.remove(0);
+            }
+            currentPlayer.setPlayedCards(currentPlayerPlayedCards);
+
+            //take all cards from opponentPlayedCards and append them to wonCards
+            wonCards.addAll(opponentPlayerPlayedCards);
+            for(int i = 0; i < opponentPlayerPlayedCards.size(); i++){
+                opponentPlayerPlayedCards.remove(0);
+            }
+            opponentPlayer.setPlayedCards(opponentPlayerPlayedCards);
+
+            //shuffle and append won Cards to opponentPLayer
+            Collections.shuffle(wonCards);
+            List<Card> opponentPlayerHand = opponentPlayer.getHand();
+            opponentPlayerHand.addAll(wonCards);
+
+
+            //update currentPlayerHand
+            opponentPlayer.setHand(opponentPlayerHand);
+        }
+
+        game = gameRepository.save(game);
+        gameRepository.flush();
+    }
+
+    private int getStatValue(Card card, String currentStatName) throws ResponseStatusException{
+        for(int i = 0;i < card.getCardstats().size(); i++ ){
+            String statName = card.getCardstats().get(i).getStatname();
+            if(Objects.equals(currentStatName, statName)){
+                return Integer.parseInt(card.getCardstats().get(i).getStatvalue());
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no statName which equals the given one");
     }
 }
 
