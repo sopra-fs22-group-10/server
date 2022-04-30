@@ -16,12 +16,12 @@ public class Game implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
+/*
     @Id
     @GeneratedValue
     private Long gameId;
-
-    @Column(nullable = false)
+*/
+    @Id
     private Long gameCode;
 
     @Column
@@ -43,14 +43,14 @@ public class Game implements Serializable {
     @Column
     private Long winner;
 
-
+/*
     public Long getGameId() {
         return gameId;
     }
 
     public void setGameId(Long deckId) {
         this.gameId = deckId;
-    }
+    }*/
 
     public Long getGameCode() {
         return gameCode;
