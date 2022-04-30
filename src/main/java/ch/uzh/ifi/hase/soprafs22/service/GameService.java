@@ -176,6 +176,10 @@ public class GameService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"This opponent has no cards left [PlayerStatus = INACTIVE]");
         }
 
+        if(opponentPlayerId == game.getCurrentPlayer()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The opponent and current Player cannot have the same Id");
+        }
+
         game.setOpponentPlayer(opponentPlayerId);
 
         //now the first card of both's hand will be appended in playedCards
@@ -286,6 +290,9 @@ public class GameService {
 
             //update currentPlayerHand
             opponentPlayer.setHand(opponentPlayerHand);
+
+            //set opponent as current since he has won
+            game.setCurrentPlayer(opponentPlayer.getPlayerId());
 
         }
 
