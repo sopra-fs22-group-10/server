@@ -1,30 +1,21 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs22.entity.Deck;
-import ch.uzh.ifi.hase.soprafs22.entity.Game;
-import ch.uzh.ifi.hase.soprafs22.entity.Session;
-import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.GameRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.SessionRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
+import ch.uzh.ifi.hase.soprafs22.entity.*;
+import ch.uzh.ifi.hase.soprafs22.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SessionServiceTest {
+public class GameServiceTest {
 
     @Mock
     private SessionRepository sessionRepository;
@@ -34,81 +25,131 @@ public class SessionServiceTest {
     private DeckRepository deckRepository;
     @Mock
     private GameRepository gameRepository;
-
+    @Mock
+    private PlayerRepository playerRepository;
     @InjectMocks
+    private GameService gameService;
+    @Mock
     private SessionService sessionService;
-
+    @Mock
     private Session testSession;
-    private User testUser;
-    private Deck testDeck;
+    @Mock
     private Game testGame;
+    @Mock
+    private Player testPlayer;
+    @Mock
+    private Player testPlayer2;
+    @Mock
+    private User testUser1;
+    @Mock
+    private User testUser2;
+    @Mock
+    private Card testCard1;
+    @Mock
+    private Card testCard2;
+    @Mock
+    private Deck testDeck;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
 
         // given
+        testUser1 = new User();
+        testUser1.setUsername("username");
+        testUser1.setPassword("password");
+        testUser1.setUserId(1L);
+
+        testUser2 = new User();
+        testUser2.setUsername("username");
+        testUser2.setPassword("password");
+        testUser2.setUserId(2L);
+
         testSession = new Session();
         testSession.setSessionId(1L);
         testSession.setMaxPlayers(2);
-        testSession.setDeckId(2L);
-        testSession.setGameCode(1);
+        testSession.setDeckId(testDeck.getDeckId());
+        testSession.setGameCode(123456);
         testSession.setHostUsername("username");
         testSession.setHostId(3L);
-        testSession.setUserList(new ArrayList<>());
-
-        testUser = new User();
-        testUser.setUsername("username");
-        testUser.setPassword("password");
+        List<String> userList = new ArrayList<>();
+        userList.add(testUser1.getUsername());
+        userList.add(testUser2.getUsername());
+        testSession.setUserList(userList);
 
         testDeck = new Deck();
-        testDeck.setDeckname("deck");
+        testDeck.setDeckId(1L);
+        testDeck.setDeckstatus(DeckStatus.PUBLIC);
+        testDeck.setDeckname("testDeckname");
+        List<Card> cardList = new ArrayList<>();
+        cardList.add(testCard1);
+        cardList.add(testCard2);
+        testDeck.setCardList(cardList);
+
+
+        testCard1 = new Card();
+        testCard1.setCardId(1L);
+        testCard1.setCardname("testCardname");
+        testCard1.setImage("RandomImage");
+
+        testCard2 = new Card();
+        testCard2.setCardId(2L);
+        testCard2.setCardname("testCardname");
+        testCard2.setImage("RandomImage");
 
         testGame = new Game();
-        testGame.setGameCode((long) testSession.getGameCode());
+        testGame.setCurrentPlayer(1L);
+        testGame.setOpponentPlayer(null);
+        List<Player> playerList = new ArrayList<>();
+        playerList.add(testPlayer);
+        playerList.add(testPlayer2);
+        testGame.setPlayerList(playerList);
+        testGame.setRoundStatus(null);
+        testGame.setCurrentStatName(null);
+        testGame.setWinner(null);
 
-        Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
-        Mockito.when(deckRepository.findByDeckId(Mockito.any())).thenReturn(testDeck);
         Mockito.when(sessionRepository.findByGameCode(Mockito.anyInt())).thenReturn(testSession);
-        Mockito.when(gameRepository.findByGameCode(Mockito.anyLong())).thenReturn(testGame);
+        Mockito.when(playerRepository.findByPlayerId(Mockito.anyLong())).thenReturn(testPlayer);
+        Mockito.when(sessionService.getSessionByGameCode(Mockito.anyInt())).thenReturn(testSession);
+        Mockito.when(deckRepository.findByDeckId(testSession.getDeckId())).thenReturn(testDeck);
+        Mockito.when(userRepository.findByUsername(Mockito.anyString())).thenReturn(testUser1);
 
         // when -> any object is being saved in the sessionRepository -> return the dummy
-        // testSession
-        Mockito.when(sessionRepository.save(Mockito.any())).thenReturn(testSession);
+        // testGame
+        Mockito.when(gameRepository.save(Mockito.any())).thenReturn(testGame);
 
     }
 
     @Test
-    public void createSessionSuccess() {
+    public void createGameSuccess() {
 
         // when -> any object is being saved in the sessionRepository -> return the dummy
         // testSession
-        Session createdSession = sessionService.createSession(testSession);
+        Game createdGame = gameService.createGame((long) testSession.getGameCode());
 
 
         // then
-        Mockito.verify(sessionRepository, Mockito.times(2)).save(Mockito.any());
+        Mockito.verify(gameRepository, Mockito.times(3)).save(Mockito.any());
 
-        assertEquals(testSession.getSessionId(), createdSession.getSessionId());
-        assertEquals(testSession.getHostUsername(), createdSession.getHostUsername());
-        assertEquals(testSession.getHostId(), createdSession.getHostId());
-        assertEquals(testSession.getGameCode(), createdSession.getGameCode());
-        assertEquals(testSession.getMaxPlayers(), createdSession.getMaxPlayers());
-        assertEquals(testSession.getDeckId(), createdSession.getDeckId());
-        assertEquals(testSession.getUserList(), createdSession.getUserList());
+        assertEquals(testGame.getGameCode(), createdGame.getGameCode());
+        assertEquals(testGame.getCurrentPlayer(), createdGame.getCurrentPlayer());
+        assertEquals(testGame.getOpponentPlayer(), createdGame.getOpponentPlayer());
+        assertEquals(testGame.getPlayerList(), createdGame.getPlayerList());
+        assertEquals(testGame.getRoundStatus(), createdGame.getRoundStatus());
+        assertEquals(testGame.getCurrentStatName(), createdGame.getCurrentStatName());
+        assertEquals(testGame.getWinner(), createdGame.getWinner());
     }
 
+
+    /*
     @Test
     public void joinSessionSuccess() throws Exception {
-        //create a new User to join a session
+
         User testUser2 = new User();
         testUser2.setUsername("username2");
         testUser2.setPassword("password");
 
-        //join a given session
-        Session sessionToJoin = sessionService.joinSessionByGameCode(testSession.getGameCode(), testUser2.getUsername());
-
-        Mockito.verify(sessionRepository, Mockito.times(1)).save(Mockito.any());
+        Session sessionToJoin = gameService.joinSessionByGameCode(testSession.getGameCode(), testUser2.getUsername());
 
         assertEquals(testSession.getSessionId(), sessionToJoin.getSessionId());
         assertEquals(testSession.getHostUsername(), sessionToJoin.getHostUsername());
@@ -132,7 +173,7 @@ public class SessionServiceTest {
 
         // then -> attempt to update a session-> check that an error
         // is thrown
-        assertThrows(ResponseStatusException.class, () -> sessionService.joinSessionByGameCode(0,testUser2.getUsername()));
+        assertThrows(ResponseStatusException.class, () -> gameService.joinSessionByGameCode(0,testUser2.getUsername()));
 
     }
 
@@ -146,7 +187,7 @@ public class SessionServiceTest {
         inputSession.setHostUsername(testSession.getHostUsername());
         inputSession.setHostId(testSession.getHostId());
 
-        Session updatedSession = sessionService.updateSession(inputSession);
+        Session updatedSession = gameService.updateSession(inputSession);
 
         //then verify
         assertEquals(testSession.getSessionId(), updatedSession.getSessionId());
@@ -173,7 +214,7 @@ public class SessionServiceTest {
 
         // then -> attempt to update a session-> check that an error
         // is thrown
-        assertThrows(ResponseStatusException.class, () -> sessionService.updateSession(inputSession));
+        assertThrows(ResponseStatusException.class, () -> gameService.updateSession(inputSession));
 
-    }
+    }*/
 }

@@ -21,7 +21,7 @@ public class Game implements Serializable {
     @GeneratedValue
     private Long gameId;
 
-    @Column(nullable = false)
+    @Column
     private Long gameCode;
 
     @Column

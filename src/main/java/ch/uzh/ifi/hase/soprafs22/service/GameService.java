@@ -76,7 +76,7 @@ public class GameService {
         sessionService.checkIfSessionHasGame(foundSession);
         return newGame;
     }
-
+    @Transactional
     public Game gameUpdate(Long gameCode, Long opponentPlayer, String currentStatName){
         //The gameUpdate gets a PutDTO with updated opponentPlayer[id] or currentStatName [string]
         //The method should check which of the input gets updated and act accordingly
@@ -222,7 +222,6 @@ public class GameService {
 
         //get the two stats to compare [Always take the last Card in playedCards this way
         //if there is a draw this should be the most recent one]
-
         List<Card> currentPlayerPlayedCards = currentPlayer.getPlayedCards();
         List<Card> opponentPlayerPlayedCards = opponentPlayer.getPlayedCards();
 
@@ -259,7 +258,7 @@ public class GameService {
             List<Card> opponentPlayerHand = opponentPlayer.getHand();
             if(!opponentPlayerHand.isEmpty()){
                 Card nextCard = opponentPlayerHand.remove(0);
-                opponentPlayerHand.add(nextCard);
+                opponentPlayerPlayedCards.add(nextCard);
                 opponentPlayer.setHand(opponentPlayerHand);
                 opponentPlayer.setPlayedCards(opponentPlayerPlayedCards);
             }

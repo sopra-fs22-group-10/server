@@ -1,43 +1,22 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
-import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
-import ch.uzh.ifi.hase.soprafs22.entity.*;
-import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
+import ch.uzh.ifi.hase.soprafs22.entity.Game;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.GameGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.GamePutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.RoundGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
-import ch.uzh.ifi.hase.soprafs22.service.*;
+import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @RestController
 public class GameController {
 
-    private final DeckService deckService;
-    private final TemplateService templateService;
-    private final CardService cardService;
-    private final UserService userService;
     private final GameService gameService;
-    private final DeckRepository deckRepository;
-    //private EntityManager entityManager;
-    /*
-    private final UserRepository userRepository;
-
-    private final CardRepository cardRepository;
-    private final StatRepository statRepository;
-    private final TemplateRepository templateRepository;
-
-     */
-
-
 
     private EntityManager entityManager;
 
@@ -49,22 +28,9 @@ public class GameController {
 
 
 
-    GameController(DeckService deckService, DeckRepository deckRepository, TemplateService templateService, CardService cardService, UserService userService, GameService gameService, EntityManager entityManager){//, UserRepository userRepository, CardRepository cardRepository, TemplateRepository templateRepository, StatRepository statRepository) {
-        this.deckService = deckService;
-        this.templateService = templateService;
-        this.cardService = cardService;
-        this.userService = userService;
+    GameController(GameService gameService, EntityManager entityManager){
+
         this.gameService = gameService;
-
-        this.deckRepository = deckRepository;
-        /*
-        this.userRepository = userRepository;
-        this.templateRepository = templateRepository;
-        this.cardRepository = cardRepository;
-        this.statRepository = statRepository;
-
-         */
-
         this.entityManager = entityManager;
     }
 
