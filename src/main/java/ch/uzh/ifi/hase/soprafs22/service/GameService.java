@@ -76,7 +76,7 @@ public class GameService {
         sessionService.checkIfSessionHasGame(foundSession);
         return newGame;
     }
-
+    @Transactional
     public Game gameUpdate(Long gameCode, Long opponentPlayer, String currentStatName){
         //The gameUpdate gets a PutDTO with updated opponentPlayer[id] or currentStatName [string]
         //The method should check which of the input gets updated and act accordingly
@@ -166,9 +166,9 @@ public class GameService {
     }
 
     private void checkIfGameExists(Long gameCode) throws ResponseStatusException{
-        Game foundGame = gameRepository.findByGameCode(gameCode);
+        Optional<Game> foundGame = gameRepository.findById(gameCode);
 
-        if(foundGame != null){
+        if(foundGame.isPresent()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There already exists a Game with given gameCode");
         }
     }
