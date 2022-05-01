@@ -9,9 +9,10 @@ DROP TABLE IF EXISTS USER;
 DROP TABLE IF EXISTS USER_DECK_LIST;
 
 
-CREATE TABLE template
+CREATE TABLE TEMPLATE
 (
     template_id BIGINT NOT NULL,
+    statcount   INT    NOT NULL,
     CONSTRAINT pk_template PRIMARY KEY (template_id)
 );
 
@@ -81,36 +82,4 @@ create table USER_DECK_LIST
 (
     user_user_id      VARCHAR not null,
     deck_list_deck_id VARCHAR not null
-);
-
-CREATE TABLE SESSION
-(
-    session_id    BIGINT       NOT NULL,
-    host_username VARCHAR(255) NOT NULL,
-    host_id       BIGINT       NOT NULL,
-    game_code     INT          NOT NULL,
-    max_players   INT          NOT NULL,
-    deck_id       BIGINT       NOT NULL,
-    has_game      BOOLEAN,
-    CONSTRAINT pk_session PRIMARY KEY (session_id)
-);
-
-CREATE TABLE GAME
-(
-    game_id           BIGINT NOT NULL,
-    game_code         BIGINT NOT NULL,
-    current_player    BIGINT,
-    opponent_player   BIGINT,
-    current_stat_name VARCHAR(255),
-    round_status      INT,
-    winner            BIGINT,
-    CONSTRAINT pk_game PRIMARY KEY (game_id)
-);
-
-CREATE TABLE PLAYER
-(
-    player_id     BIGINT NOT NULL,
-    player_name   VARCHAR(255),
-    player_status INT,
-    CONSTRAINT pk_player PRIMARY KEY (player_id)
 );
