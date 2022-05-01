@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS USER;
 DROP TABLE IF EXISTS USER_DECK_LIST;
 
 
-CREATE TABLE TEMPLATE
+CREATE TABLE template
 (
     template_id BIGINT NOT NULL,
     CONSTRAINT pk_template PRIMARY KEY (template_id)
@@ -114,6 +114,3 @@ CREATE TABLE PLAYER
     player_status INT,
     CONSTRAINT pk_player PRIMARY KEY (player_id)
 );
-
-
-
