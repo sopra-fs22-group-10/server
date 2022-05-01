@@ -41,27 +41,26 @@ insert into CARD_CARDSTATS(card_card_id, cardstats_stat_id) VALUES
                                                                 ( '53', '65' );
 
 insert into CARD(card_id, cardname, image) VALUES
-                                               ('68', 'Cardname68','randomimage68'),
-                                               ('69', 'Cardname69','randomimage69'),
-                                               ('70', 'Cardname70','randomimage70'),
-
-('71','Cardname71','randomimage71'),
-('72','Cardname72','randomimage72'),
-('73','Cardname73','randomimage73'),
-('74','Cardname74','randomimage74'),
-('75','Cardname75','randomimage75'),
-('76','Cardname76','randomimage76'),
-('77','Cardname77','randomimage77'),
-('78','Cardname78','randomimage78'),
-('79','Cardname79','randomimage79'),
-('80','Cardname80','randomimage80'),
-('81','Cardname81','randomimage81'),
-('82','Cardname82','randomimage82'),
-('83','Cardname83','randomimage83'),
-('84','Cardname84','randomimage84'),
-('85','Cardname85','randomimage85'),
-('86','Cardname86','randomimage86'),
-('87','Cardname87','randomimage87');
+                                                ('68', 'Cardname68','randomimage68'),
+                                                ('69', 'Cardname69','randomimage69'),
+                                                ('70', 'Cardname70','randomimage70'),
+                                                ('71','Cardname71','randomimage71'),
+                                                ('72','Cardname72','randomimage72'),
+                                                ('73','Cardname73','randomimage73'),
+                                                ('74','Cardname74','randomimage74'),
+                                                ('75','Cardname75','randomimage75'),
+                                                ('76','Cardname76','randomimage76'),
+                                                ('77','Cardname77','randomimage77'),
+                                                ('78','Cardname78','randomimage78'),
+                                                ('79','Cardname79','randomimage79'),
+                                                ('80','Cardname80','randomimage80'),
+                                                ('81','Cardname81','randomimage81'),
+                                                ('82','Cardname82','randomimage82'),
+                                                ('83','Cardname83','randomimage83'),
+                                                ('84','Cardname84','randomimage84'),
+                                                ('85','Cardname85','randomimage85'),
+                                                ('86','Cardname86','randomimage86'),
+                                                ('87','Cardname87','randomimage87');
 
 
 insert into STAT(stat_id, statname, stattype, statvalue, valuestypes) VALUES
@@ -193,11 +192,26 @@ insert into DECK(deck_id, deckname, deckstatus, template_template_id) VALUES
 insert into DECK_CARD_LIST(deck_deck_id, card_list_card_id) VALUES
     ( '67', '51'),
     ( '67', '52'),
-    ( '67', '53');
-
-
-
-
-
+    ( '67', '53'),
+('67','68'),
+('67','69'),
+('67','70'),
+('67','71'),
+('67','72'),
+('67','73'),
+('67','74'),
+('67','75'),
+('67','76'),
+('67','77'),
+('67','78'),
+('67','79'),
+('67','80'),
+('67','81'),
+('67','82'),
+('67','83'),
+('67','84'),
+('67','85'),
+('67','86'),
+('67','87');
 
 
