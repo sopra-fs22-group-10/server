@@ -140,6 +140,7 @@ public class GameServiceTest {
         assertEquals(testGame.getWinner(), createdGame.getWinner());
     }
 
+
     /*
     @Test
     public void joinSessionSuccess() throws Exception {

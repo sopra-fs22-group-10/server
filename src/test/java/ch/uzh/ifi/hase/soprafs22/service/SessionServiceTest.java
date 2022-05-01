@@ -100,12 +100,15 @@ public class SessionServiceTest {
 
     @Test
     public void joinSessionSuccess() throws Exception {
-
+        //create a new User to join a session
         User testUser2 = new User();
         testUser2.setUsername("username2");
         testUser2.setPassword("password");
 
+        //join a given session
         Session sessionToJoin = sessionService.joinSessionByGameCode(testSession.getGameCode(), testUser2.getUsername());
+
+        Mockito.verify(sessionRepository, Mockito.times(1)).save(Mockito.any());
 
         assertEquals(testSession.getSessionId(), sessionToJoin.getSessionId());
         assertEquals(testSession.getHostUsername(), sessionToJoin.getHostUsername());
