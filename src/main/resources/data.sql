@@ -110,6 +110,7 @@ insert into STAT(stat_id, statname, stattype, statvalue, valuestypes) VALUES
 
 
 insert into CARD_CARDSTATS(card_card_id, cardstats_stat_id) VALUES
+
                                                                 ('999995551', '999995557'),
                                                                 ('999995551', '999995558' ),
                                                                 ('999995551', '999995559' ),
@@ -180,6 +181,7 @@ insert into CARD_CARDSTATS(card_card_id, cardstats_stat_id) VALUES
                                                                 ('999995587', '999995646'),
                                                                 ('999995587', '999995647');
 
+
 insert into TEMPLATE(template_id) VALUES
     ('999995566');
 
@@ -197,6 +199,7 @@ insert into DECK(deck_id, deckname, deckstatus, template_template_id) VALUES
 
 
 insert into DECK_CARD_LIST(deck_deck_id, card_list_card_id) VALUES
+
                                                                 ('999995567','999995551'),
                                                                 ('999995567','999995552'),
                                                                 ('999995567','999995553'),
@@ -220,6 +223,8 @@ insert into DECK_CARD_LIST(deck_deck_id, card_list_card_id) VALUES
                                                                 ('999995567','999995585'),
                                                                 ('999995567','999995586'),
                                                                 ('999995567','999995587');
+
+
 
 
 
