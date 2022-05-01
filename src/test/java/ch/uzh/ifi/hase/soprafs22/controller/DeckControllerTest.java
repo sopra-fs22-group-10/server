@@ -242,30 +242,6 @@ public class DeckControllerTest {
                 .content(asJsonString(template_1));
 
 
-        /*
-        JSONArray ja = new JSONArray();
-
-        LinkedHashMap<Object,Object> statmap = new LinkedHashMap<>();
-        statmap.put("id",testStat.getStatId());
-        statmap.put("statvalue", testStat.getStatvalue());
-        statmap.put("statname", testStat.getStatname());
-        statmap.put("stattype", testStat.getStattype().toString());
-        statmap.put("valuestype", testStat.getValuestypes());
-
-        ja.add(statmap);
-
-
-        LinkedHashMap<Object,Object> map = new LinkedHashMap<>();
-        map.put("templateid",testTemplate.getTemplateId().intValue());
-        map.put("templatename", testTemplate.getTemplatename());
-
-        map.put("templatestats", ja);
-        
-         */
-
-
-
-
         mockMvc.perform(postRequest).andExpect(status().isCreated())
                 .andExpect(jsonPath("$.deckname", is(testDeck.getDeckname())))
                 .andExpect(jsonPath("$.deckstatus", is(testDeck.getDeckstatus().toString())))
@@ -273,15 +249,14 @@ public class DeckControllerTest {
                 .andExpect(jsonPath("$.template.templatestats[0].statvalue",is(testTemplate.getTemplatestats().get(0).getStatvalue())))
                 .andExpect(jsonPath("$.template.templatestats[0].statname",is(testTemplate.getTemplatestats().get(0).getStatname())));
 
-        //Why is template it Linked Hash map ?
+
     }
 
 
     @Test //Get request to Deck but with wrong ID
     public void get_Deck_with_DeckGet_with_wrong_Id() throws Exception{
 
-        // this mocks the DeckService -> we define above what the deckService should
-        // return when getDecks() is called
+
         String baseErrorMessage = "The %s provided does not exist. There %s not any deck assotiated with this Id";
 
         given(deckService.getDeckById(Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage, "ID", "is")));
@@ -334,7 +309,6 @@ public class DeckControllerTest {
                 .content(asJsonString(card_1));
         
         mockMvc.perform(postRequest).andExpect(status().isCreated())
-                //.andExpect(jsonPath("$.cardList", hasSize(1)))
                 .andExpect(jsonPath("$.cardList[0].cardname",is(testCard.getCardname())))
                 .andExpect(jsonPath("$.cardList[0].cardId",is(testCard.getCardId().intValue())))
                 .andExpect(jsonPath("$.cardList[0].cardstats[0].statvalue",is(testCard.getCardstats().get(0).getStatvalue())))
@@ -342,7 +316,6 @@ public class DeckControllerTest {
                 .andExpect(jsonPath("$.cardList[0].cardstats[0].stattype",is(testCard.getCardstats().get(0).getStattype().toString())))
                 .andExpect(jsonPath("$.cardList[0].cardstats[0].valuestypes",is(testCard.getCardstats().get(0).getValuestypes())));
 
-        //.andExpect(jsonPath("$.template", equalToObject(testDeck.getTemplate())));
         
     }
 
@@ -414,7 +387,7 @@ public class DeckControllerTest {
                 .content(asJsonString(cardPutDTO));
 
         mockMvc.perform(putRequest).andExpect(status().isNoContent());
-                //.andExpect(jsonPath("$.cardList", hasSize(1)))
+
 
 
 
@@ -485,20 +458,7 @@ public class DeckControllerTest {
         given(cardService.createCard(Mockito.any(), Mockito.any())).willReturn(testCard2);
         given(deckService.createDeck(Mockito.any())).willReturn(testDeck2);
         given(templateService.createTemplate(Mockito.any())).willReturn(testTemplate2);
-        /*doAnswer(invocation -> {
-            Object arg0 = invocation.getArgument(0);
-            Object arg1 = invocation.getArgument(1);
 
-            assertEquals(3, arg0);
-            assertEquals("answer me", arg1);
-            return null;
-        }).when(entityManager).detach(any(Object.class));
-
-         */
-
-
-        //given(entityManager)).willReturn(entitymanager);
-        //doNothing().when(entityManager).detach(Mockito.any());
 
 
 
@@ -528,7 +488,7 @@ public class DeckControllerTest {
 
         user.setDeckList(decklist);
 
-        // then
+
         MockHttpServletRequestBuilder getRequest = get("/decks/users/"+user.getUserId())
                 .header("Authentication", user.getAuthentication())
                 .contentType(MediaType.APPLICATION_JSON);
