@@ -169,7 +169,7 @@ public class DeckController {
 
         //Adds TemplateDeck to every user created
         DeckPutDTO deckPutDTO = new DeckPutDTO();
-        deckPutDTO.setDeckId(67L);
+        deckPutDTO.setDeckId(999995567L);
         AddExistingDeckToUser(createdUser.getUserId(), deckPutDTO, createdUser.getAuthentication());
 
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
