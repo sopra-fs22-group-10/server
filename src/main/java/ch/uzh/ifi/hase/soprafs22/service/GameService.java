@@ -166,9 +166,9 @@ public class GameService {
     }
 
     private void checkIfGameExists(Long gameCode) throws ResponseStatusException{
-        Optional<Game> foundGame = gameRepository.findById(gameCode);
+        Game foundGame = gameRepository.findByGameCode(gameCode);
 
-        if(foundGame.isPresent()){
+        if(foundGame != null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There already exists a Game with given gameCode");
         }
     }

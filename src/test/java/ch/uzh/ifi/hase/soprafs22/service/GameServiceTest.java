@@ -69,7 +69,7 @@ public class GameServiceTest {
         testSession.setSessionId(1L);
         testSession.setMaxPlayers(2);
         testSession.setDeckId(testDeck.getDeckId());
-        testSession.setGameCode(1);
+        testSession.setGameCode(123456);
         testSession.setHostUsername("username");
         testSession.setHostId(3L);
         List<String> userList = new ArrayList<>();
@@ -109,7 +109,6 @@ public class GameServiceTest {
         testGame.setWinner(null);
 
         Mockito.when(sessionRepository.findByGameCode(Mockito.anyInt())).thenReturn(testSession);
-        Mockito.when(gameRepository.findByGameCode(Mockito.anyLong())).thenReturn(testGame);
         Mockito.when(playerRepository.findByPlayerId(Mockito.anyLong())).thenReturn(testPlayer);
         Mockito.when(sessionService.getSessionByGameCode(Mockito.anyInt())).thenReturn(testSession);
         Mockito.when(deckRepository.findByDeckId(testSession.getDeckId())).thenReturn(testDeck);
