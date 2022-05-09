@@ -54,11 +54,6 @@ public class GameControllerTest {
 
     }
 
-    @AfterEach
-    public void teardown() {
-        gameService.deleteGameByGameCode(game.getGameCode());
-    }
-
     @Autowired
     private MockMvc mockMvc;
 

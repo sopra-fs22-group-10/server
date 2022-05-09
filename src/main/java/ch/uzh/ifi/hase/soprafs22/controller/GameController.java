@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.entity.Game;
+import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.GamePutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.RoundGetDTO;
@@ -85,8 +86,8 @@ public class GameController {
     @DeleteMapping("/session/{gameCode}/game")
     @ResponseStatus(HttpStatus.OK)
     public void deleteGameByGameCode(@PathVariable Long gameCode, @RequestHeader("Authentication") String auth){
-        userService.checkIfUserExistsByAuthentication(auth);
+        User foundUser = userService.getUserByAuthentication(auth);
 
-        gameService.deleteGameByGameCode(gameCode);
+        gameService.deleteGameByGameCode(gameCode, foundUser);
     }
 }
