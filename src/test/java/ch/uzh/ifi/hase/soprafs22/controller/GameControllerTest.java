@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 import ch.uzh.ifi.hase.soprafs22.entity.Game;
 import ch.uzh.ifi.hase.soprafs22.entity.Player;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
+import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -38,8 +39,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(GameController.class)
 public class GameControllerTest {
     Game game;
-    Player player1;
-    Player player2;
 
     @BeforeEach
     public void init() {
@@ -67,7 +66,11 @@ public class GameControllerTest {
     private GameService gameService;
 
     @MockBean
+    private UserService userService;
+
+    @MockBean
     EntityManager createentityManager;
+
 
 
 
@@ -79,7 +82,8 @@ public class GameControllerTest {
         given(gameService.createGame(Mockito.any())).willReturn(game);
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = post("/session/"+game.getGameCode()+"/game")
-                .contentType(MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authentication", "auth");
         // then
         MvcResult mvcResult = mockMvc.perform(postRequest)
                 .andExpect(status().is(201))
@@ -97,7 +101,7 @@ public class GameControllerTest {
         given(gameService.findGameByGameCode(game.getGameCode())).willReturn(game);
 
         // when
-        MockHttpServletRequestBuilder getRequest = get("/session/"+game.getGameCode()+"/game").contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder getRequest = get("/session/"+game.getGameCode()+"/game").contentType(MediaType.APPLICATION_JSON).header("Authentication", "auth");
 
         // then
         mockMvc.perform(getRequest).andExpect(status().is(200))
@@ -114,7 +118,8 @@ public class GameControllerTest {
         given(gameService.createGame(Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.resolve(404), "There exists no Session with given gamecode"));
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = post("/session/"+0L+"/game")
-                .contentType(MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authentication", "auth");
         // then
         mockMvc.perform(postRequest)
                 .andExpect(status().is(404));
