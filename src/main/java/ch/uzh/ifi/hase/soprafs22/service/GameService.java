@@ -54,6 +54,7 @@ public class GameService {
         }
 
         foundSession.setHasGame(false);
+        sessionService.saveSession(foundSession);
 
         gameRepository.deleteByGameCode(gameCode);
     }

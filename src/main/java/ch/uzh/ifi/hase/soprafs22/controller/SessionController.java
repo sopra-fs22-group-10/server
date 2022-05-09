@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.entity.Session;
+import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.JoinSessionPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.SessionGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.SessionPostDTO;
@@ -87,5 +88,15 @@ public class SessionController {
         Session updatedSession = sessionService.updateSession(sessionToUpdate);
 
         return DTOMapper.INSTANCE.convertEntityToSessionGetDTO(updatedSession);
+    }
+
+    @PostMapping("/session/leave/{gameCode}")
+    @ResponseStatus(HttpStatus.OK)
+    public void leaveSession(@PathVariable int gameCode, @RequestHeader("Authentication") String auth) {
+        User user = userService.getUserByAuthentication(auth);
+
+        String username = user.getUsername();
+
+        sessionService.leaveSession(gameCode, username);
     }
 }
