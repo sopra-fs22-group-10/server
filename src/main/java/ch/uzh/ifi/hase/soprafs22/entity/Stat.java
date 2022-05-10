@@ -16,7 +16,7 @@ public class Stat implements Serializable {
     private Long statId;
 
     @Column
-    private String statvalue;
+    private Double statvalue;
 
     @Column(nullable = false)
     private String statname;
@@ -27,11 +27,11 @@ public class Stat implements Serializable {
     @Column
     private String valuestypes;
 
-    public void setStatvalue(String statvalue) {
+    public void setStatvalue(Double statvalue) {
         this.statvalue = statvalue;
     }
 
-    public String getStatvalue() {
+    public Double getStatvalue() {
         return statvalue;
     }
 

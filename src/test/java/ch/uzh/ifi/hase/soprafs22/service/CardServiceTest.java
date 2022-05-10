@@ -65,7 +65,7 @@ public class CardServiceTest {
         CardStat.setStatname("testStat1");
         CardStat.setStatId(4L);
         CardStat.setStattype(StatTypes.NUMBER);
-        CardStat.setStatvalue("CardStatValue");
+        CardStat.setStatvalue(6.0);
 
         cardStats = new ArrayList<>();
         cardStats.add(CardStat);
@@ -150,7 +150,7 @@ public class CardServiceTest {
 
         Stat CardStat2 = new Stat();
         CardStat2.setStatname("testCardStat1");
-        CardStat2.setStatvalue("3");
+        CardStat2.setStatvalue(3.0);
         CardStat2.setStatId(1L);
         CardStat2.setStattype(StatTypes.STARS);
         CardStat2.setValuestypes("KMH");

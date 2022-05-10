@@ -93,6 +93,10 @@ public class CardService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The StatName of the card and Template doesn't match!");
             }
 
+            if(StatCard.getStatvalue() == null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The Statvalue must be of type Integer!");
+            }
+
              //Only Stat with StatType Value can have a ValuesType
              if((StatCard.getStattype()!= StatTypes.VALUE && (StatCard.getValuestypes() != null) || (StatCard.getStattype()== StatTypes.VALUE && (StatCard.getValuestypes() == null)))){
                  throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only StatType VALUE, can and must have a non null Valuestype");

@@ -83,7 +83,7 @@ public class CardServiceIntegrationTest {
         CardStat = new Stat();
         CardStat.setStatname("testStat1");
         CardStat.setStattype(StatTypes.NUMBER);
-        CardStat.setStatvalue("CardStatValue");
+        CardStat.setStatvalue(5.0);
 
         List<Stat> cardStats = new ArrayList<>();
         cardStats.add(CardStat);
@@ -164,7 +164,7 @@ public class CardServiceIntegrationTest {
 
         Stat CardStat2 = new Stat();
         CardStat2.setStatname("testCardStat1");
-        CardStat2.setStatvalue("3");
+        CardStat2.setStatvalue(3.0);
         CardStat2.setStatId(1L);
         CardStat2.setStattype(StatTypes.STARS);
         CardStat2.setValuestypes("KMH");
@@ -219,7 +219,7 @@ public class CardServiceIntegrationTest {
         newCardStat.setStatId(testCard.getCardstats().get(0).getStatId());
         newCardStat.setStatname("testStat1");
         newCardStat.setStattype(StatTypes.NUMBER);
-        newCardStat.setStatvalue("33");
+        newCardStat.setStatvalue(33.0);
 
         Card newcard = new Card();
         newcard.setCardId(testCard.getCardId());
@@ -236,7 +236,7 @@ public class CardServiceIntegrationTest {
         Card changedCard = cardService.getCardById(newcard.getCardId());
 
         assertEquals(changedCard.getCardId(), newcard.getCardId());
-        assertEquals(changedCard.getCardstats().get(0).getStatvalue(), "33");
+        assertEquals(changedCard.getCardstats().get(0).getStatvalue(), 33);
         assertEquals(changedCard.getCardname(), "NewCardname");
         assertEquals(changedCard.getImage(), newcard.getImage());
         assertEquals(changedCard.getCardstats().get(0).getStatId(), newcard.getCardstats().get(0).getStatId());
