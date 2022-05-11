@@ -66,7 +66,7 @@ public class StatServiceIntegrationTest {
 
 
         Stat testStat = new Stat();
-        testStat.setStatvalue("200");
+        testStat.setStatvalue(200.0);
         testStat.setStatname("testStat1");
         testStat.setStattype(StatTypes.VALUE);
         testStat.setValuestypes("hhhh");
@@ -94,7 +94,7 @@ public class StatServiceIntegrationTest {
 
 
         Stat testStat = new Stat();
-        testStat.setStatvalue("200");
+        testStat.setStatvalue(200.0);
         testStat.setStatId(1L);
         testStat.setStatname("testStat1");
         testStat.setStattype(StatTypes.NUMBER);

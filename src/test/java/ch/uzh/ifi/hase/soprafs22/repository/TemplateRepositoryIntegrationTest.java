@@ -31,7 +31,7 @@ public class TemplateRepositoryIntegrationTest {
 
 
         Stat testStat = new Stat();
-        testStat.setStatvalue("200");
+        testStat.setStatvalue(200.0);
         testStat.setStatname("testStat1");
         testStat.setStattype(StatTypes.NUMBER);
 

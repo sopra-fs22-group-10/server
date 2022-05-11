@@ -1,16 +1,13 @@
 To Do:
     ENtities:
-        -Change Template to Deck Relationship
+
         -Create Change Template or Delete Template Function/Endpoint:
             Make check that only Template can be changed if no cards are present
             Ask Question
-    Authorization:
-        -Create Authorization Checks for all requests
 
-    -Add add_existing_deck with access code Check
 
-    To write Tests for:
-        -User getUserByAuthentication(String Authentication)
-        -UserRepository:  User findByAuthentication(String authentication);
-        -DeckRepository:  Deck findByCardListContaining(Card card);
-        -DeckController getCard(@PathVariable Long cardId, @RequestHeader("Authentication") String auth){
+
+
+
+
+    -Check if Value from Created cardstat is larger zero

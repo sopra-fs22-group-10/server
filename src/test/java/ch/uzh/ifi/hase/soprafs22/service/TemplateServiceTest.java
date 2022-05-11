@@ -92,7 +92,7 @@ public class TemplateServiceTest {
 
 
         Stat someStat = new Stat();
-        someStat.setStatvalue("200");
+        someStat.setStatvalue(200.0);
         someStat.setStatname("testStat1");
         someStat.setStattype(StatTypes.NUMBER);
 

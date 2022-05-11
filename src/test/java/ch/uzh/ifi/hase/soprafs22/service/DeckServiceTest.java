@@ -142,7 +142,7 @@ public class DeckServiceTest {
         templateStat.setStattype(StatTypes.NUMBER);
 
         Stat cardStat = new Stat();
-        cardStat.setStatvalue("200");
+        cardStat.setStatvalue(200.0);
         cardStat.setStatname("Stat1");
         cardStat.setStatId(3L);
         cardStat.setStattype(StatTypes.NUMBER);
@@ -189,7 +189,7 @@ public class DeckServiceTest {
         templateStat.setStattype(StatTypes.NUMBER);
 
         Stat cardStat = new Stat();
-        cardStat.setStatvalue("200");
+        cardStat.setStatvalue(200.0);
         cardStat.setStatname("Stat1");
         cardStat.setStattype(StatTypes.NUMBER);
 
@@ -231,14 +231,14 @@ public class DeckServiceTest {
         testTemplate.setTemplatestats(templateStats);
 
         Stat cardStat = new Stat();
-        cardStat.setStatvalue("200");
+        cardStat.setStatvalue(200.0);
         cardStat.setStatname("cardStat1");
         cardStat.setStattype(StatTypes.NUMBER);
         List<Stat> statList = new ArrayList<>();
         statList.add(cardStat);
 
         Stat cardStat2 = new Stat();
-        cardStat2.setStatvalue("300");
+        cardStat2.setStatvalue(300.0);
         cardStat2.setStatname("cardStat1");
         cardStat2.setStattype(StatTypes.NUMBER);
         List<Stat> statList2 = new ArrayList<>();

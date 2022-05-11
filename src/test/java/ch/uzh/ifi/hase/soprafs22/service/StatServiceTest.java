@@ -34,7 +34,7 @@ public class StatServiceTest {
         testStat = new Stat();
         testStat.setStatId(1L);
         testStat.setStatname("testStatname");
-        testStat.setStatvalue("200");
+        testStat.setStatvalue(200.0);
         testStat.setStattype(StatTypes.NUMBER);
 
         // when -> any object is being saved in the statRepository -> return the dummy

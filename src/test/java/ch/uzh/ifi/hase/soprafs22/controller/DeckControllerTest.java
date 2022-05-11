@@ -101,7 +101,7 @@ public class DeckControllerTest {
         templateStat.setStattype(StatTypes.NUMBER);
 
         cardStat = new Stat();
-        cardStat.setStatvalue("200");
+        cardStat.setStatvalue(200.0);
         cardStat.setStatname("cardStat1");
         cardStat.setStatId(1L);
         cardStat.setStattype(StatTypes.NUMBER);
@@ -301,7 +301,7 @@ public class DeckControllerTest {
         CardPostDTO card_1 = new CardPostDTO();
         Stat postStat = new Stat();
         
-        postStat.setStatvalue("200");
+        postStat.setStatvalue(200.0);
         postStat.setStatname("postStat1");
         postStat.setStattype(StatTypes.NUMBER);
 
@@ -373,7 +373,7 @@ public class DeckControllerTest {
         Stat postStat = new Stat();
 
         Stat cardStat2 = new Stat();
-        cardStat2.setStatvalue("300");
+        cardStat2.setStatvalue(300.0);
         cardStat2.setStatname("cardStat1");
         cardStat2.setStatId(1L);
         cardStat2.setStattype(StatTypes.NUMBER);
@@ -440,7 +440,7 @@ public class DeckControllerTest {
         templateStat2.setStattype(StatTypes.NUMBER);
 
         Stat cardStat2 = new Stat();
-        cardStat2.setStatvalue("200");
+        cardStat2.setStatvalue(200.0);
         cardStat2.setStatname("cardStat1");
         cardStat2.setStatId(1L);
         cardStat2.setStattype(StatTypes.NUMBER);
@@ -574,7 +574,7 @@ public class DeckControllerTest {
             templateStat2.setStattype(StatTypes.NUMBER);
 
             Stat cardStat2 = new Stat();
-            cardStat2.setStatvalue("200");
+            cardStat2.setStatvalue(200.0);
             cardStat2.setStatname("cardStat1");
             cardStat2.setStatId(1L);
             cardStat2.setStattype(StatTypes.NUMBER);

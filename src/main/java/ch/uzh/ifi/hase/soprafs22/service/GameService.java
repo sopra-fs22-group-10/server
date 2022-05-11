@@ -230,8 +230,8 @@ public class GameService {
         Card opponentPlayerCard = opponentPlayerPlayedCards.get(opponentPlayerPlayedCards.size() - 1);
 
         //get the statValue of both cards and compare them
-        int currentStatValue;
-        int opponentStatValue;
+        double currentStatValue;
+        double opponentStatValue;
         try {
             currentStatValue = getStatValue(currentPlayerCard, currentStatName);
             opponentStatValue = getStatValue(opponentPlayerCard, currentStatName);
@@ -336,12 +336,12 @@ public class GameService {
         gameRepository.flush();
     }
 
-    private int getStatValue(Card card, String currentStatName) throws ResponseStatusException{
+    private Double getStatValue(Card card, String currentStatName) throws ResponseStatusException{
         //always compare the stats of the last card in playedCards (when they have drawn the new card gets appended)
         for(int i = 0;i < card.getCardstats().size(); i++ ){
             String statName = card.getCardstats().get(i).getStatname();
             if(Objects.equals(currentStatName, statName)){
-                return Integer.parseInt(card.getCardstats().get(i).getStatvalue());
+                return card.getCardstats().get(i).getStatvalue();
             }
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no statName which equals the given one");

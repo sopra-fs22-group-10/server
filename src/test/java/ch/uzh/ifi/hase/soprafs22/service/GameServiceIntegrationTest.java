@@ -112,17 +112,17 @@ public class GameServiceIntegrationTest {
         testStat1 = new Stat();
         testStat1.setStatname("statName");
         testStat1.setStattype(StatTypes.NUMBER);
-        testStat1.setStatvalue("100");
+        testStat1.setStatvalue(100.0);
 
         testStat2 = new Stat();
         testStat2.setStatname("statName");
         testStat2.setStattype(StatTypes.NUMBER);
-        testStat2.setStatvalue("1");
+        testStat2.setStatvalue(1.0);
 
         testStat3 = new Stat();
         testStat3.setStatname("statName");
         testStat3.setStattype(StatTypes.NUMBER);
-        testStat3.setStatvalue("50");
+        testStat3.setStatvalue(50.0);
 
         templateStat = new Stat();
         templateStat.setStatname("statName");
