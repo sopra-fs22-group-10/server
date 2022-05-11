@@ -47,7 +47,15 @@ public class GameService {
         return foundGame;
     }
 
-    public void deleteGameByGameCode(Long gameCode){
+    public void deleteGameByGameCode (Long gameCode, User user)throws ResponseStatusException{
+        Session foundSession = sessionService.getSessionByGameCode(gameCode.intValue());
+        if(!user.getUsername().equals(foundSession.getHostUsername())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only the host can end a game");
+        }
+
+        foundSession.setHasGame(false);
+        sessionService.saveSession(foundSession);
+
         gameRepository.deleteByGameCode(gameCode);
     }
 
