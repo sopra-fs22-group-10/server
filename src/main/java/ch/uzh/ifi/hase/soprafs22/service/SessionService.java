@@ -148,23 +148,28 @@ public class    SessionService {
         throw new ResponseStatusException(HttpStatus.resolve(404), "There exists no Session with given gamecode");
     }
 
-    public void leaveSession(int gameCode, String username){
+    public void leaveSession(int gameCode, String usernameToLeave) throws ResponseStatusException{
         Session session = getSessionByGameCode(gameCode);
         List<String> userList = session.getUserList();
-        if(session.getHostUsername().equals(username)){ //if the host leaves the session a new user should be assigned as the new host
-            userList.remove(username);
-            //if the session would be empty after the user leaves it gets deleted
-            if(userList.isEmpty()){deleteSessionByGameCode(gameCode); }
-            else{
-                User newHost = userRepository.findByUsername(userList.get(0));
-                session.setHostId(newHost.getUserId());
-                session.setHostUsername(newHost.getUsername());
-            }
-        } else{
-            //in this case the user to leave is not the host so he just gets removed from the userList
-            userList.remove(username);
+        if(!userList.contains(usernameToLeave)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"The user to leave is not found in the given session");
         }
-        session.setUserList(userList);
+        if(userList.size()== 1){
+            deleteSessionByGameCode(gameCode);
+            return;
+        }
+        if(usernameToLeave.equals(session.getHostUsername())){
+            userList.remove(usernameToLeave);
+            session.setUserList(userList);
+            String newHostUsername = userList.get(0);
+            User newHost = userRepository.findByUsername(newHostUsername);
+            session.setHostUsername(newHostUsername);
+            session.setHostId(newHost.getUserId());
+        } else {
+            userList.remove(usernameToLeave);
+            session.setUserList(userList);
+        }
+
         saveSession(session);
     }
 
@@ -251,6 +256,5 @@ public class    SessionService {
         sessionRepository.save(sessionToSave);
         sessionRepository.flush();
     }
-
 }
 

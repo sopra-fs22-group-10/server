@@ -90,7 +90,7 @@ public class SessionController {
         return DTOMapper.INSTANCE.convertEntityToSessionGetDTO(updatedSession);
     }
 
-    @PostMapping("/session/leave/{gameCode}")
+    @PutMapping("/session/leave/{gameCode}")
     @ResponseStatus(HttpStatus.OK)
     public void leaveSession(@PathVariable int gameCode, @RequestHeader("Authentication") String auth) {
         User user = userService.getUserByAuthentication(auth);
