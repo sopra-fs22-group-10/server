@@ -192,7 +192,7 @@ public class GameService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"This opponent has no cards left [PlayerStatus = INACTIVE]");
         }
 
-        if(opponentPlayerId == game.getCurrentPlayer()){
+        if(opponentPlayerId.equals(game.getCurrentPlayer())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The opponent and current Player cannot have the same Id");
         }
 

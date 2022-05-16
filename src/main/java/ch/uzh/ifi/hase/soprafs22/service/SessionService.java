@@ -43,12 +43,15 @@ public class    SessionService {
 
     private final GameRepository gameRepository;
 
+    private final Random random;
+
     @Autowired
     public SessionService(@Qualifier("sessionRepository") SessionRepository sessionRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("deckRepository") DeckRepository deckRepository, @Qualifier("gameRepository") GameRepository gameRepository) {
         this.sessionRepository = sessionRepository;
         this.userRepository = userRepository;
         this.deckRepository = deckRepository;
         this.gameRepository = gameRepository;
+        this.random = new Random();
     }
 
     public List<Session> getSessions() {
@@ -182,8 +185,6 @@ public class    SessionService {
       //check if the user exists
       User userToCheck = userRepository.findByUsername(newSession.getHostUsername());
       if(userToCheck == null){ throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The given User does not exist");}
-      //check if User is authorized
-      //TO BE IMPLEMENTED
 
       //check if MaxPlayer Input is correct
       if(newSession.getMaxPlayers() > 6){
@@ -199,8 +200,6 @@ public class    SessionService {
 
   private int generateGameCode(Long sessionId) {
         String stringValue = sessionId.toString();
-
-        Random random = new Random();
 
         while(stringValue.length() < 6) {
 
