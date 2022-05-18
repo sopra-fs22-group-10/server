@@ -88,6 +88,6 @@ public class GameController {
     public void deleteGameByGameCode(@PathVariable Long gameCode, @RequestHeader("Authentication") String auth){
         User foundUser = userService.getUserByAuthentication(auth);
 
-        gameService.deleteGameByGameCode(gameCode, foundUser);
+        gameService.deleteGameByGameCode(gameCode);
     }
 }
