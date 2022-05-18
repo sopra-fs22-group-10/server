@@ -72,6 +72,9 @@ public class    SessionService {
             checkSessionCreationInput(newSession);
         }catch (ResponseStatusException e) {throw e; }
 
+        Deck deck = deckRepository.findByDeckId(newSession.getDeckId());
+        newSession.setDeckCode(deck.getDeckacesscode());
+
         newSession.addUser(newSession.getHostUsername());
         checkIfSessionHasGame(newSession);
 
@@ -136,6 +139,8 @@ public class    SessionService {
         }catch (ResponseStatusException e) {throw e; }
 
         sessionToUpdate.setDeckId(sessionInput.getDeckId());
+        Deck deck  = deckRepository.findByDeckId(sessionToUpdate.getDeckId());
+        sessionToUpdate.setDeckCode(deck.getDeckacesscode());
         sessionToUpdate.setMaxPlayers(sessionInput.getMaxPlayers());
         sessionToUpdate.setHostUsername(sessionInput.getHostUsername());
         sessionRepository.save(sessionToUpdate);

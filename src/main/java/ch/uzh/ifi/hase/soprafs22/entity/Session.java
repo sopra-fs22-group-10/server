@@ -42,6 +42,9 @@ public class Session implements Serializable {
     @Column(nullable = false)
     private Long deckId;
 
+    @Column
+    private Integer deckCode;
+
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> userList;
 
@@ -87,4 +90,8 @@ public class Session implements Serializable {
     public void setHasGame(Boolean hasGame) {
         this.hasGame = hasGame;
     }
+
+    public Integer getDeckCode() { return deckCode; }
+
+    public void setDeckCode(Integer deckCode) { this.deckCode = deckCode; }
 }

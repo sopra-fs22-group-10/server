@@ -78,8 +78,6 @@ public class GameController {
         // fetch game in the internal representation
        Game game = gameService.gameUpdate(gameCode, gamePutDTO.getOpponentPlayer(), gamePutDTO.getCurrentStatName());
 
-        //Authentification Check
-
         return DTOMapper.INSTANCE.convertEntityToRoundGetDTO(game);
     }
 
