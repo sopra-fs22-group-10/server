@@ -263,10 +263,58 @@ public class GameServiceIntegrationTest {
     }
 
     @Test
-    public void gameUpdateWhenChoosingOpponent(){
-        //first we need to add Cards to both players hand since we
-        //dont do that before Each test
+    public void findGameByGameCodeSuccess(){
 
+        Game game = gameService.createGame(testGame.getGameCode());
+
+        Game foundGame = gameService.findGameByGameCode(testGame.getGameCode());
+
+        assertEquals(foundGame.getGameCode(), game.getGameCode());
     }
+
+    @Test
+    public void findGameByGameCodeFail() throws ResponseStatusException{
+        assertThrows(ResponseStatusException.class, () -> gameService.findGameByGameCode(testGame.getGameCode()));
+    }
+
+    @Test
+    public void wrongGameCode() throws ResponseStatusException{
+        assertThrows(ResponseStatusException.class, () -> gameService.createGame(0L));
+    }
+
+    @Test
+    public void createGameWithExistingGameCode() throws ResponseStatusException{
+        Game createdGame = gameService.createGame((long)testSession.getGameCode());
+        assertThrows(ResponseStatusException.class, () -> gameService.createGame(createdGame.getGameCode()));
+    }
+
+    @Test
+    public void updateGameWhenChoosingOpponent(){
+
+        Game createdGame = gameService.createGame(testGame.getGameCode());
+
+        assertNull(createdGame.getOpponentPlayer());
+    }
+
+    @Test
+    public void updateOpponentPlayer(){
+        Game createdGame = gameService.createGame(testGame.getGameCode());
+
+        Game updatedGame = gameService.gameUpdate(createdGame.getGameCode(), testPlayer2.getPlayerId(),null);
+
+        assertEquals(testPlayer2.getPlayerId(), updatedGame.getOpponentPlayer());
+    }
+
+    @Test
+    public void playRound(){
+        Game createdGame = gameService.createGame(testGame.getGameCode());
+
+        Game updatedGame = gameService.gameUpdate(createdGame.getGameCode(), testPlayer2.getPlayerId(),null);
+
+        updatedGame = gameService.gameUpdate(createdGame.getGameCode(), null, "statName");
+
+        assertNotNull(updatedGame.getWinner());
+    }
+
 }
 

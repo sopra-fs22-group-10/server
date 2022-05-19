@@ -1,13 +1,15 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs22.entity.Game;
+import ch.uzh.ifi.hase.soprafs22.entity.Player;
 import ch.uzh.ifi.hase.soprafs22.entity.Session;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.SessionGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.SessionPostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UserLoginDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import org.junit.jupiter.api.Test;
 
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -109,5 +111,24 @@ public class DTOMapperTest {
         assertEquals(session.getUserList(), sessionGetDTO.getUserList());
         assertEquals(session.getMaxPlayers(), sessionGetDTO.getMaxPlayers());
         assertEquals(session.getDeckId(), sessionGetDTO.getDeckId());
+    }
+
+    @Test
+    public void createGetGameDTOSuccess() {
+        Game game = new Game();
+        game.setGameCode(1L);
+        game.setWinner(2L);
+        game.setCurrentPlayer(2L);
+        game.setOpponentPlayer(3L);
+        game.setPlayerList(new ArrayList<Player>());
+
+        //create GameGetDTO
+        GameGetDTO gameGetDTO = DTOMapper.INSTANCE.convertEntityToGameGetDTO(game);
+
+        assertEquals(game.getWinner(), gameGetDTO.getWinner());
+        assertEquals(game.getCurrentPlayer(), gameGetDTO.getCurrentPlayer());
+        assertEquals(game.getOpponentPlayer(), gameGetDTO.getOpponentPlayer());
+        assertEquals(game.getPlayerList(), gameGetDTO.getPlayerList());
+
     }
 }

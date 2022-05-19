@@ -78,8 +78,6 @@ public class GameController {
         // fetch game in the internal representation
        Game game = gameService.gameUpdate(gameCode, gamePutDTO.getOpponentPlayer(), gamePutDTO.getCurrentStatName());
 
-        //Authentification Check
-
         return DTOMapper.INSTANCE.convertEntityToRoundGetDTO(game);
     }
 
@@ -88,6 +86,6 @@ public class GameController {
     public void deleteGameByGameCode(@PathVariable Long gameCode, @RequestHeader("Authentication") String auth){
         User foundUser = userService.getUserByAuthentication(auth);
 
-        gameService.deleteGameByGameCode(gameCode, foundUser);
+        gameService.deleteGameByGameCode(gameCode);
     }
 }

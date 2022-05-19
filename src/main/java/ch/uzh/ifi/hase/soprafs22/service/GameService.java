@@ -47,12 +47,8 @@ public class GameService {
         return foundGame;
     }
 
-    public void deleteGameByGameCode (Long gameCode, User user)throws ResponseStatusException{
+    public void deleteGameByGameCode (Long gameCode)throws ResponseStatusException{
         Session foundSession = sessionService.getSessionByGameCode(gameCode.intValue());
-        if(!user.getUsername().equals(foundSession.getHostUsername())){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only the host can end a game");
-        }
-
         foundSession.setHasGame(false);
         sessionService.saveSession(foundSession);
 
@@ -192,7 +188,7 @@ public class GameService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"This opponent has no cards left [PlayerStatus = INACTIVE]");
         }
 
-        if(opponentPlayerId == game.getCurrentPlayer()){
+        if(opponentPlayerId.equals(game.getCurrentPlayer())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The opponent and current Player cannot have the same Id");
         }
 

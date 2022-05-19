@@ -77,6 +77,7 @@ public interface DTOMapper {
     @Mapping(source = "maxPlayers", target = "maxPlayers")
     @Mapping(source = "deckId", target = "deckId")
     @Mapping(source = "hasGame",target = "hasGame")
+    @Mapping(source = "deckCode", target = "deckCode")
     SessionGetDTO convertEntityToSessionGetDTO(Session session);
 
 
