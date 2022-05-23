@@ -11,8 +11,8 @@ import ch.uzh.ifi.hase.soprafs22.repository.CardRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.StatRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.TemplateRepository;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.DeckPutDTO;
 import org.junit.jupiter.api.AfterEach;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.DeckPostDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,6 +113,25 @@ public class DeckServiceIntegrationTest {
         assertEquals(newDeck.getTemplate().getTemplatestats().size(), testTemplate.getTemplatestats().size());
         assertEquals(newDeck.getTemplate().getTemplatestats(), testTemplate.getTemplatestats());
 
+
+    }
+    @Test
+    public void changeDeck_validInputs_success() {
+        // given
+
+
+        Deck testDeck = new Deck();
+        testDeck.setDeckname("NewDeckname");
+
+        DeckPutDTO deckPutDTO = new DeckPutDTO();
+        deckPutDTO.setDeckImage("NewDeckimage");
+        deckPutDTO.setDeckname("NewDeckName");
+        // when
+        Deck createdDeck = deckService.createDeck(testDeck);
+        deckService.changeDeck(deckPutDTO, createdDeck);
+
+        assertEquals(createdDeck.getDeckname(), deckPutDTO.getDeckname());
+        assertEquals(createdDeck.getDeckImage(), deckPutDTO.getDeckImage());
 
     }
 

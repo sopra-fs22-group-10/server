@@ -1,16 +1,10 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
-import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.DeckPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserLoginDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
-import ch.uzh.ifi.hase.soprafs22.service.CardService;
-import ch.uzh.ifi.hase.soprafs22.service.DeckService;
-import ch.uzh.ifi.hase.soprafs22.service.TemplateService;
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -39,24 +33,6 @@ public class UserController {
 
 
 
-    //Just for Testing from Here
-    //==============================================================================
-    /*
-    private final UserService userService;
-    private final DeckService deckService;
-    private final DeckRepository deckRepository;
-
-    UserController(UserService userService , DeckService deckService, DeckRepository deckRepository) {
-        this.userService = userService;
-        this.deckService = deckService;
-        this.deckRepository = deckRepository;
-    }
-
-     */
-
-
-    //To here
-    //======================================================================================================================================
 
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
@@ -136,4 +112,19 @@ public class UserController {
         userService.saveUser(userToUpdate);
        //if update is successful
     }
+    /*
+    @PutMapping("/users/checkToken")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void checkUserToken(@RequestHeader("Authentication") String auth){
+        if(auth == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was no Authentication token");
+        }
+        User user = userService.getUserByAuthentication(auth);
+
+    }
+
+     */
+
+
 }

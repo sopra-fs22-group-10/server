@@ -4,6 +4,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -20,7 +21,7 @@ import java.util.List;
 @Entity
 @Table(name = "SESSION")
 public class Session implements Serializable {
-
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -41,6 +42,9 @@ public class Session implements Serializable {
 
     @Column(nullable = false)
     private Long deckId;
+
+    @Column
+    private Integer deckaccesscode;
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> userList;
@@ -86,5 +90,13 @@ public class Session implements Serializable {
 
     public void setHasGame(Boolean hasGame) {
         this.hasGame = hasGame;
+    }
+
+    public Integer getDeckaccesscode() {
+        return deckaccesscode;
+    }
+
+    public void setDeckaccesscode(Integer deckaccesscode) {
+        this.deckaccesscode = deckaccesscode;
     }
 }

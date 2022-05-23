@@ -86,20 +86,33 @@ public class DeckController {
     @GetMapping("/decks/{deckId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Deck getDeckById(@PathVariable Long deckId, @RequestHeader("Authentication") String auth) {
+    public Deck getDeckById(@PathVariable Long deckId, @RequestHeader("Authentication") String auth, @RequestHeader(value = "DeckAccessCode", required = false) Integer deckaccesscode) {
         // fetch all decks in the internal representation
-        userService.checkIfUserExistsByAuthentication(auth);
+
+        User user = userService.getUserByAuthentication(auth);
         Deck deck = deckService.getDeckById(deckId);
+
+        //for deck owner
+        if(user.getDeckList().contains(deck)){
+            return deck;
+        }
+        //For other User who the deck doesn't belong to if deck PRIVATE
         if(deck.getDeckstatus()==DeckStatus.PRIVATE){
-            User user = userService.getUserByAuthentication(auth);
-            if(!user.getDeckList().contains(deck)){
+            if(deckaccesscode == null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This deck is private and requires a deckaccesscode");
+            }
+            if(!deckaccesscode.equals(deck.getDeckaccesscode())){
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The User has no access to this resource");
+            }
+            else{
+                return deck;
             }
 
         }
+        else{
+            return deck;
+        }
 
-
-        return deck;
     }
     @GetMapping("/decks/users/{userId}")
     @ResponseStatus(HttpStatus.OK)
@@ -136,6 +149,23 @@ public class DeckController {
         deckRepository.deleteById(deckId);
     }
 
+    @PutMapping("/decks/{deckId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void changeDeck(@PathVariable Long deckId,@RequestBody DeckPutDTO deckPutDTO, @RequestHeader("Authentication") String auth){
+        User user = userService.getUserByAuthentication(auth);
+        Deck originalDeck = deckService.getDeckById(deckId);
+
+        if(!user.getDeckList().contains(originalDeck)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The User by Authentication can't alter/access this deck !");
+        }
+        deckService.changeDeck(deckPutDTO, originalDeck);
+
+    }
+
+
+
+
 
     @PostMapping("/decks/users/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
@@ -161,16 +191,16 @@ public class DeckController {
 
         User userInput = DTOMapper.INSTANCE.convertUserLoginDTOtoEntity(userLoginDTO);
         User createdUser = userService.createUser(userInput);
-
+        createdUser.setDeckList(new ArrayList<Deck>());
         //Deck defaultDeck = deckService.createDefaultDeck();
 
         response.addHeader("Access-Control-Expose-Headers", "Authentication");
         response.addHeader("Authentication", createdUser.getAuthentication());
 
         //Adds TemplateDeck to every user created
-        DeckPutDTO deckPutDTO = new DeckPutDTO();
-        deckPutDTO.setDeckId(999995567L);
-        AddExistingDeckToUser(createdUser.getUserId(), deckPutDTO, createdUser.getAuthentication());
+        DeckAccessPutDTO deckAccessPutDTO = new DeckAccessPutDTO();
+        deckAccessPutDTO.setDeckId(999995567L);
+        AddExistingDeckToUser(createdUser.getUserId(), deckAccessPutDTO, createdUser.getAuthentication());
 
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
     }
@@ -179,7 +209,7 @@ public class DeckController {
     @PutMapping("/decks/users/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void AddExistingDeckToUser(@PathVariable Long userId, @RequestBody DeckPutDTO deckPutDTO, @RequestHeader("Authentication") String auth){
+    public void AddExistingDeckToUser(@PathVariable Long userId, @RequestBody DeckAccessPutDTO deckAccessPutDTO, @RequestHeader("Authentication") String auth){
         //Check if user exists
         User user = userService.getUserByID(userId);
 
@@ -187,10 +217,13 @@ public class DeckController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The User by Authentication can't alter/acess this resource !");
         }
 
-        Long deckId = deckPutDTO.getDeckId();
+        Long deckId = deckAccessPutDTO.getDeckId();
         Deck existingDeck = deckService.getDeckById(deckId);
+        if(user.getDeckList().contains(existingDeck)){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "You can't add a existing deck twice to one user.");
+        }
         if(existingDeck.getDeckstatus() == DeckStatus.PRIVATE){
-            if(deckPutDTO.getDeckAccessCode() != null && !Objects.equals(deckPutDTO.getDeckAccessCode(), existingDeck.getDeckacesscode())){
+            if(deckAccessPutDTO.getDeckAccessCode() != null && !Objects.equals(deckAccessPutDTO.getDeckAccessCode(), existingDeck.getDeckaccesscode())){
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The provided Deck Access Code is wrong.");
             }
         }

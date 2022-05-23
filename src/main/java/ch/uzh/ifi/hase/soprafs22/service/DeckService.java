@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs22.entity.Card;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Template;
 import ch.uzh.ifi.hase.soprafs22.repository.DeckRepository;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.DeckPutDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,8 +102,9 @@ public class DeckService {
     }
 
 
-
+    //Only performs check and throws error otherwise, but returns nothing
     public void checkIfCardIsAlreadyInDeck(Card card, Deck deck){
+
         if(deck.getCardList() != null) {
 
             if (deck.getCardList().contains(card)) {
@@ -117,6 +119,17 @@ public class DeckService {
 
     }
 
+    public void changeDeck(DeckPutDTO deckPutDTO, Deck originalDeck){
+        if(deckPutDTO.getDeckImage() != null && !Objects.equals(deckPutDTO.getDeckImage(), originalDeck.getDeckImage())) {
+            originalDeck.setDeckImage(deckPutDTO.getDeckImage());
+        }
+        if(deckPutDTO.getDeckname() != null && !Objects.equals(deckPutDTO.getDeckname(), originalDeck.getDeckname())){
+            originalDeck.setDeckname(deckPutDTO.getDeckname());
+        }
+        deckRepository.flush();
+
+    }
+    //Returns boolean
     public boolean checkIfCardIdIsInDeck(Long cardId, Long deckId){
 
         for(Card card: getDeckById(deckId).getCardList()){

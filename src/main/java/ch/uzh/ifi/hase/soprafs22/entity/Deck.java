@@ -32,7 +32,10 @@ public class Deck implements Serializable {
     private DeckStatus deckstatus;
 
     @Column
-    private Integer deckacesscode;
+    private Integer deckaccesscode;
+
+    @Column
+    private String deckImage;
 
 
     //Right now Template has many to one Relationship but could be changed to One to One
@@ -85,11 +88,11 @@ public class Deck implements Serializable {
     public void setDeckstatus(DeckStatus deckstatus) {
         if(deckstatus == DeckStatus.PRIVATE){
             Random random = new Random();
-            setDeckacesscode(random.nextInt(10000));
+            setDeckaccesscode(random.nextInt(10000));
         }
         else{
-            if(getDeckacesscode() != null){
-                setDeckacesscode(null);
+            if(getDeckaccesscode() != null){
+                setDeckaccesscode(null);
             }
 
         }
@@ -104,13 +107,20 @@ public class Deck implements Serializable {
         return template;
     }
 
-    public Integer getDeckacesscode() {
-        return deckacesscode;
+    public Integer getDeckaccesscode() {
+        return deckaccesscode;
     }
 
-    public void setDeckacesscode(Integer deckacesscode) {
-        this.deckacesscode = deckacesscode;
+    public void setDeckaccesscode(Integer deckacesscode) {
+        this.deckaccesscode = deckacesscode;
     }
 
+    public String getDeckImage() {
+        return deckImage;
+    }
+
+    public void setDeckImage(String deckImage) {
+        this.deckImage = deckImage;
+    }
 }
 
