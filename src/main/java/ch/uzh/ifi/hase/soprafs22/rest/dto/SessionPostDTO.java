@@ -6,6 +6,7 @@ public class SessionPostDTO {
     private Long hostId;
     private int maxPlayers;
     private Long deckId;
+    private Integer deckaccesscode;
 
 
     public String getHostUsername() { return hostUsername; }
@@ -23,4 +24,12 @@ public class SessionPostDTO {
     public int getMaxPlayers() { return maxPlayers; }
 
     public void setMaxPlayers(int maxPlayers) { this.maxPlayers = maxPlayers; }
+
+    public Integer getDeckaccesscode() {
+        return deckaccesscode;
+    }
+
+    public void setDeckaccesscode(Integer deckaccesscode) {
+        this.deckaccesscode = deckaccesscode;
+    }
 }

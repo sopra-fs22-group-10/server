@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
+import ch.uzh.ifi.hase.soprafs22.constant.DeckStatus;
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.Deck;
 import ch.uzh.ifi.hase.soprafs22.entity.Game;
@@ -72,9 +73,6 @@ public class    SessionService {
             checkSessionCreationInput(newSession);
         }catch (ResponseStatusException e) {throw e; }
 
-        Deck deck = deckRepository.findByDeckId(newSession.getDeckId());
-        newSession.setDeckCode(deck.getDeckacesscode());
-
         newSession.addUser(newSession.getHostUsername());
         checkIfSessionHasGame(newSession);
 
@@ -96,7 +94,7 @@ public class    SessionService {
         if (foundSession.isPresent()) {
             return foundSession.get();
         }
-        throw new ResponseStatusException(HttpStatus.resolve(404), "No session for this sessionId found");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No session for this sessionId found");
     }
 
     @Transactional(propagation=Propagation.REQUIRED)
@@ -139,8 +137,7 @@ public class    SessionService {
         }catch (ResponseStatusException e) {throw e; }
 
         sessionToUpdate.setDeckId(sessionInput.getDeckId());
-        Deck deck  = deckRepository.findByDeckId(sessionToUpdate.getDeckId());
-        sessionToUpdate.setDeckCode(deck.getDeckacesscode());
+        sessionToUpdate.setDeckaccesscode(sessionInput.getDeckaccesscode());
         sessionToUpdate.setMaxPlayers(sessionInput.getMaxPlayers());
         sessionToUpdate.setHostUsername(sessionInput.getHostUsername());
         sessionRepository.save(sessionToUpdate);
@@ -153,7 +150,7 @@ public class    SessionService {
         if(foundSession != null){
             return foundSession;
         }
-        throw new ResponseStatusException(HttpStatus.resolve(404), "There exists no Session with given gamecode");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There exists no Session with given gamecode");
     }
 
     public void leaveSession(int gameCode, String usernameToLeave) throws ResponseStatusException{
@@ -201,6 +198,10 @@ public class    SessionService {
       //check if Deck exists
       Deck deckToCheck = deckRepository.findByDeckId(newSession.getDeckId());
       if(deckToCheck == null) { throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The given Deck does not exist"); }
+
+      //set deckaccesscode, so all users in the lobby can access it if the deck is private
+      if(deckToCheck.getDeckstatus() == DeckStatus.PRIVATE){newSession.setDeckaccesscode(deckToCheck.getDeckaccesscode());}
+
   }
 
   private int generateGameCode(Long sessionId) {

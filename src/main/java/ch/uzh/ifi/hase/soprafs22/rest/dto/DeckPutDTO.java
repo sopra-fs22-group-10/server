@@ -1,22 +1,24 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
 public class DeckPutDTO {
-    private Long deckId;
-    private Integer deckAccessCode;
 
-    public Long getDeckId() {
-        return deckId;
+    private String deckImage;
+    private String deckname;
+
+
+    public String getDeckImage() {
+        return deckImage;
     }
 
-    public void setDeckId(Long deckId) {
-        this.deckId = deckId;
+    public void setDeckImage(String deckimage) {
+        this.deckImage = deckimage;
     }
 
-    public Integer getDeckAccessCode() {
-        return deckAccessCode;
+    public String getDeckname() {
+        return deckname;
     }
 
-    public void setDeckAccessCode(Integer deckAccessCode) {
-        this.deckAccessCode = deckAccessCode;
+    public void setDeckname(String deckname) {
+        this.deckname = deckname;
     }
 }

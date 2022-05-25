@@ -23,6 +23,8 @@ public interface DTOMapper {
   @Mapping(target = "deckId", ignore = true)
   @Mapping(target ="deckstatus", ignore = true)
   @Mapping(target = "template", ignore = true)
+  @Mapping(target ="deckaccesscode", ignore = true)
+  @Mapping(target = "deckImage", ignore = true)
   Deck convertDeckPostDTOtoEntity(DeckPostDTO deckPostDTO);
 
   @Mapping(source = "cardstats", target = "cardstats")
@@ -37,6 +39,15 @@ public interface DTOMapper {
   @Mapping(source = "image", target = "image")
   @Mapping(target = "cardId", ignore = true)
   Card convertCardPostDTOtoEntity(CardPostDTO cardPostDTO);
+
+  @Mapping(source = "deckname", target = "deckname")
+  @Mapping(target = "deckaccesscode", ignore = true)
+  @Mapping(source = "deckImage",target = "deckImage")
+  @Mapping(target = "cardList", ignore = true)
+  @Mapping(target = "deckId", ignore = true)
+  @Mapping(target ="deckstatus", ignore = true)
+  @Mapping(target = "template", ignore = true)
+  Deck convertDeckPutDTOtoEntity(DeckPutDTO deckPutDTO);
 
     /*
     @Mapping(source = "username", target = "username")
@@ -68,6 +79,10 @@ public interface DTOMapper {
     @Mapping(source = "hostId", target = "hostId")
     @Mapping(source = "deckId", target = "deckId")
     @Mapping(source = "maxPlayers", target = "maxPlayers")
+    @Mapping(target = "sessionId", ignore = true)
+    @Mapping(target = "gameCode", ignore = true)
+    @Mapping(target = "userList", ignore = true)
+    @Mapping(target = "hasGame", ignore = true)
     Session convertSessionPostDTOtoEntity(SessionPostDTO sessionPostDTO);
 
     @Mapping(source = "gameCode", target = "gameCode")
@@ -77,7 +92,7 @@ public interface DTOMapper {
     @Mapping(source = "maxPlayers", target = "maxPlayers")
     @Mapping(source = "deckId", target = "deckId")
     @Mapping(source = "hasGame",target = "hasGame")
-    @Mapping(source = "deckCode", target = "deckCode")
+    @Mapping(source = "deckaccesscode",target = "deckaccesscode")
     SessionGetDTO convertEntityToSessionGetDTO(Session session);
 
 

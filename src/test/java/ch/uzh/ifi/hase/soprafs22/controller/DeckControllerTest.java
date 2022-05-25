@@ -126,6 +126,7 @@ public class DeckControllerTest {
         testDeck.setDeckId(1L);
         testDeck.setDeckname("Yess");
         testDeck.setDeckstatus(DeckStatus.PUBLIC);
+        testDeck.setDeckaccesscode(123456789);
 
         user = new User();
         user.setUsername("testUsername");
@@ -192,7 +193,7 @@ public class DeckControllerTest {
     }
 
     @Test
-    public void get_Deck_with_DeckGet_with_Id() throws Exception{
+    public void get_Deck_with_with_Id_when_owning_Deck() throws Exception{
 
         testDeck.setTemplate(testTemplate);
 
@@ -216,6 +217,25 @@ public class DeckControllerTest {
                 .andExpect(jsonPath("$.deckstatus", is(testDeck.getDeckstatus().toString())));
                 //.andExpect(jsonPath("$.template", equalToObject(testDeck.getTemplate())));
 
+    }
+
+    @Test
+    public void get_Deck_with_with_Id_with_Accesscode() throws Exception{
+
+        testDeck.setTemplate(testTemplate);
+        user.setDeckList(new ArrayList<Deck>());
+
+        given(deckService.getDeckById(testDeck.getDeckId())).willReturn(testDeck);
+        given(deckService.getDeckById(Mockito.any())).willReturn(testDeck);
+        given(userService.getUserByAuthentication(Mockito.any())).willReturn(user);
+
+        MockHttpServletRequestBuilder getRequest = get("/decks/1").header("Authentication", user.getAuthentication()).header("DeckAccessCode", testDeck.getDeckaccesscode()).contentType(MediaType.APPLICATION_JSON);
+
+        // then
+        mockMvc.perform(getRequest).andExpect(status().isOk())
+                .andExpect(jsonPath("$.deckId", is(testDeck.getDeckId().intValue())))
+                .andExpect(jsonPath("$.deckname", is(testDeck.getDeckname())))
+                .andExpect(jsonPath("$.deckstatus", is(testDeck.getDeckstatus().toString())));
     }
 
     @Test
@@ -475,8 +495,13 @@ public class DeckControllerTest {
         testDeck2.setDeckstatus(DeckStatus.PUBLIC);
         testDeck2.setTemplate(testTemplate2);
 
-        DeckPutDTO deckPutDTO = new DeckPutDTO();
-        deckPutDTO.setDeckId(1L);
+        List<Deck> deckList = new ArrayList<>();
+        deckList.add(testDeck2);
+
+        TestUser2.setDeckList(deckList);
+
+        DeckAccessPutDTO deckAccessPutDTO = new DeckAccessPutDTO();
+        deckAccessPutDTO.setDeckId(1L);
 
 
         given(userService.getUserByID(Mockito.any())).willReturn(TestUser2);
@@ -485,31 +510,55 @@ public class DeckControllerTest {
         given(cardService.createCard(Mockito.any(), Mockito.any())).willReturn(testCard2);
         given(deckService.createDeck(Mockito.any())).willReturn(testDeck2);
         given(templateService.createTemplate(Mockito.any())).willReturn(testTemplate2);
-        /*doAnswer(invocation -> {
-            Object arg0 = invocation.getArgument(0);
-            Object arg1 = invocation.getArgument(1);
 
-            assertEquals(3, arg0);
-            assertEquals("answer me", arg1);
-            return null;
-        }).when(entityManager).detach(any(Object.class));
-
-         */
-
-
-        //given(entityManager)).willReturn(entitymanager);
-        //doNothing().when(entityManager).detach(Mockito.any());
 
 
 
         MockHttpServletRequestBuilder putRequest = put("/decks/users/33")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authentication", TestUser2.getAuthentication())
-                .content(asJsonString(deckPutDTO));
+                .content(asJsonString(deckAccessPutDTO));
 
         mockMvc.perform(putRequest).andExpect(status().isNoContent());
 
     }
+
+    @Test
+    public void change_Deck_correct_Input()throws Exception{
+        List<Deck> deckList = new ArrayList<>();
+        deckList.add(testDeck);
+        user.setDeckList(deckList);
+
+        DeckPutDTO deckPutDTO = new DeckPutDTO();
+        deckPutDTO.setDeckImage("NewImage");
+        deckPutDTO.setDeckname("NewDeckname");
+
+
+        given(userService.getUserByAuthentication(Mockito.any())).willReturn(user);
+        given(deckService.getDeckById(Mockito.any())).willReturn(testDeck);
+
+        doAnswer(invocation -> {
+            testDeck.setDeckImage("NewImage");
+            testDeck.setDeckname("NewDeckname");
+
+            return null;
+        }).when(deckService).changeDeck(Mockito.any(), Mockito.any());
+
+        MockHttpServletRequestBuilder putRequest = put("/decks/"+testDeck.getDeckId())
+                .header("Authentication", user.getAuthentication())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(deckPutDTO));
+
+
+        mockMvc.perform(putRequest).andExpect(status().isNoContent());
+
+
+    }
+
+
+
+
+
     @Test
     public void getUserDecks_correct_Input() throws Exception{
 
@@ -612,8 +661,9 @@ public class DeckControllerTest {
         cardlist.add(testCard2);
             testDeck2.setCardList(cardlist);
 
-            DeckPutDTO deckPutDTO = new DeckPutDTO();
-            deckPutDTO.setDeckId(1L);
+
+            DeckAccessPutDTO deckAccessPutDTO = new DeckAccessPutDTO();
+            deckAccessPutDTO.setDeckId(1L);
 
             given(userService.getUserByID(Mockito.any())).willReturn(TestUser2);
             given(deckService.getDeckById(Mockito.any())).willReturn(testDeck);
@@ -629,7 +679,7 @@ public class DeckControllerTest {
         userLoginDTO.setUsername(user.getUsername());
         userLoginDTO.setPassword(user.getPassword());
 
-
+        user.setDeckList(new ArrayList<Deck>());
         doAnswer(invocation -> {
             List<Deck> decklist = new ArrayList<>();
             decklist.add(testDeck2);

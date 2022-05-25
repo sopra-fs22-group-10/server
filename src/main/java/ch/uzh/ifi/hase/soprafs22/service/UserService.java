@@ -67,6 +67,10 @@ public class UserService {
     public void addDeck(Long deckId, Long userId){
         Deck deckToAdd = deckService.getDeckById(deckId);
         User user = getUserByID(userId);
+        if(user.getDeckList().contains(deckToAdd)){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "You can't add a existing deck twice");
+        }
+
         List<Deck> deckList = user.getDeckList();
         if(user.getDeckList() == null){
             deckList = new ArrayList<>();
@@ -121,6 +125,7 @@ public class UserService {
         String authentication = generateAuthToken();
         newUser.setAuthentication(authentication);
         newUser.setStatus(UserStatus.OFFLINE);
+
 
         try {
             checkIfUserExists(newUser);
