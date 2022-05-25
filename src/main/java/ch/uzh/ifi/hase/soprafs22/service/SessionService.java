@@ -75,7 +75,7 @@ public class    SessionService {
         }catch (ResponseStatusException e) {throw e; }
 
         Deck deck = deckRepository.findByDeckId(newSession.getDeckId());
-        newSession.setDeckCode(deck.getDeckacesscode());
+        newSession.setDeckaccesscode(deck.getDeckacesscode());
 
         newSession.addUser(newSession.getHostUsername());
         checkIfSessionHasGame(newSession);
