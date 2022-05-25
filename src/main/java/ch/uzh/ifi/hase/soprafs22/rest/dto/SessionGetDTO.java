@@ -13,6 +13,7 @@ public class SessionGetDTO {
     private Long deckId;
     private Integer deckaccesscode;
     private Boolean hasGame;
+    private Integer deckCode;
 
     public int getGameCode() { return gameCode; }
 
@@ -45,6 +46,7 @@ public class SessionGetDTO {
     public void setHasGame(Boolean hasGame) {
         this.hasGame = hasGame;
     }
+
 
     public Integer getDeckaccesscode() {
         return deckaccesscode;

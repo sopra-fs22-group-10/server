@@ -1,10 +1,13 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.Session;
+import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.JoinSessionPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.SessionGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.SessionPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.SessionService;
+import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hibernate.mapping.Join;
@@ -43,10 +46,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(SessionController.class)
 public class SessionControllerTest {
     Session session;
+    User user;
     SessionGetDTO sessionGetDTO;
 
     @BeforeEach
     public void init() {
+        user = new User();
+        user.setUserId(1L);
+        user.setUsername("username");
+        user.setPassword("password");
+        user.setAuthentication("auth");
+        user.setStatus(UserStatus.ONLINE);
 
         session = new Session();
         session.setSessionId(1L);
@@ -54,9 +64,10 @@ public class SessionControllerTest {
         session.setUserList(new ArrayList<String>());
         session.setDeckId(1L);
         session.setGameCode(1);
-        session.setHostUsername("username");
-        session.setHostId(1L);
-        session.addUser("username");
+        session.setHostUsername(user.getUsername());
+        session.setHostId(user.getUserId());
+        session.addUser(user.getUsername());
+
     }
 
     @AfterEach
@@ -69,7 +80,8 @@ public class SessionControllerTest {
 
     @MockBean
     private SessionService sessionService;
-
+    @MockBean
+    private UserService userService;
 
     @Test //post /session -> 201 : successful creation of session
     public void createSession_validInput_SessionCreated() throws Exception {
@@ -82,6 +94,7 @@ public class SessionControllerTest {
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = post("/session/create")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authentication", user.getAuthentication())
                 .content(asJsonString(sessionPostDTO));
         // then
         MvcResult mvcResult = mockMvc.perform(postRequest)
@@ -102,7 +115,7 @@ public class SessionControllerTest {
         given(sessionService.getSessionByGameCode(session.getGameCode())).willReturn(session);
 
         // when
-        MockHttpServletRequestBuilder getRequest = get("/session/"+session.getGameCode()).contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder getRequest = get("/session/"+session.getGameCode()).contentType(MediaType.APPLICATION_JSON).header("Authentication", user.getAuthentication());
 
         // then
         mockMvc.perform(getRequest).andExpect(status().is(200))
@@ -121,6 +134,7 @@ public class SessionControllerTest {
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = post("/session/create")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authentication", user.getAuthentication())
                 .content(asJsonString(sessionPostDTO));
         // then
         mockMvc.perform(postRequest)
@@ -135,7 +149,7 @@ public class SessionControllerTest {
                 "No session for this GameCode found"));
 
         // when
-        MockHttpServletRequestBuilder getRequest = get("/session/"+session.getGameCode()).contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder getRequest = get("/session/"+session.getGameCode()).contentType(MediaType.APPLICATION_JSON).header("Authentication", user.getAuthentication());
 
         // then
         mockMvc.perform(getRequest).andExpect(status().is(404));
@@ -153,6 +167,7 @@ public class SessionControllerTest {
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = post("/session/create")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authentication", user.getAuthentication())
                 .content(asJsonString(sessionPostDTO));
         // then
         mockMvc.perform(postRequest)
@@ -174,6 +189,7 @@ public class SessionControllerTest {
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = post("/session/join/"+session.getGameCode())
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authentication", user.getAuthentication())
                 .content(asJsonString(joinSessionPostDTO));
 
         // then
@@ -202,6 +218,7 @@ public class SessionControllerTest {
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = post("/session/join/"+session.getGameCode())
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authentication", user.getAuthentication())
                 .content(asJsonString(joinSessionPostDTO));
 
         // then
@@ -223,6 +240,7 @@ public class SessionControllerTest {
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = post("/session/join/"+77)
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authentication", user.getAuthentication())
                 .content(asJsonString(joinSessionPostDTO));
 
         // then
@@ -245,6 +263,7 @@ public class SessionControllerTest {
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = post("/session/join/"+session.getGameCode())
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authentication", user.getAuthentication())
                 .content(asJsonString(joinSessionPostDTO));
 
         // then
@@ -267,6 +286,7 @@ public class SessionControllerTest {
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = put("/session/"+session.getGameCode())
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authentication", user.getAuthentication())
                 .content(asJsonString(sessionPostDTO));
 
         // then
@@ -295,6 +315,7 @@ public class SessionControllerTest {
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = put("/session/"+0)
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authentication", user.getAuthentication())
                 .content(asJsonString(sessionPostDTO));
 
         // then
@@ -316,6 +337,7 @@ public class SessionControllerTest {
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = put("/session/"+session.getGameCode())
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authentication", user.getAuthentication())
                 .content(asJsonString(sessionPostDTO));
 
         // then

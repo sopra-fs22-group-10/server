@@ -44,12 +44,15 @@ public class    SessionService {
 
     private final GameRepository gameRepository;
 
+    private final Random random;
+
     @Autowired
     public SessionService(@Qualifier("sessionRepository") SessionRepository sessionRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("deckRepository") DeckRepository deckRepository, @Qualifier("gameRepository") GameRepository gameRepository) {
         this.sessionRepository = sessionRepository;
         this.userRepository = userRepository;
         this.deckRepository = deckRepository;
         this.gameRepository = gameRepository;
+        this.random = new Random();
     }
 
     public List<Session> getSessions() {
@@ -70,6 +73,9 @@ public class    SessionService {
         try{
             checkSessionCreationInput(newSession);
         }catch (ResponseStatusException e) {throw e; }
+
+        Deck deck = deckRepository.findByDeckId(newSession.getDeckId());
+        newSession.setDeckCode(deck.getDeckacesscode());
 
         newSession.addUser(newSession.getHostUsername());
         checkIfSessionHasGame(newSession);
@@ -137,6 +143,7 @@ public class    SessionService {
         }catch (ResponseStatusException e) {throw e; }
 
         sessionToUpdate.setDeckId(sessionInput.getDeckId());
+
         sessionToUpdate.setDeckaccesscode(sessionInput.getDeckaccesscode());
         sessionToUpdate.setMaxPlayers(sessionInput.getMaxPlayers());
         sessionToUpdate.setHostUsername(sessionInput.getHostUsername());
@@ -153,6 +160,31 @@ public class    SessionService {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There exists no Session with given gamecode");
     }
 
+    public void leaveSession(int gameCode, String usernameToLeave) throws ResponseStatusException{
+        Session session = getSessionByGameCode(gameCode);
+        List<String> userList = session.getUserList();
+        if(!userList.contains(usernameToLeave)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"The user to leave is not found in the given session");
+        }
+        if(userList.size()== 1){
+            deleteSessionByGameCode(gameCode);
+            return;
+        }
+        if(usernameToLeave.equals(session.getHostUsername())){
+            userList.remove(usernameToLeave);
+            session.setUserList(userList);
+            String newHostUsername = userList.get(0);
+            User newHost = userRepository.findByUsername(newHostUsername);
+            session.setHostUsername(newHostUsername);
+            session.setHostId(newHost.getUserId());
+        } else {
+            userList.remove(usernameToLeave);
+            session.setUserList(userList);
+        }
+
+        saveSession(session);
+    }
+
 
 
 
@@ -162,8 +194,6 @@ public class    SessionService {
       //check if the user exists
       User userToCheck = userRepository.findByUsername(newSession.getHostUsername());
       if(userToCheck == null){ throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The given User does not exist");}
-      //check if User is authorized
-      //TO BE IMPLEMENTED
 
       //check if MaxPlayer Input is correct
       if(newSession.getMaxPlayers() > 6){
@@ -181,10 +211,8 @@ public class    SessionService {
 
   }
 
-    private int generateGameCode(Long sessionId) {
+  private int generateGameCode(Long sessionId) {
         String stringValue = sessionId.toString();
-
-        Random random = new Random();
 
         while(stringValue.length() < 6) {
 
@@ -236,5 +264,9 @@ public class    SessionService {
         sessionRepository.flush();
     }
 
+    public void saveSession(Session sessionToSave){
+        sessionRepository.save(sessionToSave);
+        sessionRepository.flush();
+    }
 }
 

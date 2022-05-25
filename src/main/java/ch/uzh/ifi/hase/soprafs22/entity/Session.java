@@ -46,6 +46,7 @@ public class Session implements Serializable {
     @Column
     private Integer deckaccesscode;
 
+
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> userList;
 
