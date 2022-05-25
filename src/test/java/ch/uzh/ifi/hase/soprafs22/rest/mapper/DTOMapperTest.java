@@ -1,9 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs22.entity.Game;
-import ch.uzh.ifi.hase.soprafs22.entity.Player;
-import ch.uzh.ifi.hase.soprafs22.entity.Session;
-import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.entity.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import org.junit.jupiter.api.Test;
 
@@ -131,4 +128,82 @@ public class DTOMapperTest {
         assertEquals(game.getPlayerList(), gameGetDTO.getPlayerList());
 
     }
+
+    @Test
+    public void createCardPutDTOtoEntitySuccess() {
+       
+       CardPutDTO cardPutDTO = new CardPutDTO();
+       cardPutDTO.setCardId(22L);
+       cardPutDTO.setCardname("NewCardname");
+       List<Stat> statList = new ArrayList<>();
+       Stat somestat = new Stat();
+       statList.add(somestat);
+       cardPutDTO.setCardstats(statList);
+       cardPutDTO.setImage("Newimage");
+
+        //create GameGetDTO
+        
+        Card card = DTOMapper.INSTANCE.convertCardPutDTOtoEntity(cardPutDTO);
+
+        assertEquals(cardPutDTO.getCardId(), card.getCardId());
+        assertEquals(cardPutDTO.getCardname(), card.getCardname());
+        assertEquals(cardPutDTO.getImage(), card.getImage());
+        assertEquals(cardPutDTO.getCardstats(), card.getCardstats());
+
+    }
+
+    @Test
+    public void createCardPostDTOtoEntitySuccess() {
+
+        CardPostDTO cardPostDTO = new CardPostDTO();
+        cardPostDTO.setCardname("NewCardname");
+        List<Stat> statList = new ArrayList<>();
+        Stat somestat = new Stat();
+        statList.add(somestat);
+        cardPostDTO.setCardstats(statList);
+        cardPostDTO.setImage("Newimage");
+
+        //create GameGetDTO
+
+        Card card = DTOMapper.INSTANCE.convertCardPostDTOtoEntity(cardPostDTO);
+
+     
+        assertEquals(cardPostDTO.getCardname(), card.getCardname());
+        assertEquals(cardPostDTO.getImage(), card.getImage());
+        assertEquals(cardPostDTO.getCardstats(), card.getCardstats());
+
+    }
+
+    @Test
+    public void createDeckPutDTOtoEntitySuccess() {
+
+        DeckPutDTO deckPutDTO = new DeckPutDTO();
+        deckPutDTO.setDeckImage("NewDeckimage");
+        deckPutDTO.setDeckname("NewDeckname");
+
+        //create GameGetDTO
+
+        Deck deck = DTOMapper.INSTANCE.convertDeckPutDTOtoEntity(deckPutDTO);
+
+
+        assertEquals(deckPutDTO.getDeckname(), deck.getDeckname());
+        assertEquals(deckPutDTO.getDeckImage(), deck.getDeckImage());
+        
+    }
+
+    @Test
+    public void createDeckPostDTOtoEntitySuccess() {
+
+        DeckPostDTO deckPostDTO = new DeckPostDTO();
+        deckPostDTO.setDeckname("NewDeckname");
+
+        //create GameGetDTO
+
+        Deck deck = DTOMapper.INSTANCE.convertDeckPostDTOtoEntity(deckPostDTO);
+
+
+        assertEquals(deckPostDTO.getDeckname(), deck.getDeckname());
+
+    }
+    
 }
