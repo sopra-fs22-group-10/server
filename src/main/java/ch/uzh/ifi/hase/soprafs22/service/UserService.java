@@ -145,15 +145,17 @@ public class UserService {
     }
 
     public void logoutUser(Long userId, String auth){
-        Optional <User> loggedOutUser = userRepository.findById(userId);
-        if (loggedOutUser.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No account for this userID was found!");
-        } else {
-            if (!auth.equals(loggedOutUser.get().getAuthentication())){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authorized!");
-            }
+        User userById = getUserByID(userId);
+        User user = getUserByAuthentication(auth);
+
+
+
+        if (userById != user){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authorized!");
         }
-        loggedOutUser.get().setAuthentication(generateAuthToken());
+
+        user.setAuthentication(generateAuthToken());
+        userRepository.flush();
     }
 
 

@@ -368,12 +368,16 @@ public class DeckControllerTest {
 
     //The testDeck doesn't contain the testCraad to be Deleteed
     @Test
-    public void deleteCard_when_Card_not_in_Deck()throws Exception {
+    public void deleteCard_when_Card_in_Deck()throws Exception {
+
+        List<Card> cardList = new ArrayList<>();
+        cardList.add(testCard);
+        testDeck.setCardList(cardList);
         List<Deck> deckList = new ArrayList<>();
         deckList.add(testDeck);
         user.setDeckList(deckList);
 
-        given(deckService.checkIfCardIdIsInDeck(Mockito.any(), Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "The provided CardId doesn't correspond to a Card in the Deck." ));
+        given(deckService.checkIfCardIdIsInDeck(Mockito.any(), Mockito.any())).willReturn(false);
         given(deckService.getDeckById(Mockito.any())).willReturn(testDeck);
         given(userService.getUserByAuthentication(Mockito.any())).willReturn(user);
 
@@ -381,7 +385,38 @@ public class DeckControllerTest {
                 .header("Authentication", user.getAuthentication())
                 .contentType(MediaType.APPLICATION_JSON);
 
-        mockMvc.perform(deleteRequest).andExpect(status().isNotFound());
+        mockMvc.perform(deleteRequest).andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    public void getCard_success()throws Exception {
+
+        List<Card> cardList = new ArrayList<>();
+        cardList.add(testCard);
+        testDeck.setCardList(cardList);
+        List<Deck> deckList = new ArrayList<>();
+        deckList.add(testDeck);
+        user.setDeckList(deckList);
+
+        given(deckRepository.findByCardListContaining(Mockito.any())).willReturn(testDeck);
+        given(cardService.getCardById(Mockito.any())).willReturn(testCard);
+        given(deckService.getDeckById(Mockito.any())).willReturn(testDeck);
+        given(userService.getUserByAuthentication(Mockito.any())).willReturn(user);
+
+        MockHttpServletRequestBuilder getRequest = get("/cards/1")
+                .header("Authentication", user.getAuthentication())
+                .contentType(MediaType.APPLICATION_JSON);
+
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cardname",is(testCard.getCardname())))
+                .andExpect(jsonPath("$.cardId",is(testCard.getCardId().intValue())))
+                .andExpect(jsonPath("$.cardstats[0].statvalue",is(testCard.getCardstats().get(0).getStatvalue())))
+                .andExpect(jsonPath("$.cardstats[0].statname",is(testCard.getCardstats().get(0).getStatname())))
+                .andExpect(jsonPath("$.cardstats[0].stattype",is(testCard.getCardstats().get(0).getStattype().toString())))
+                .andExpect(jsonPath("$.cardstats[0].valuestypes",is(testCard.getCardstats().get(0).getValuestypes())));
 
     }
 
