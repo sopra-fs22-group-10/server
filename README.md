@@ -61,30 +61,12 @@ Have a working programming environment or download your IDE of choice: (e.g., [E
 3. Accept to import the project as a `gradle project`
 
 ### VS Code
-<details><summary>The following extensions will help you to run it more easily:</summary>
-<p>
-    
-- `pivotal.vscode-spring-boot`
-</p>
-
-<p>
-
--  `vscjava.vscode-spring-initializr`
-</p>
-<p>
-
+The following extensions will help you to run it more easily:
+-   `pivotal.vscode-spring-boot`
+-   `vscjava.vscode-spring-initializr`
 -   `vscjava.vscode-spring-boot-dashboard`
-</p>
-<p>
-
-- `vscjava.vscode-java-pack`
-</p>
-<p>
-
+-   `vscjava.vscode-java-pack`
 -   `richardwillis.vscode-gradle`
-</p>
-
-</details>
 
 **Note:** You'll need to build the project first with Gradle, just click on the
 `build` command in the _Gradle Tasks_ extension. Then check the _Spring Boot Dashboard_ extension if it already shows `soprafs22` 
@@ -93,42 +75,34 @@ and hit the play button to start the server. If it doesn't show up, restart VS C
 
 ## Running and building with Gradle
 
-<details><summary>You can use the local Gradle Wrapper to build and run the application.</summary>
-<p>
+You can use the local Gradle Wrapper to build and run the application.
+- macOS: `./gradlew`
+- Linux: `./gradlew`
+- Windows: `./gradlew.bat`
 
--   macOS: `./gradlew`
--   Linux: `./gradlew`
--   Windows: `./gradlew.bat`
-    More Information about [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) and [Gradle](https://gradle.org/docs/).
-</p>
-</details>
+ More Information about [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) and [Gradle](https://gradle.org/docs/).
+
 
 ### Build
-
 To build right click the `build.gradle` file and choose `Run Build`
-or use the gradle wrapper:
-`./gradlew build`
+or use the gradle wrapper: `./gradlew build`
 
 ### Run
 
 Right-click on the [Application.java](https://github.com/sopra-fs22-group-10/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs22/Application.java) file and then choose `Run 'Application'`
 or use the gradle wrapper:
-
-`./gradlew bootRun`
+ `./gradlew bootRun`
 
 To test if your application works on localhost go to [http://localhost:8080/](http://localhost:8080/)
 And if you can see 'Your application is running.'
 
 
-### Test
-
-`./gradlew test`
-
+**Test:**
+``./gradlew test``       
 Have a look here: https://www.baeldung.com/spring-boot-testing
 
 ### Development Mode 
-<details><summary>Expand:</summary> 
-<p>
+
 You can start the backend in development mode, this will automatically trigger a new build and reload the application
 once the content of a file has been changed and you save the file.
 
@@ -143,8 +117,7 @@ and in the other one:
 If you want to avoid running all tests with every change, use the following command instead:
 
 `./gradlew build --continuous -xtest`
-</p>
-</details>
+
 
 ## Debugging
 
@@ -219,9 +192,5 @@ If you wish to add change/improve the code here are some suggestions to work on:
 [Atsrivi](https://github.com/Atsrivi)
 
 We are thankful to our TA [SamuelBruegger](https://github.com/SamuelBruegger) for his support during this project.
-
-
-
-## Testing
 
 
