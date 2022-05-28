@@ -255,7 +255,9 @@ public class DeckController {
         existingDeck.setTemplate(templateService.createTemplate(existingTemplate));
         existingDeck.setCardList(newCardList);
         existingDeck.setDeckId(null);
-        existingDeck.setDeckname(null);
+        if(Objects.equals(existingDeck.getDeckname(), "Auto Quartett")) {
+            existingDeck.setDeckname(user.getUsername() +"'s Auto Quartett");
+        }else{existingDeck.setDeckname(null);}
         existingDeck = deckService.createDeck(existingDeck);
         existingDeck.setDeckstatus(DeckStatus.PRIVATE);
        userService.addDeck(existingDeck.getDeckId(), userId);
