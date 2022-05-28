@@ -91,7 +91,7 @@ Have a working programming environment or download your IDE of choice: (e.g., [E
 and hit the play button to start the server. If it doesn't show up, restart VS Code and check again.
 
 
-## Running and building locally with Gradle
+## Running and building with Gradle
 
 <details><summary>You can use the local Gradle Wrapper to build and run the application.</summary>
 <p>
@@ -107,27 +107,23 @@ and hit the play button to start the server. If it doesn't show up, restart VS C
 
 To build right click the `build.gradle` file and choose `Run Build`
 or use the gradle wrapper:
-```bash
-./gradlew build
-```
+`./gradlew build`
 
 ### Run
 
 Right-click on the [Application.java](https://github.com/sopra-fs22-group-10/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs22/Application.java) file and then choose `Run 'Application'`
 or use the gradle wrapper:
 
-```bash
-./gradlew bootRun
-```
+`./gradlew bootRun`
+
 To test if your application works on localhost go to [http://localhost:8080/](http://localhost:8080/)
 And if you can see 'Your application is running.'
 
 
 ### Test
 
-```bash
-./gradlew test
-```
+`./gradlew test`
+
 Have a look here: https://www.baeldung.com/spring-boot-testing
 
 ### Development Mode 
@@ -150,7 +146,20 @@ If you want to avoid running all tests with every change, use the following comm
 </p>
 </details>
 
+## Debugging
 
+If something is not working and/or you don't know what is going on. We highly recommend that you use a debugger and step
+through the process step-by-step.
+
+To configure a debugger for SpringBoot's Tomcat servlet (i.e. the process you start with `./gradlew bootRun` command),
+do the following:
+
+1. Open Tab: **Run**/Edit Configurations
+2. Add a new Remote Configuration and name it properly
+3. Start the Server in Debug mode: `./gradlew bootRun --debug-jvm`
+4. Press `Shift + F9` or the use **Run**/Debug"Name of your task"
+5. Set breakpoints in the application where you need it
+6. Step through the process one step at a time
 
 
 
@@ -161,8 +170,9 @@ is running check on [https://sopra-fs22-group-10-server.herokuapp.com/](https://
 If you see 'The application is running.' The server is deployed.
 
 ## Illustrations:
-In this picture you can see all the folders which make up the application istself.
-![](Pictures/Application_Folders.png)
+Below you can see the main folders.
+![](Pictures/Important_Folders.png)
+
 **Controller**
 The Controller handles all the incoming HTTP request from the client-side
 and calls the necessary classes to answer request.
@@ -209,26 +219,8 @@ If you wish to add change/improve the code here are some suggestions to work on:
 [Atsrivi](https://github.com/Atsrivi)
 
 We are thankful to our TA [SamuelBruegger](https://github.com/SamuelBruegger) for his support during this project.
-## API Endpoint Testing
 
-### Postman
 
--   We highly recommend to use [Postman](https://www.getpostman.com) in order to test your API Endpoints.
-
-## Debugging
-
-If something is not working and/or you don't know what is going on. We highly recommend that you use a debugger and step
-through the process step-by-step.
-
-To configure a debugger for SpringBoot's Tomcat servlet (i.e. the process you start with `./gradlew bootRun` command),
-do the following:
-
-1. Open Tab: **Run**/Edit Configurations
-2. Add a new Remote Configuration and name it properly
-3. Start the Server in Debug mode: `./gradlew bootRun --debug-jvm`
-4. Press `Shift + F9` or the use **Run**/Debug"Name of your task"
-5. Set breakpoints in the application where you need it
-6. Step through the process one step at a time
 
 ## Testing
 
