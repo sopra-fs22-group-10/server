@@ -18,7 +18,7 @@ Our goal is to have:
 - sharing decks among peers
 
 
-##Technologies
+## Technologies
 
 On the server side we use the following technologies:
 - **Java:** Backend logic
@@ -38,7 +38,7 @@ On the server side we use the following technologies:
 
 
 ![](Pictures/Server_Stack.png)
-##High-Level components
+## High-Level components
 **Real time session based games:**
 Since a game cycle is session based, the [session](https://github.com/sopra-fs22-group-10/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs22/entity/Session.java) 
 ties game and the players together. It creates a lobby and allows the transition to the game
@@ -163,7 +163,7 @@ do the following:
 
 
 
-##Deployment to Heroku
+## Deployment to Heroku
 To deploy the applocation to heroku you just have to push to the [sopra-fs22-group-10/server](https://github.com/sopra-fs22-group-10/server)
 repository and GitHub and make sure your push is merged to main. It may take some time but to check if the application
 is running check on [https://sopra-fs22-group-10-server.herokuapp.com/](https://sopra-fs22-group-10-server.herokuapp.com/).
@@ -200,14 +200,14 @@ In the resource-folder is located the data.sql file which is used
 to add data to the database when it's starting up. here we add the Template decks
 that users have when they create an account.
 
-##Roadmap
+## Roadmap
 If you wish to add change/improve the code here are some suggestions to work on:
     
 - Implement a fairness check for user created decks, that notifies the users to alter the deck and make it fairer/funnier to play with
 - Add the possibility for users to create a deck together in a session
 - Add a feature for users to communicate which each others (important when users create decks together
 
-##Authors and Acknowledgement
+## Authors and Acknowledgement
 [andreas-wiemeyer](https://github.com/andreas-wiemeyer)
 
 [UlricaK](https://github.com/UlricaK)
@@ -220,8 +220,5 @@ If you wish to add change/improve the code here are some suggestions to work on:
 
 We are thankful to our TA [SamuelBruegger](https://github.com/SamuelBruegger) for his support during this project.
 
-
-
-## Testing
 
 
