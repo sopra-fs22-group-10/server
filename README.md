@@ -37,7 +37,6 @@ On the server side we use the following technologies:
 
 
 
-![](Pictures/Server_Stack.png)
 ## High-Level components
 **Real time session based games:**
 Since a game cycle is session based, the [session](https://github.com/sopra-fs22-group-10/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs22/entity/Session.java) 
