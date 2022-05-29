@@ -21,10 +21,10 @@ public interface DTOMapper {
   @Mapping(source = "deckname", target = "deckname")
   @Mapping(target = "cardList", ignore = true)
   @Mapping(target = "deckId", ignore = true)
-  @Mapping(target ="deckstatus", ignore = true)
+  @Mapping(source = "deckstatus", target ="deckstatus")
   @Mapping(target = "template", ignore = true)
   @Mapping(target ="deckaccesscode", ignore = true)
-  @Mapping(target = "deckImage", ignore = true)
+  @Mapping(source = "deckImage", target = "deckImage")
   Deck convertDeckPostDTOtoEntity(DeckPostDTO deckPostDTO);
 
   @Mapping(source = "cardstats", target = "cardstats")
