@@ -1,5 +1,5 @@
 # TopTrumps
-Top Trumps is an online multiplayer card game that is played by 2-5 players and is better known under 'Autoquartet'. 
+Top Trumps is an online multiplayer card game that is played by 2-6 players and is better known under 'Autoquartet'. 
 The application allows friends to play games with different themed decks and allows them to create decks and 
 cards by themselves and even add pictures to them to make the game more fun.
 These created decks can be published so others can play with them aswell or only share them between friends.
