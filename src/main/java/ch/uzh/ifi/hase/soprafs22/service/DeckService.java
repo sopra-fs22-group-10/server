@@ -126,6 +126,13 @@ public class DeckService {
         if(deckPutDTO.getDeckname() != null && !Objects.equals(deckPutDTO.getDeckname(), originalDeck.getDeckname())){
             originalDeck.setDeckname(deckPutDTO.getDeckname());
         }
+        if(deckPutDTO.getDeckstatus() != null && !Objects.equals(deckPutDTO.getDeckstatus(), originalDeck.getDeckstatus())){
+            if(deckPutDTO.getDeckstatus().equals("PUBLIC")){
+                originalDeck.setDeckstatus(DeckStatus.PUBLIC);
+            }else{
+                originalDeck.setDeckstatus(DeckStatus.PRIVATE);
+            }
+        }
         deckRepository.flush();
 
     }
